@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>About - FloorAqua</title>
+  <style>
+    html { scroll-behavior: smooth; }
+    
+    /* Smooth reveal animation */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    /* Modal Background */
+    #callModal {
+      display: none;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-900">
+
+  <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+      <a href="index.html" class="flex title-font font-medium items-center text-white mb-4 md:mb-0">
+        <img src="flooraqua.png" alt="FloorAqua Logo" class="h-12 w-auto object-contain bg-white rounded-full p-1">
+        <span class="ml-3 text-2xl font-bold tracking-tight">FloorAqua</span>
+      </a>
+
+      <nav class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-base justify-center">
+        <a href="index.html" class="mr-5 hover:text-indigo-200 transition">Home</a>
+        <a href="index.html#steps" class="mr-5 hover:text-indigo-200 transition">Products</a>
+        <a href="about.html" class="mr-5 hover:text-indigo-200 transition font-bold border-b-2 border-white">About</a>
+        <a href="contact.html" class="mr-5 hover:text-indigo-200 transition">Contact</a>
+      </nav>
+
+      <button id="callBtn" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition transform">
+        Call Now
+      </button>
+    </div>
+  </header>
+
+  <div class="min-h-screen flex items-center justify-center p-4 md:p-8">
+    <div class="glass shadow-2xl rounded-3xl max-w-6xl w-full overflow-hidden animate-fade-up">
+      <div class="flex flex-col lg:flex-row">
+        
+        <div class="lg:w-1/3 bg-indigo-600 p-8 md:p-12 flex flex-col justify-center items-center text-white text-center">
+          <img src="flooraqua.png" alt="FloorAqua Logo" class="w-32 h-32 md:w-48 md:h-48 object-contain bg-white rounded-2xl shadow-xl mb-6 p-4">
+          <h1 class="text-3xl font-bold mb-2">FloorAqua</h1>
+          <p class="text-indigo-100 italic">"Cleaning for a Healthier Society"</p>
+        </div>
+
+        <div class="lg:w-2/3 p-6 md:p-12 lg:p-16">
+          <header class="mb-10 text-center lg:text-left">
+            <h2 class="text-indigo-600 font-bold uppercase tracking-widest text-sm mb-2">Our Story</h2>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-slate-800">Rooted in Vision, Driven by Hygiene.</h3>
+          </header>
+
+          <div class="space-y-8">
+            <div class="flex gap-4">
+              <span class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">🚀</span>
+              <div>
+                <h4 class="font-bold text-lg text-slate-800">Our Mission</h4>
+                <p class="text-slate-600 leading-relaxed">Founded with the vision of delivering high-quality cleaning products at affordable prices. We provide safe, effective, and reliable solutions for modern homes and businesses.</p>
+              </div>
+            </div>
+
+            <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+              <div class="flex gap-4">
+                <span class="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">👥</span>
+                <div>
+                  <h4 class="font-bold text-lg text-slate-800">The Founders</h4>
+                  <p class="text-slate-600 leading-relaxed">Passionate entrepreneurs <span class="font-semibold text-indigo-600">Anurag Masih</span> and <span class="font-semibold text-indigo-600">Pankaj Kumar</span> launched FloorAqua right after graduation. They are dedicated to building long-term trust through product innovation.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <span class="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600">✨</span>
+              <div>
+                <h4 class="font-bold text-lg text-slate-800">Quality Range</h4>
+                <p class="text-slate-600 leading-relaxed">From floor cleaners and phenol to specialty air fresheners, every FloorAqua product is designed to meet the highest modern hygiene standards.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-4 mt-12">
+            <a href="index.html" class="flex-1 bg-slate-800 text-white text-center py-4 rounded-xl font-bold hover:bg-slate-900 transition-all shadow-lg">← Back to Home</a>
+            <a href="contact.html" class="flex-1 bg-indigo-600 text-white text-center py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg">Get in Touch 📩</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="callModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div id="modalBox" class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm transform scale-95 opacity-0 transition-all duration-300">
+      <h2 class="text-2xl font-bold mb-2 text-indigo-600 text-center">Place Order</h2>
+      <p class="text-gray-600 text-center mb-6">Call or WhatsApp us at:</p>
+      <p class="text-xl font-black mb-6 text-center text-gray-800 tracking-wide">+91 63981 38894</p>
+      <div class="space-y-3">
+        <a href="tel:+916398138894" class="flex items-center justify-center w-full bg-indigo-600 text-white px-4 py-3 rounded-xl font-bold hover:bg-indigo-700 transition transform hover:-translate-y-1">📞 Call Now</a>
+        <a href="https://wa.me/916398138894" target="_blank" class="flex items-center justify-center w-full bg-green-500 text-white px-4 py-3 rounded-xl font-bold hover:bg-green-600 transition transform hover:-translate-y-1">💬 WhatsApp</a>
+        <button id="modalCancel" class="w-full text-gray-400 hover:text-gray-600 text-sm font-medium mt-4">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const modal = document.getElementById("callModal");
+      const box = document.getElementById("modalBox");
+      const callBtn = document.getElementById("callBtn");
+      const cancelBtn = document.getElementById("modalCancel");
+
+      function openModal() {
+        modal.style.display = "flex";
+        setTimeout(() => {
+          box.classList.add('opacity-100', 'scale-100');
+          box.classList.remove('opacity-0', 'scale-95');
+        }, 10);
+      }
+
+      function closeModal() {
+        box.classList.remove('opacity-100', 'scale-100');
+        box.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => { modal.style.display = "none"; }, 300);
+      }
+
+      callBtn.addEventListener("click", openModal);
+      cancelBtn.addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    });
+  </script>
+
+</body>
+</html>
