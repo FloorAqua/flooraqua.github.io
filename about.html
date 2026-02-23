@@ -32,24 +32,25 @@
 <body class="bg-slate-50 font-sans text-slate-900">
 
   <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-      <a href="index.html" class="flex title-font font-medium items-center text-white mb-4 md:mb-0">
-        <img src="flooraqua.png" alt="FloorAqua Logo" class="h-12 w-auto object-contain bg-white rounded-full p-1">
-        <span class="ml-3 text-2xl font-bold tracking-tight">FloorAqua</span>
-      </a>
+  <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+    <a href="index.html" class="flex title-font font-medium items-center text-white mb-6 md:mb-0">
+      <img src="flooraqua.png" alt="FloorAqua Logo" class="h-12 w-auto object-contain bg-white rounded-full p-1">
+      <span class="ml-3 text-2xl font-bold tracking-tight">FloorAqua</span>
+    </a>
 
-      <nav class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-base justify-center">
-        <a href="index.html" class="mr-5 hover:text-indigo-200 transition">Home</a>
-        <a href="product.html" class="mr-5 hover:text-indigo-200 transition">Products</a>
-        <a href="about.html" class="mr-5 hover:text-indigo-200 transition font-bold border-b-2 border-white">About</a>
-        <a href="contact.html" class="mr-5 hover:text-indigo-200 transition">Contact</a>
-      </nav>
+    <nav class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-base justify-center gap-x-6 gap-y-4 mb-6 md:mb-0">
+      <a href="index.html" class="hover:text-indigo-200 transition">Home</a>
+      <a href="product.html" class="hover:text-indigo-200 transition">Products</a>
+      <a href="about.html" class="text-indigo-200 font-bold border-b-2 border-white transition">About</a>
+      <a href="contact.html" class="hover:text-indigo-200 transition">Contact</a>
+      <a href="pricing.html" class="hover:text-indigo-200 transition">Pricing</a>
+    </nav>
 
-      <button id="callBtn" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-100 hover:scale-105 transition transform">
-        Call Now
-      </button>
-    </div>
-  </header>
+    <button id="callBtn" class="w-full md:w-auto inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105 active:scale-95">
+      Call Now
+    </button>
+  </div>
+</header>
 
   <div class="min-h-screen flex items-center justify-center p-4 md:p-8">
     <div class="glass shadow-2xl rounded-3xl max-w-6xl w-full overflow-hidden animate-fade-up">
@@ -117,32 +118,45 @@
     </div>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const modal = document.getElementById("callModal");
-      const box = document.getElementById("modalBox");
-      const callBtn = document.getElementById("callBtn");
-      const cancelBtn = document.getElementById("modalCancel");
+ <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("callModal");
+    const box = document.getElementById("modalBox");
+    const callBtn = document.getElementById("callBtn");
+    const cancelBtn = document.getElementById("modalCancel");
 
-      function openModal() {
-        modal.style.display = "flex";
-        setTimeout(() => {
-          box.classList.add('opacity-100', 'scale-100');
-          box.classList.remove('opacity-0', 'scale-95');
-        }, 10);
-      }
+    function openModal() {
+      modal.style.display = "flex";
+      // Small timeout to allow display:flex to register before animating
+      setTimeout(() => {
+        box.classList.add('opacity-100', 'scale-100');
+        box.classList.remove('opacity-0', 'scale-95');
+      }, 10);
+    }
 
-      function closeModal() {
-        box.classList.remove('opacity-100', 'scale-100');
-        box.classList.add('opacity-0', 'scale-95');
-        setTimeout(() => { modal.style.display = "none"; }, 300);
-      }
+    function closeModal() {
+      box.classList.remove('opacity-100', 'scale-100');
+      box.classList.add('opacity-0', 'scale-95');
+      setTimeout(() => { 
+        modal.style.display = "none"; 
+      }, 300);
+    }
 
-      callBtn.addEventListener("click", openModal);
-      cancelBtn.addEventListener("click", closeModal);
-      modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    // Event Listeners
+    callBtn.addEventListener("click", openModal);
+    cancelBtn.addEventListener("click", closeModal);
+    
+    // Close on background click
+    modal.addEventListener("click", (e) => { 
+      if (e.target === modal) closeModal(); 
     });
-  </script>
+
+    // Close on Escape key
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+  });
+</script>
 
 </body>
 </html>
