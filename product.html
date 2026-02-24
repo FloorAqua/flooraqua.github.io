@@ -7,60 +7,62 @@
   <title>Our Products - FloorAqua</title>
   <style>
     html { scroll-behavior: smooth; }
+    
+    /* Smart Header */
+    header { transition: transform 0.3s ease-in-out !important; }
+    .nav-up { transform: translateY(-100%) !important; }
+    
+    /* Fixed Container (No scroll jump) */
+    #contentContainer { opacity: 0; transition: opacity 0.8s ease-out; }
+    #contentContainer.visible { opacity: 1; }
+    
+    .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    
+    /* Modals & Layers */
+    #orderModal, #cartDrawer, #checkoutModal { display: none; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; }
+    
+    /* Hide number arrows */
+    input[type="number"]::-webkit-inner-spin-button, 
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    
+    /* Animations */
+    @keyframes shake {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.2) rotate(15deg); }
+      50% { transform: scale(1.2) rotate(-15deg); }
+      75% { transform: scale(1.2) rotate(15deg); }
+      100% { transform: scale(1); }
+    }
+    .cart-shake { animation: shake 0.5s ease-in-out; }
 
-    /* --- NEW: Smart Header Styles --- */
-    header {
-      transition: transform 0.3s ease-in-out !important;
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
-    .nav-up {
-      transform: translateY(-100%) !important;
-    }
-
-    #contentContainer {
-      transform: translateY(30px);
-      opacity: 0;
-      transition: all 0.8s ease-out;
-    }
-    #contentContainer.visible {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.8s ease-out;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #orderModal {
-      display: none;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px);
-    }
+    .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
   </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 pb-10">
 
   <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-      <a href="index.html" class="flex title-font font-medium items-center text-white mb-6 md:mb-0">
-        <img src="flooraqua.png" alt="FloorAqua Logo" class="h-12 w-auto object-contain bg-white rounded-full p-1">
-        <span class="ml-3 text-2xl font-bold tracking-tight">FloorAqua</span>
-      </a>
-
-      <nav class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-base justify-center gap-x-6 gap-y-4 mb-6 md:mb-0">
+    <div class="container mx-auto flex flex-wrap p-3 md:p-5 flex-col md:flex-row items-center justify-between">
+      <div class="flex justify-between items-center w-full md:w-auto">
+        <a href="index.html" class="flex title-font font-medium items-center text-white">
+          <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 md:h-12 w-auto object-contain bg-white rounded-full p-1">
+          <span class="ml-2 md:ml-3 text-xl md:text-2xl font-bold tracking-tight">FloorAqua</span>
+        </a>
+        <button onclick="window.location.href='tel:+916398138894'" class="md:hidden inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-1.5 px-4 rounded-full shadow-md hover:bg-gray-100 transition text-sm">
+          Call Now 
+        </button>
+      </div>
+      <nav class="w-full md:w-auto md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-sm md:text-base justify-center gap-x-5 gap-y-2 mt-3 md:mt-0">
         <a href="index.html" class="hover:text-indigo-200 transition">Home</a>
         <a href="product.html" class="text-indigo-200 font-bold border-b-2 border-white transition">Products</a>
         <a href="about.html" class="hover:text-indigo-200 transition">About</a>
         <a href="contact.html" class="hover:text-indigo-200 transition">Contact</a>
-        <a href="pricing.html" class="hover:text-indigo-200 transition">Pricing</a>
       </nav>
-
-      <button onclick="openOrderModal('General Inquiry')" class="w-full md:w-auto inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105 active:scale-95">
+      <button onclick="window.location.href='tel:+916398138894'" class="hidden md:inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105 active:scale-95">
         Call Now
       </button>
     </div>
@@ -68,159 +70,329 @@
 
   <div id="contentContainer">
     <section class="text-gray-600 body-font">
-      <div class="container px-5 py-16 mx-auto">
-        <div class="flex flex-col text-center w-full mb-16 fade-in">
-          <h1 class="sm:text-5xl text-4xl font-extrabold title-font mb-4 text-gray-900">Our Premium Range</h1>
-          <p class="lg:w-2/3 mx-auto leading-relaxed text-lg text-gray-600">Click a product to order. Fast Doorstep Delivery in Moradabad, Uttarpradesh 244001.</p>
+      <div class="container px-3 md:px-5 py-8 md:py-12 mx-auto">
+        <div class="text-center mb-8 md:mb-12 fade-in">
+          <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-2 md:mb-4">Our Premium Range</h1>
+          <p class="text-sm md:text-base text-gray-600">Free Doorstep Delivery on orders over ₹500! 🚚</p>
         </div>
-
-        <div class="flex flex-wrap -m-4">
-          <div class="lg:w-1/3 sm:w-1/2 p-4 fade-in" onclick="openOrderModal('Premium Floor Cleaner')">
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 cursor-pointer hover:shadow-2xl transition duration-500 transform hover:-translate-y-2 group">
-              <img class="h-64 w-full object-cover group-hover:scale-110 transition duration-500" src="floor_cleaner.png" alt="Floor Phenol">
-              <div class="p-6 text-center">
-                <h2 class="text-xl font-bold text-gray-900">
-                  Premium Floor Cleaner <br>
-                  <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2 align-middle">Starts from ₹100</span>
-                </h2>
-                <p class="text-indigo-600 font-bold mt-2">Tap to Order</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:w-1/3 sm:w-1/2 p-4 fade-in" onclick="openOrderModal('Glass Cleaner')">
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 cursor-pointer hover:shadow-2xl transition duration-500 transform hover:-translate-y-2 group">
-              <img class="h-64 w-full object-cover group-hover:scale-110 transition duration-500" src="glass_cleaner.png" alt="Glass Cleaner">
-              <div class="p-6 text-center">
-                <h2 class="text-xl font-bold text-gray-900">
-                  Crystal Glass Cleaner <br>
-                  <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2 align-middle">Starts from ₹100</span>
-                </h2>
-                <p class="text-indigo-600 font-bold mt-2">Tap to Order</p>
-              </div>
-            </div>
-          </div>
-          <div class="lg:w-1/3 sm:w-1/2 p-4 fade-in" onclick="openOrderModal('Floor Phenol')">
-  <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 cursor-pointer hover:shadow-2xl transition duration-500 transform hover:-translate-y-2 group">
-    <img class="h-64 w-full object-cover group-hover:scale-110 transition duration-500" src="floor_phenol.png" alt=" Floor Phenol">
-    <div class="p-6 text-center">
-      <h2 class="text-xl font-bold text-gray-900">
-        Floor Phenol <br>
-        <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2 align-middle">Starts from ₹100</span>
-      </h2>
-      <p class="text-indigo-600 font-bold mt-2">Tap to Order</p>
-    </div>
-  </div>
-</div>
-
-          <div class="lg:w-1/3 sm:w-1/2 p-4 fade-in" onclick="openOrderModal('Toilet Cleaner')">
-            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 cursor-pointer hover:shadow-2xl transition duration-500 transform hover:-translate-y-2 group">
-              <img class="h-64 w-full object-cover group-hover:scale-110 transition duration-500" src="toilet_cleaner.png" alt="Toilet Cleaner">
-              <div class="p-6 text-center">
-                <h2 class="text-xl font-bold text-gray-900">
-                  Advance Toilet Cleaner <br>
-                  <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2 align-middle">Starts from ₹100</span>
-                </h2>
-                <p class="text-indigo-600 font-bold mt-2">Tap to Order</p>
-              </div>
-            </div>
-          </div>
+        <div class="flex flex-wrap -m-2 md:-m-4">
+          <script>
+            const products = [
+              { name: 'Premium Floor Cleaner', img: 'floor_cleaner.png', p1L: 100, p5L: 450 },
+              { name: 'Crystal Glass Cleaner', img: 'glass_cleaner.png', p1L: 120, p5L: 550 },
+              { name: 'Floor Phenol', img: 'floor_phenol.png', p1L: 110, p5L: 500 },
+              { name: 'Advance Toilet Cleaner', img: 'toilet_cleaner.png', p1L: 130, p5L: 600 }
+            ];
+            products.forEach(p => {
+              document.write(`
+                <div class="lg:w-1/4 md:w-1/2 w-1/2 p-2 md:p-4 fade-in" onclick="openOrderModal('${p.name}', ${p.p1L}, ${p.p5L})">
+                  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden h-full flex flex-col">
+                    <img class="h-32 md:h-56 w-full object-cover" src="${p.img}" alt="${p.name}">
+                    <div class="p-3 md:p-6 text-center flex-grow flex flex-col justify-between">
+                      <div>
+                        <h2 class="text-sm md:text-lg font-bold text-gray-900 mb-1 leading-tight">${p.name}</h2>
+                        <span class="text-green-600 font-bold text-xs md:text-sm">Starts from ₹${p.p1L}</span>
+                      </div>
+                      <p class="text-indigo-600 font-bold text-xs md:text-base mt-2 md:mt-4">Order Now</p>
+                    </div>
+                  </div>
+                </div>
+              `);
+            });
+          </script>
         </div>
       </div>
     </section>
 
-    <footer class="text-gray-600 body-font bg-gray-100 border-t border-gray-200">
-      <div class="container px-5 py-12 mx-auto text-center">
-        <p class="text-sm text-gray-500">© 2026 FloorAqua — Moradabad's Trusted Cleaning Partner</p>
+    <footer class="text-gray-600 body-font bg-gray-100 border-t border-gray-200 mt-12 md:mt-20">
+      <div class="container px-5 py-8 md:py-12 mx-auto text-center">
+        <p class="text-xs md:text-sm text-gray-500">© 2026 FloorAqua — Moradabad's Trusted Cleaning Partner</p>
       </div>
     </footer>
   </div>
 
-  <div id="orderModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
-    <div id="modalContent" class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm transform scale-90 opacity-0 transition-all duration-300">
-      <div class="text-center">
-        <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-2xl">🛍️</div>
-        <h2 id="modalProductName" class="text-2xl font-black text-gray-900 mb-1">Product Name</h2>
-        <p class="text-gray-500 mb-8 text-sm italic border-b pb-4">Cash on Delivery Available 🤝</p>
-        
-        <div class="space-y-4">
-          <a id="callLink" href="tel:+916398138894" class="flex items-center justify-center w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 transition shadow-lg transform hover:-translate-y-1">
-            📞 Call to Order
-          </a>
-          <a id="whatsappLink" href="#" target="_blank" class="flex items-center justify-center w-full bg-green-500 text-white font-bold py-4 rounded-2xl hover:bg-green-600 transition shadow-lg transform hover:-translate-y-1">
-            💬 WhatsApp Order
-          </a>
-          <button onclick="closeOrderModal()" class="w-full text-gray-400 font-medium pt-2 hover:text-gray-600 transition text-sm">Go Back</button>
+  <button id="floatingCart" onclick="toggleCart(true)" class="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 md:p-5 rounded-full shadow-2xl z-40 flex items-center transition-all duration-300">
+    <span id="cartCount" class="absolute -top-1 -left-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-white">0</span>
+    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+  </button>
+
+  <div id="orderModal" class="fixed inset-0 flex items-center justify-center p-3 md:p-4 z-[105]">
+    <div class="absolute inset-0" onclick="closeModal()"></div>
+    <div class="bg-white rounded-2xl md:rounded-3xl shadow-2xl w-[95%] max-w-sm overflow-hidden relative z-10 animate-slide-up">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-indigo-300 hover:text-indigo-600 z-10 bg-white rounded-full p-1">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+      <div class="bg-indigo-50 p-5 md:p-6 text-center border-b border-indigo-100 pr-10">
+        <h2 id="modalProductName" class="text-xl font-black text-indigo-900 leading-tight">Product Name</h2>
+        <p class="text-indigo-600 text-xs md:text-sm mt-1 italic">5 Litres is highly recommended! ⭐</p>
+      </div>
+      <div class="p-4 md:p-6">
+        <div class="mb-5 flex gap-2">
+            <button id="btn5L" onclick="selectSize('5L')" class="flex-1 py-2.5 md:py-3 border-2 rounded-xl font-bold transition text-sm md:text-base">5 Litres<br><span id="price5LText" class="text-xs opacity-70">₹0</span></button>
+            <button id="btn1L" onclick="selectSize('1L')" class="flex-1 py-2.5 md:py-3 border-2 rounded-xl font-bold transition text-sm md:text-base">1 Litre<br><span id="price1LText" class="text-xs opacity-70">₹0</span></button>
         </div>
+        <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 md:p-4 rounded-xl border">
+          <div class="flex items-center gap-2 md:gap-3">
+            <button onclick="changeQty(-1)" class="w-10 h-10 md:w-12 md:h-12 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition">-</button>
+            <input type="number" id="modalQty" value="1" readonly class="w-8 text-center font-bold bg-transparent outline-none text-lg">
+            <button onclick="changeQty(1)" class="w-10 h-10 md:w-12 md:h-12 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition">+</button>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase">Item Total</p>
+            <p class="text-xl md:text-2xl font-black text-indigo-600">₹<span id="itemTotal">0</span></p>
+          </div>
+        </div>
+        <button onclick="addToCart()" class="w-full bg-indigo-600 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-sm md:text-base">
+          Add to Cart 🛒
+        </button>
       </div>
     </div>
   </div>
 
-  <script>
-    function openOrderModal(productName) {
-      const modal = document.getElementById('orderModal');
-      const content = document.getElementById('modalContent');
-      document.getElementById('modalProductName').innerText = productName;
+  <div id="cartDrawer" class="fixed inset-0 flex justify-end z-[105]">
+    <div class="absolute inset-0 bg-black/40" onclick="toggleCart(false)"></div>
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col relative z-10 transition-transform">
+      <div class="flex justify-between items-center border-b p-4 md:p-6 shrink-0 bg-white">
+        <h2 class="text-xl md:text-2xl font-bold text-gray-900">Your Cart</h2>
+        <button onclick="toggleCart(false)" class="text-gray-400 text-3xl hover:text-gray-600">&times;</button>
+      </div>
       
-      const message = productName === 'General Inquiry' 
-        ? "Hello FloorAqua! I have an inquiry about your products."
-        : "Hello FloorAqua! I want to order: " + productName;
+      <div class="flex-grow overflow-y-auto p-4 md:p-6">
+        <div id="deliveryProgressContainer" class="mb-4 hidden">
+          <div id="deliveryBannerText" class="text-xs md:text-sm font-bold p-3 rounded-t-xl text-center"></div>
+          <div id="deliveryProgressBarTrack" class="h-2 md:h-2.5 w-full bg-gray-200 rounded-b-xl overflow-hidden">
+            <div id="deliveryProgressBarFill" class="h-full w-0 transition-all duration-700 ease-out"></div>
+          </div>
+        </div>
+        <div id="cartItemsList" class="space-y-3 md:space-y-4"></div>
+      </div>
+      
+      <div class="border-t bg-white p-4 md:p-6 shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+        <div class="flex justify-between text-xs md:text-sm text-gray-600 font-bold mb-2">
+          <span>Items Subtotal:</span>
+          <span>₹<span id="cartSubtotal">0</span></span>
+        </div>
+        <div class="flex justify-between text-xs md:text-sm text-gray-600 font-bold mb-3 md:mb-4 items-center">
+          <span>Delivery Charge:</span>
+          <span id="cartDeliveryFee" class="text-orange-600">₹0</span>
+        </div>
+        <div class="flex justify-between text-xl md:text-2xl font-black mb-4 md:mb-6 border-t pt-3 md:pt-4">
+          <span>Grand Total:</span>
+          <span class="text-indigo-600">₹<span id="grandTotal">0</span></span>
+        </div>
+        <button onclick="openCheckoutModal()" class="w-full bg-indigo-600 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-indigo-700 transition">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="checkoutModal" class="fixed inset-0 flex flex-col justify-end md:justify-center items-center p-0 md:p-4 z-[110]">
+    <div class="absolute inset-0" onclick="closeCheckout()"></div>
+    <div class="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md p-5 md:p-6 relative flex flex-col max-h-[85vh] md:max-h-[90vh] z-10 animate-slide-up">
+      
+      <div class="shrink-0 pb-3 md:pb-4 border-b mb-3 md:mb-4 relative">
+        <button onclick="closeCheckout()" class="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-600 bg-gray-50 rounded-full transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <h2 class="text-xl md:text-2xl font-bold text-gray-900 text-center pr-8 pl-8">Delivery Details</h2>
+        <p class="text-gray-500 text-xs md:text-sm text-center mt-1">Pay securely via Cash on Delivery 🤝</p>
+      </div>
+      
+      <form id="checkoutForm" onsubmit="finalizeOrder(event)" class="overflow-y-auto flex-grow px-1 space-y-3 md:space-y-4 pb-2">
+        <div>
+          <input type="text" id="custName" required placeholder="Full Name *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+        </div>
+        <div>
+          <input type="tel" id="custPhone" required placeholder="Mobile Number *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+        </div>
+        <div>
+          <input type="email" id="custEmail" placeholder="Email Address (Optional)" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+          <p id="emailError" class="text-red-500 text-xs mt-1 hidden font-medium pl-1">Please enter a valid email.</p>
+        </div>
+        <div>
+          <textarea id="custAddress" required placeholder="Full Delivery Address (Moradabad) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-24 resize-none transition shadow-sm"></textarea>
+        </div>
+      </form>
+      
+      <div class="shrink-0 pt-4 mt-2 border-t bg-white">
+        <button type="button" onclick="document.getElementById('checkoutForm').dispatchEvent(new Event('submit', {cancelable: true, bubbles: true}))" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base">
+          Confirm & Send to WhatsApp
+        </button>
+        <button type="button" onclick="closeCheckout()" class="w-full mt-3 text-gray-500 text-sm font-medium hover:text-gray-700 py-2">
+          ← Back to Cart
+        </button>
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    // PREVENT SCROLL JUMP ON REFRESH
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    let cart = JSON.parse(localStorage.getItem('floorAquaCart')) || [];
+    let curProd = '', curSize = '5L', curQty = 1, p1L = 0, p5L = 0;
+    
+    const FREE_DELIVERY_THRESHOLD = 500;
+    const STANDARD_DELIVERY_CHARGE = 80;
+
+    function openOrderModal(name, price1, price5) {
+      curProd = name; p1L = price1; p5L = price5;
+      curSize = '5L'; curQty = 1;
+      document.getElementById('modalProductName').innerText = name;
+      document.getElementById('price1LText').innerText = '₹' + p1L;
+      document.getElementById('price5LText').innerText = '₹' + p5L;
+      updateModalUI();
+      document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    function selectSize(s) { curSize = s; updateModalUI(); }
+    function changeQty(v) { curQty = Math.max(1, curQty + v); updateModalUI(); }
+    function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
+    function toggleCart(show) { document.getElementById('cartDrawer').style.display = show ? 'flex' : 'none'; renderCart(); }
+
+    function updateModalUI() {
+      const price = curSize === '1L' ? p1L : p5L;
+      document.getElementById('modalQty').value = curQty;
+      document.getElementById('itemTotal').innerText = price * curQty;
+      const b1 = document.getElementById('btn1L'), b5 = document.getElementById('btn5L');
+      
+      b1.className = curSize === '1L' ? "flex-1 py-2.5 md:py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold rounded-xl text-sm md:text-base" : "flex-1 py-2.5 md:py-3 border-2 border-gray-100 text-gray-500 font-bold rounded-xl text-sm md:text-base";
+      b5.className = curSize === '5L' ? "flex-1 py-2.5 md:py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold rounded-xl text-sm md:text-base" : "flex-1 py-2.5 md:py-3 border-2 border-gray-100 text-gray-500 font-bold rounded-xl text-sm md:text-base";
+    }
+
+    function addToCart() {
+      const price = curSize === '1L' ? p1L : p5L;
+      const existing = cart.find(i => i.name === curProd && i.size === curSize);
+      if (existing) { existing.qty += curQty; } else { cart.push({ name: curProd, size: curSize, qty: curQty, price: price }); }
+      saveCart(); closeModal(); 
+      const cb = document.getElementById('floatingCart');
+      cb.classList.add('cart-shake'); setTimeout(() => cb.classList.remove('cart-shake'), 500);
+    }
+
+    function saveCart() { localStorage.setItem('floorAquaCart', JSON.stringify(cart)); document.getElementById('cartCount').innerText = cart.length; }
+
+    function renderCart() {
+      const list = document.getElementById('cartItemsList');
+      const progressContainer = document.getElementById('deliveryProgressContainer');
+      const bannerText = document.getElementById('deliveryBannerText');
+      const progressBarFill = document.getElementById('deliveryProgressBarFill');
+      const progressBarTrack = document.getElementById('deliveryProgressBarTrack');
+
+      let subtotal = 0;
+      
+      list.innerHTML = cart.length === 0 ? '<p class="text-gray-400 text-center py-10 text-sm">Your cart is empty</p>' : '';
+      cart.forEach((item, index) => {
+        subtotal += (item.price * item.qty);
+        list.innerHTML += `<div class="flex justify-between items-center bg-gray-50 p-3 md:p-4 rounded-2xl border border-gray-100"><div><p class="font-bold text-gray-900 text-sm md:text-base">${item.name}</p><p class="text-xs text-gray-500">${item.size} • ₹${item.price} x ${item.qty}</p></div><div class="text-right"><p class="font-bold text-indigo-600 text-sm md:text-base">₹${item.price * item.qty}</p><button onclick="removeItem(${index})" class="text-red-400 text-[10px] md:text-xs font-bold uppercase hover:text-red-600">Remove</button></div></div>`;
+      });
+
+      let deliveryFee = 0;
+      if (subtotal > 0 && subtotal < FREE_DELIVERY_THRESHOLD) {
+        deliveryFee = STANDARD_DELIVERY_CHARGE;
+      }
+      const grandTotal = subtotal + deliveryFee;
+
+      let progressPercentage = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
+      setTimeout(() => { progressBarFill.style.width = progressPercentage + '%'; }, 50);
+
+      document.getElementById('cartSubtotal').innerText = subtotal;
+      document.getElementById('grandTotal').innerText = grandTotal;
+
+      const deliveryElement = document.getElementById('cartDeliveryFee');
+
+      if (subtotal === 0) {
+        deliveryElement.innerText = '₹0';
+        deliveryElement.className = "text-gray-600";
+        progressContainer.style.display = 'none';
         
-      const encodedMsg = encodeURIComponent(message);
-      document.getElementById('whatsappLink').href = "https://wa.me/916398138894?text=" + encodedMsg;
-
-      modal.style.display = "flex";
-      setTimeout(() => {
-        content.classList.remove('scale-90', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-      }, 10);
+      } else if (deliveryFee > 0) {
+        deliveryElement.innerHTML = '+ ₹' + deliveryFee;
+        deliveryElement.className = "text-orange-600 font-bold";
+        
+        progressContainer.style.display = 'block';
+        bannerText.className = "bg-orange-50 text-orange-700 text-xs md:text-sm font-bold p-3 rounded-t-xl text-center border-t border-l border-r border-orange-100";
+        bannerText.innerHTML = `Add ₹${FREE_DELIVERY_THRESHOLD - subtotal} more for <b>Free Delivery!</b> 🚚`;
+        progressBarFill.className = "h-full bg-orange-400 transition-all duration-700 ease-out";
+        progressBarTrack.className = "h-2 md:h-2.5 w-full bg-orange-100 rounded-b-xl overflow-hidden border-b border-l border-r border-orange-100";
+        
+      } else {
+        deliveryElement.innerHTML = `<span class="text-gray-400 line-through font-medium text-xs mr-2">₹${STANDARD_DELIVERY_CHARGE}</span>FREE`;
+        deliveryElement.className = "text-green-600 font-bold flex items-center";
+        
+        progressContainer.style.display = 'block';
+        bannerText.className = "bg-green-50 text-green-700 text-xs md:text-sm font-bold p-3 rounded-t-xl text-center border-t border-l border-r border-green-100";
+        bannerText.innerHTML = `🎉 You've unlocked <b>Free Delivery!</b>`;
+        progressBarFill.className = "h-full bg-green-500 transition-all duration-700 ease-out";
+        progressBarTrack.className = "h-2 md:h-2.5 w-full bg-green-100 rounded-b-xl overflow-hidden border-b border-l border-r border-green-100";
+      }
     }
 
-    function closeOrderModal() {
-      const modal = document.getElementById('orderModal');
-      const content = document.getElementById('modalContent');
-      content.classList.remove('scale-100', 'opacity-100');
-      content.classList.add('scale-90', 'opacity-0');
-      setTimeout(() => { modal.style.display = "none"; }, 300);
+    function removeItem(index) { cart.splice(index, 1); saveCart(); renderCart(); }
+
+    function openCheckoutModal() { if(cart.length === 0) return; toggleCart(false); document.getElementById('checkoutModal').style.display = 'flex'; }
+    function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; document.getElementById('emailError').classList.add('hidden');}
+
+    function finalizeOrder(e) {
+      e.preventDefault();
+      const name = document.getElementById('custName').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const addr = document.getElementById('custAddress').value.trim();
+      const emailError = document.getElementById('emailError');
+
+      if (email !== "") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          emailError.classList.remove('hidden');
+          return;
+        }
+      }
+      emailError.classList.add('hidden');
+
+      let subtotal = 0;
+      let msg = `Hello FloorAqua! I want to place a Cash on Delivery order:\n\n👤 *Customer:* ${name}\n📞 *Phone:* ${phone}\n📧 *Email:* ${email || 'Not provided'}\n📍 *Address:* ${addr}\n\n🛒 *Order Details:* \n`;
+      
+      cart.forEach((item, i) => { 
+        msg += `${i+1}. ${item.name} (${item.size}) x ${item.qty} = ₹${item.price * item.qty}\n`;
+        subtotal += (item.price * item.qty);
+      });
+      
+      let deliveryFee = (subtotal >= FREE_DELIVERY_THRESHOLD) ? 0 : STANDARD_DELIVERY_CHARGE;
+      let grandTotal = subtotal + deliveryFee;
+      
+      msg += `\n💵 *Items Subtotal:* ₹${subtotal}`;
+      
+      if (deliveryFee === 0) {
+         msg += `\n🚚 *Delivery Charge:* ~₹${STANDARD_DELIVERY_CHARGE}~ FREE`;
+      } else {
+         msg += `\n🚚 *Delivery Charge:* ₹${deliveryFee}`;
+      }
+      
+      msg += `\n💰 *Grand Total: ₹${grandTotal}*\n\nPlease confirm my delivery time!`;
+      
+      window.open(`https://wa.me/916398138894?text=${encodeURIComponent(msg)}`, '_blank');
+      cart = []; saveCart(); closeCheckout();
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      // 1. Trigger main content animation
-      document.getElementById('contentContainer').classList.add('visible');
-
-      // 2. Scroll observer for product cards
-      const faders = document.querySelectorAll('.fade-in');
-      const appearOnScroll = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-      }, { threshold: 0.1 });
-      faders.forEach(fader => appearOnScroll.observe(fader));
-
-      // 3. SMART HEADER LOGIC
-      let lastScrollTop = 0;
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('contentContainer').classList.add('visible'); saveCart();
+      const obs = new IntersectionObserver((es) => { es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
+      document.querySelectorAll('.fade-in').forEach(f => obs.observe(f));
+      
+      let lastScroll = 0;
       const header = document.querySelector('header');
-
-      window.addEventListener('scroll', function() {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        // Hide on scroll down, Show on scroll up
-        if (scrollTop > lastScrollTop && scrollTop > 100) {
+      window.addEventListener('scroll', () => {
+        let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        if (currentScroll > lastScroll && currentScroll > 80) {
           header.classList.add('nav-up');
         } else {
           header.classList.remove('nav-up');
         }
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
+        lastScroll = currentScroll <= 0 ? 0 : currentScroll;
       }, { passive: true });
-
-      // 4. Close modal logic
-      document.getElementById('orderModal').addEventListener('click', function(e) {
-        if(e.target === this) closeOrderModal();
-      });
-      
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeOrderModal();
-      });
     });
   </script>
 </body>
