@@ -127,21 +127,35 @@
         <p class="text-indigo-600 text-xs md:text-sm mt-1 italic">5 Litres is highly recommended! ⭐</p>
       </div>
       <div class="p-4 md:p-6">
-        <div class="mb-5 flex gap-2">
-            <button id="btn5L" onclick="selectSize('5L')" class="flex-1 py-2.5 md:py-3 border-2 rounded-xl font-bold transition text-sm md:text-base">5 Litres<br><span id="price5LText" class="text-xs opacity-70">₹0</span></button>
-            <button id="btn1L" onclick="selectSize('1L')" class="flex-1 py-2.5 md:py-3 border-2 rounded-xl font-bold transition text-sm md:text-base">1 Litre<br><span id="price1LText" class="text-xs opacity-70">₹0</span></button>
-        </div>
-        <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 md:p-4 rounded-xl border">
+        <div class="flex justify-between items-center mb-3 bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+          <div>
+            <p class="font-bold text-indigo-900 text-sm md:text-base">5 Litres</p>
+            <p class="text-xs md:text-sm text-indigo-600 font-bold mt-1" id="price5LText">₹0</p>
+          </div>
           <div class="flex items-center gap-2 md:gap-3">
-            <button onclick="changeQty(-1)" class="w-10 h-10 md:w-12 md:h-12 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition">-</button>
-            <input type="number" id="modalQty" value="1" readonly class="w-8 text-center font-bold bg-transparent outline-none text-lg">
-            <button onclick="changeQty(1)" class="w-10 h-10 md:w-12 md:h-12 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition">+</button>
-          </div>
-          <div class="text-right">
-            <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase">Item Total</p>
-            <p class="text-xl md:text-2xl font-black text-indigo-600">₹<span id="itemTotal">0</span></p>
+            <button onclick="changeQty('5L', -1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-indigo-100 transition flex items-center justify-center">-</button>
+            <input type="number" id="qty5L" value="1" readonly class="w-6 md:w-8 text-center font-bold bg-transparent outline-none text-base md:text-lg">
+            <button onclick="changeQty('5L', 1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-indigo-100 transition flex items-center justify-center">+</button>
           </div>
         </div>
+
+        <div class="flex justify-between items-center mb-5 bg-gray-50 p-3 rounded-xl border border-gray-200">
+          <div>
+            <p class="font-bold text-gray-700 text-sm md:text-base">1 Litre</p>
+            <p class="text-xs md:text-sm text-gray-500 font-bold mt-1" id="price1LText">₹0</p>
+          </div>
+          <div class="flex items-center gap-2 md:gap-3">
+            <button onclick="changeQty('1L', -1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition flex items-center justify-center">-</button>
+            <input type="number" id="qty1L" value="0" readonly class="w-6 md:w-8 text-center font-bold bg-transparent outline-none text-base md:text-lg">
+            <button onclick="changeQty('1L', 1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition flex items-center justify-center">+</button>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center mb-6 px-1">
+          <p class="text-xs md:text-sm text-gray-400 font-bold uppercase">Item Total</p>
+          <p class="text-xl md:text-2xl font-black text-indigo-600">₹<span id="itemTotal">0</span></p>
+        </div>
+
         <button onclick="addToCart()" class="w-full bg-indigo-600 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-sm md:text-base">
           Add to Cart 🛒
         </button>
@@ -214,9 +228,9 @@
       </form>
       
       <div class="shrink-0 pt-4 mt-2 border-t bg-white">
-        <button type="button" onclick="document.getElementById('checkoutForm').dispatchEvent(new Event('submit', {cancelable: true, bubbles: true}))" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base">
-          Confirm & Send to WhatsApp
-        </button>
+        <button type="submit" form="checkoutForm" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base">
+  Confirm & Send to WhatsApp
+</button>
         <button type="button" onclick="closeCheckout()" class="w-full mt-3 text-gray-500 text-sm font-medium hover:text-gray-700 py-2">
           ← Back to Cart
         </button>
@@ -232,15 +246,15 @@
     }
     window.scrollTo(0, 0);
 
-    let cart = JSON.parse(localStorage.getItem('floorAquaCart')) || [];
-    let curProd = '', curSize = '5L', curQty = 1, p1L = 0, p5L = 0;
+   let cart = JSON.parse(localStorage.getItem('floorAquaCart')) || [];
+    let curProd = '', qty5L = 1, qty1L = 0, p1L = 0, p5L = 0;
     
     const FREE_DELIVERY_THRESHOLD = 500;
     const STANDARD_DELIVERY_CHARGE = 80;
 
     function openOrderModal(name, price1, price5) {
       curProd = name; p1L = price1; p5L = price5;
-      curSize = '5L'; curQty = 1;
+      qty5L = 1; qty1L = 0; // Reset logic: 5L is default, 1L is 0
       document.getElementById('modalProductName').innerText = name;
       document.getElementById('price1LText').innerText = '₹' + p1L;
       document.getElementById('price5LText').innerText = '₹' + p5L;
@@ -248,25 +262,41 @@
       document.getElementById('orderModal').style.display = 'flex';
     }
 
-    function selectSize(s) { curSize = s; updateModalUI(); }
-    function changeQty(v) { curQty = Math.max(1, curQty + v); updateModalUI(); }
+    function changeQty(size, v) { 
+      if(size === '5L') {
+        qty5L = Math.max(0, qty5L + v);
+      } else {
+        qty1L = Math.max(0, qty1L + v);
+      }
+      updateModalUI(); 
+    }
+
     function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
     function toggleCart(show) { document.getElementById('cartDrawer').style.display = show ? 'flex' : 'none'; renderCart(); }
 
     function updateModalUI() {
-      const price = curSize === '1L' ? p1L : p5L;
-      document.getElementById('modalQty').value = curQty;
-      document.getElementById('itemTotal').innerText = price * curQty;
-      const b1 = document.getElementById('btn1L'), b5 = document.getElementById('btn5L');
-      
-      b1.className = curSize === '1L' ? "flex-1 py-2.5 md:py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold rounded-xl text-sm md:text-base" : "flex-1 py-2.5 md:py-3 border-2 border-gray-100 text-gray-500 font-bold rounded-xl text-sm md:text-base";
-      b5.className = curSize === '5L' ? "flex-1 py-2.5 md:py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 font-bold rounded-xl text-sm md:text-base" : "flex-1 py-2.5 md:py-3 border-2 border-gray-100 text-gray-500 font-bold rounded-xl text-sm md:text-base";
+      document.getElementById('qty5L').value = qty5L;
+      document.getElementById('qty1L').value = qty1L;
+      const total = (qty5L * p5L) + (qty1L * p1L);
+      document.getElementById('itemTotal').innerText = total;
     }
 
     function addToCart() {
-      const price = curSize === '1L' ? p1L : p5L;
-      const existing = cart.find(i => i.name === curProd && i.size === curSize);
-      if (existing) { existing.qty += curQty; } else { cart.push({ name: curProd, size: curSize, qty: curQty, price: price }); }
+      if (qty5L === 0 && qty1L === 0) {
+        alert("Please add at least 1 quantity to proceed.");
+        return;
+      }
+
+      if (qty5L > 0) {
+        const existing5L = cart.find(i => i.name === curProd && i.size === '5L');
+        if (existing5L) { existing5L.qty += qty5L; } else { cart.push({ name: curProd, size: '5L', qty: qty5L, price: p5L }); }
+      }
+
+      if (qty1L > 0) {
+        const existing1L = cart.find(i => i.name === curProd && i.size === '1L');
+        if (existing1L) { existing1L.qty += qty1L; } else { cart.push({ name: curProd, size: '1L', qty: qty1L, price: p1L }); }
+      }
+      
       saveCart(); closeModal(); 
       const cb = document.getElementById('floatingCart');
       cb.classList.add('cart-shake'); setTimeout(() => cb.classList.remove('cart-shake'), 500);
