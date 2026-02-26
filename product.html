@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +10,8 @@
   <meta property="og:title" content="Our Products | FloorAqua Cleaning Supplies">
   <meta property="og:description" content="Browse our top-quality floor, glass, and toilet cleaners.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://yourusername.github.io/your-repo/images/products-preview.jpg">
   
-  <meta property="og:url" content="https://yourusername.github.io/your-repo/product.html">
-
   <script src="https://cdn.tailwindcss.com"></script> 
-</head>
   <style>
     html { scroll-behavior: smooth; }
     
@@ -21,7 +19,7 @@
     header { transition: transform 0.3s ease-in-out !important; }
     .nav-up { transform: translateY(-100%) !important; }
     
-    /* Fixed Container (No scroll jump) */
+    /* Fixed Container */
     #contentContainer { opacity: 0; transition: opacity 0.8s ease-out; }
     #contentContainer.visible { opacity: 1; }
     
@@ -29,7 +27,7 @@
     .fade-in.visible { opacity: 1; transform: translateY(0); }
     
     /* Modals & Layers */
-    #orderModal, #cartDrawer, #checkoutModal { display: none; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; }
+    #orderModal, #cartDrawer, #checkoutModal, #thankYouModal { display: none; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100; }
     
     /* Hide number arrows */
     input[type="number"]::-webkit-inner-spin-button, 
@@ -53,6 +51,10 @@
   </style>
 </head>
 <body class="bg-gray-50 pb-10">
+
+  <div id="toastNotification" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl z-[120] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm md:text-base flex items-center gap-2">
+    <span id="toastMessage">Item added to cart!</span>
+  </div>
 
   <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
     <div class="container mx-auto flex flex-wrap p-3 md:p-5 flex-col md:flex-row items-center justify-between">
@@ -87,20 +89,50 @@
         <div class="flex flex-wrap -m-2 md:-m-4">
           <script>
             const products = [
-              { name: 'Premium Floor Cleaner', img: 'floor_cleaner.png', p1L: 100, p5L: 450 },
-              { name: 'Crystal Glass Cleaner', img: 'glass_cleaner.png', p1L: 120, p5L: 550 },
-              { name: 'Floor Phenol', img: 'floor_phenol.png', p1L: 110, p5L: 500 },
-              { name: 'Advance Toilet Cleaner', img: 'toilet_cleaner.png', p1L: 130, p5L: 600 }
+              { 
+                name: 'Premium Floor Cleaner', 
+                img: 'floor_cleaner.png',
+                variants: [
+                  { size: '5 Litres', price: 450, recommended: true },
+                  { size: '1 Litre', price: 100, recommended: false }
+                ]
+              },
+              { 
+                name: 'Crystal Glass Cleaner', 
+                img: 'glass_cleaner.png',
+                variants: [
+                  { size: '5 Litres', price: 550, recommended: true },
+                  { size: '1 Litre', price: 120, recommended: false }
+                ]
+              },
+              { 
+                name: 'Floor Phenol', 
+                img: 'floor_phenol.png',
+                variants: [
+                  { size: '5 Litres', price: 500, recommended: true },
+                  { size: '1 Litre', price: 110, recommended: false }
+                ]
+              },
+              { 
+                name: 'Advance Toilet Cleaner', 
+                img: 'toilet_cleaner.png',
+                variants: [
+                  { size: '5 Litres', price: 600, recommended: true },
+                  { size: '1 Litre', price: 130, recommended: false }
+                ]
+              }
             ];
-            products.forEach(p => {
+
+            products.forEach((p, index) => {
+              const minPrice = Math.min(...p.variants.map(v => v.price));
               document.write(`
-                <div class="lg:w-1/4 md:w-1/2 w-1/2 p-2 md:p-4 fade-in" onclick="openOrderModal('${p.name}', ${p.p1L}, ${p.p5L})">
+                <div class="lg:w-1/4 md:w-1/2 w-1/2 p-2 md:p-4 fade-in" onclick="openOrderModal(${index})">
                   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden h-full flex flex-col">
                     <img class="h-32 md:h-56 w-full object-cover" src="${p.img}" alt="${p.name}">
                     <div class="p-3 md:p-6 text-center flex-grow flex flex-col justify-between">
                       <div>
                         <h2 class="text-sm md:text-lg font-bold text-gray-900 mb-1 leading-tight">${p.name}</h2>
-                        <span class="text-green-600 font-bold text-xs md:text-sm">Starts from ₹${p.p1L}</span>
+                        <span class="text-green-600 font-bold text-xs md:text-sm">Starts from ₹${minPrice}</span>
                       </div>
                       <p class="text-indigo-600 font-bold text-xs md:text-base mt-2 md:mt-4">Order Now</p>
                     </div>
@@ -131,34 +163,14 @@
       <button onclick="closeModal()" class="absolute top-4 right-4 text-indigo-300 hover:text-indigo-600 z-10 bg-white rounded-full p-1">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
+      
       <div class="bg-indigo-50 p-5 md:p-6 text-center border-b border-indigo-100 pr-10">
         <h2 id="modalProductName" class="text-xl font-black text-indigo-900 leading-tight">Product Name</h2>
-        <p class="text-indigo-600 text-xs md:text-sm mt-1 italic">5 Litres is highly recommended! ⭐</p>
+        <div id="modalSubtitle"></div>
       </div>
+      
       <div class="p-4 md:p-6">
-        <div class="flex justify-between items-center mb-3 bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-          <div>
-            <p class="font-bold text-indigo-900 text-sm md:text-base">5 Litres</p>
-            <p class="text-xs md:text-sm text-indigo-600 font-bold mt-1" id="price5LText">₹0</p>
-          </div>
-          <div class="flex items-center gap-2 md:gap-3">
-            <button onclick="changeQty('5L', -1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-indigo-100 transition flex items-center justify-center">-</button>
-            <input type="number" id="qty5L" value="1" readonly class="w-6 md:w-8 text-center font-bold bg-transparent outline-none text-base md:text-lg">
-            <button onclick="changeQty('5L', 1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-indigo-100 transition flex items-center justify-center">+</button>
-          </div>
-        </div>
-
-        <div class="flex justify-between items-center mb-5 bg-gray-50 p-3 rounded-xl border border-gray-200">
-          <div>
-            <p class="font-bold text-gray-700 text-sm md:text-base">1 Litre</p>
-            <p class="text-xs md:text-sm text-gray-500 font-bold mt-1" id="price1LText">₹0</p>
-          </div>
-          <div class="flex items-center gap-2 md:gap-3">
-            <button onclick="changeQty('1L', -1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition flex items-center justify-center">-</button>
-            <input type="number" id="qty1L" value="0" readonly class="w-6 md:w-8 text-center font-bold bg-transparent outline-none text-base md:text-lg">
-            <button onclick="changeQty('1L', 1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg hover:bg-gray-100 transition flex items-center justify-center">+</button>
-          </div>
-        </div>
+        <div id="variantContainer" class="mb-4"></div>
 
         <div class="flex justify-between items-center mb-6 px-1">
           <p class="text-xs md:text-sm text-gray-400 font-bold uppercase">Item Total</p>
@@ -225,21 +237,33 @@
           <input type="text" id="custName" required placeholder="Full Name *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
         </div>
         <div>
-          <input type="tel" id="custPhone" required placeholder="Mobile Number *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+          <input type="tel" id="custPhone" required pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit mobile number" placeholder="Mobile Number (10 digits) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
         <div>
           <input type="email" id="custEmail" placeholder="Email Address (Optional)" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
           <p id="emailError" class="text-red-500 text-xs mt-1 hidden font-medium pl-1">Please enter a valid email.</p>
         </div>
-        <div>
-          <textarea id="custAddress" required placeholder="Full Delivery Address (Moradabad) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none h-24 resize-none transition shadow-sm"></textarea>
+        
+        <div class="space-y-2 border-t pt-2 mt-2">
+          <input type="text" id="custStreet" required placeholder="Street / House No. / Locality *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+          <input type="text" id="custLandmark" placeholder="Nearest Landmark / Area (Optional)" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+          
+          <div class="relative">
+            <input type="tel" id="custPincode" required pattern="[0-9]{6}" maxlength="6" placeholder="Pincode (6 digits) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) fetchLocation(this.value);">
+            <span id="pincodeLoader" class="hidden absolute right-4 top-4 text-xs font-bold text-indigo-500">Searching...</span>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" id="custDistrict" required placeholder="City / District *" class="text-base w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50">
+            <input type="text" id="custState" required placeholder="State *" class="text-base w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50">
+          </div>
         </div>
       </form>
       
       <div class="shrink-0 pt-4 mt-2 border-t bg-white">
-        <button type="submit" form="checkoutForm" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base">
-  Confirm & Send to WhatsApp
-</button>
+        <button type="submit" id="submitBtn" form="checkoutForm" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base flex justify-center items-center">
+          Place Order Now
+        </button>
         <button type="button" onclick="closeCheckout()" class="w-full mt-3 text-gray-500 text-sm font-medium hover:text-gray-700 py-2">
           ← Back to Cart
         </button>
@@ -248,67 +272,174 @@
     </div>
   </div>
 
+  <div id="thankYouModal" class="fixed inset-0 flex items-center justify-center p-3 md:p-4 z-[115]">
+    <div class="absolute inset-0" onclick="closeThankYou()"></div>
+    <div class="bg-white rounded-2xl md:rounded-3xl shadow-2xl w-[95%] max-w-sm p-6 md:p-8 text-center relative z-10 animate-slide-up">
+      <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl md:text-3xl font-black text-gray-900 mb-2">Order Successful! 🎉</h2>
+      <p class="text-gray-600 text-sm md:text-base mb-6">Your order has been sent directly to our dispatch team. We will call you shortly to confirm delivery! 🚚</p>
+      <button onclick="closeThankYou()" class="w-full bg-indigo-600 text-white font-bold py-3.5 rounded-xl md:rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-sm md:text-base">
+        Continue Shopping
+      </button>
+    </div>
+  </div>
+
   <script>
-    // PREVENT SCROLL JUMP ON REFRESH
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
     window.scrollTo(0, 0);
 
-   let cart = JSON.parse(localStorage.getItem('floorAquaCart')) || [];
-    let curProd = '', qty5L = 1, qty1L = 0, p1L = 0, p5L = 0;
+    let cart = JSON.parse(localStorage.getItem('floorAquaCart')) || [];
+    let curProdName = '';
+    let currentSelections = {}; 
     
     const FREE_DELIVERY_THRESHOLD = 500;
     const STANDARD_DELIVERY_CHARGE = 80;
 
-    function openOrderModal(name, price1, price5) {
-      curProd = name; p1L = price1; p5L = price5;
-      qty5L = 1; qty1L = 0; // Reset logic: 5L is default, 1L is 0
-      document.getElementById('modalProductName').innerText = name;
-      document.getElementById('price1LText').innerText = '₹' + p1L;
-      document.getElementById('price5LText').innerText = '₹' + p5L;
+    // --- Pincode Auto-Fill Function ---
+    async function fetchLocation(pincode) {
+      const loader = document.getElementById('pincodeLoader');
+      const districtField = document.getElementById('custDistrict');
+      const stateField = document.getElementById('custState');
+      
+      loader.innerText = "Searching...";
+      loader.classList.remove('hidden', 'text-green-500', 'text-red-500');
+      loader.classList.add('text-indigo-500');
+
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const data = await response.json();
+        
+        if (data[0].Status === "Success") {
+          const postOffice = data[0].PostOffice[0];
+          districtField.value = postOffice.District;
+          stateField.value = postOffice.State;
+          
+          loader.classList.replace('text-indigo-500', 'text-green-500');
+          loader.innerText = "Found! ✅";
+          setTimeout(() => loader.classList.add('hidden'), 2000);
+        } else {
+          loader.classList.replace('text-indigo-500', 'text-red-500');
+          loader.innerText = "Not found ❌";
+          setTimeout(() => loader.classList.add('hidden'), 2500);
+          districtField.value = "";
+          stateField.value = "";
+        }
+      } catch (error) {
+        loader.classList.add('hidden');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-[-20px]');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 3000);
+    }
+
+    function openOrderModal(prodIndex) {
+      const p = products[prodIndex];
+      curProdName = p.name;
+      currentSelections = {}; 
+
+      document.getElementById('modalProductName').innerText = p.name;
+      let variantHtml = '';
+      let recommendedVariant = null;
+
+      p.variants.forEach((v) => {
+        let defaultQty = v.recommended ? 1 : 0;
+        currentSelections[v.size] = { price: v.price, qty: defaultQty };
+        if (v.recommended) recommendedVariant = v;
+
+        let safeId = v.size.replace(/\s+/g, '-');
+        let bgClass = v.recommended ? 'bg-indigo-50 border-indigo-100' : 'bg-gray-50 border-gray-200';
+        let textTitleClass = v.recommended ? 'text-indigo-900' : 'text-gray-700';
+        let textPriceClass = v.recommended ? 'text-indigo-600' : 'text-gray-500';
+        let btnHoverClass = v.recommended ? 'hover:bg-indigo-100' : 'hover:bg-gray-100';
+
+        variantHtml += `
+          <div class="flex justify-between items-center mb-3 ${bgClass} p-3 rounded-xl border">
+            <div>
+              <p class="font-bold ${textTitleClass} text-sm md:text-base">${v.size}</p>
+              <p class="text-xs md:text-sm ${textPriceClass} font-bold mt-1">₹${v.price}</p>
+            </div>
+            <div class="flex items-center gap-2 md:gap-3">
+              <button onclick="changeQty('${v.size}', -1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg ${btnHoverClass} transition flex items-center justify-center">-</button>
+              <input type="number" id="qty-${safeId}" value="${defaultQty}" readonly class="w-6 md:w-8 text-center font-bold bg-transparent outline-none text-base md:text-lg">
+              <button onclick="changeQty('${v.size}', 1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg ${btnHoverClass} transition flex items-center justify-center">+</button>
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('modalSubtitle').innerHTML = recommendedVariant 
+        ? `<p class="text-indigo-600 text-xs md:text-sm mt-1 italic">${recommendedVariant.size} is highly recommended! ⭐</p>` 
+        : '';
+
+      document.getElementById('variantContainer').innerHTML = variantHtml;
       updateModalUI();
       document.getElementById('orderModal').style.display = 'flex';
     }
 
-    function changeQty(size, v) { 
-      if(size === '5L') {
-        qty5L = Math.max(0, qty5L + v);
-      } else {
-        qty1L = Math.max(0, qty1L + v);
+    function changeQty(size, change) {
+      if (currentSelections[size]) {
+        currentSelections[size].qty = Math.max(0, currentSelections[size].qty + change);
+        let safeId = size.replace(/\s+/g, '-');
+        document.getElementById(`qty-${safeId}`).value = currentSelections[size].qty;
+        updateModalUI();
       }
-      updateModalUI(); 
     }
 
     function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
     function toggleCart(show) { document.getElementById('cartDrawer').style.display = show ? 'flex' : 'none'; renderCart(); }
 
     function updateModalUI() {
-      document.getElementById('qty5L').value = qty5L;
-      document.getElementById('qty1L').value = qty1L;
-      const total = (qty5L * p5L) + (qty1L * p1L);
+      let total = 0;
+      for (let size in currentSelections) {
+        total += currentSelections[size].qty * currentSelections[size].price;
+      }
       document.getElementById('itemTotal').innerText = total;
     }
 
     function addToCart() {
-      if (qty5L === 0 && qty1L === 0) {
+      let itemsAdded = false;
+      for (let size in currentSelections) {
+        let qty = currentSelections[size].qty;
+        let price = currentSelections[size].price;
+
+        if (qty > 0) {
+          const existingItem = cart.find(i => i.name === curProdName && i.size === size);
+          if (existingItem) {
+            existingItem.qty += qty;
+          } else {
+            cart.push({ name: curProdName, size: size, qty: qty, price: price });
+          }
+          itemsAdded = true;
+        }
+      }
+
+      if (!itemsAdded) {
         alert("Please add at least 1 quantity to proceed.");
         return;
       }
-
-      if (qty5L > 0) {
-        const existing5L = cart.find(i => i.name === curProd && i.size === '5L');
-        if (existing5L) { existing5L.qty += qty5L; } else { cart.push({ name: curProd, size: '5L', qty: qty5L, price: p5L }); }
-      }
-
-      if (qty1L > 0) {
-        const existing1L = cart.find(i => i.name === curProd && i.size === '1L');
-        if (existing1L) { existing1L.qty += qty1L; } else { cart.push({ name: curProd, size: '1L', qty: qty1L, price: p1L }); }
-      }
       
-      saveCart(); closeModal(); 
+      saveCart(); 
+      closeModal(); 
+      showToast(`${curProdName} added! ✅`);
+
       const cb = document.getElementById('floatingCart');
-      cb.classList.add('cart-shake'); setTimeout(() => cb.classList.remove('cart-shake'), 500);
+      cb.classList.add('cart-shake'); 
+      setTimeout(() => cb.classList.remove('cart-shake'), 500);
     }
 
     function saveCart() { localStorage.setItem('floorAquaCart', JSON.stringify(cart)); document.getElementById('cartCount').innerText = cart.length; }
@@ -346,21 +477,17 @@
         deliveryElement.innerText = '₹0';
         deliveryElement.className = "text-gray-600";
         progressContainer.style.display = 'none';
-        
       } else if (deliveryFee > 0) {
         deliveryElement.innerHTML = '+ ₹' + deliveryFee;
         deliveryElement.className = "text-orange-600 font-bold";
-        
         progressContainer.style.display = 'block';
         bannerText.className = "bg-orange-50 text-orange-700 text-xs md:text-sm font-bold p-3 rounded-t-xl text-center border-t border-l border-r border-orange-100";
         bannerText.innerHTML = `Add ₹${FREE_DELIVERY_THRESHOLD - subtotal} more for <b>Free Delivery!</b> 🚚`;
         progressBarFill.className = "h-full bg-orange-400 transition-all duration-700 ease-out";
         progressBarTrack.className = "h-2 md:h-2.5 w-full bg-orange-100 rounded-b-xl overflow-hidden border-b border-l border-r border-orange-100";
-        
       } else {
         deliveryElement.innerHTML = `<span class="text-gray-400 line-through font-medium text-xs mr-2">₹${STANDARD_DELIVERY_CHARGE}</span>FREE`;
         deliveryElement.className = "text-green-600 font-bold flex items-center";
-        
         progressContainer.style.display = 'block';
         bannerText.className = "bg-green-50 text-green-700 text-xs md:text-sm font-bold p-3 rounded-t-xl text-center border-t border-l border-r border-green-100";
         bannerText.innerHTML = `🎉 You've unlocked <b>Free Delivery!</b>`;
@@ -373,47 +500,100 @@
 
     function openCheckoutModal() { if(cart.length === 0) return; toggleCart(false); document.getElementById('checkoutModal').style.display = 'flex'; }
     function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; document.getElementById('emailError').classList.add('hidden');}
+    function closeThankYou() { document.getElementById('thankYouModal').style.display = 'none'; }
 
-    function finalizeOrder(e) {
+    // ==========================================
+    // 🚀 UPGRADED BACKEND CONFIGURATION
+    // ==========================================
+    async function finalizeOrder(e) {
       e.preventDefault();
-      const name = document.getElementById('custName').value.trim();
-      const email = document.getElementById('custEmail').value.trim();
-      const phone = document.getElementById('custPhone').value.trim();
-      const addr = document.getElementById('custAddress').value.trim();
-      const emailError = document.getElementById('emailError');
+      
+      // 1. YOUR BRAND NEW DEPLOYMENT LINK HERE:
+      const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxvCNA0JhBgLMZXnP9TRyV6p--uX5HlaPOll91WJcv_1TG-WYWkB2SjYhiQ7WmZzlv2/exec"; 
 
+      // Visual Button Loading State
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.innerHTML = `Processing <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+      // Gather Form Data
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
+      
+      const street = document.getElementById('custStreet').value.trim();
+      const landmark = document.getElementById('custLandmark').value.trim();
+      const district = document.getElementById('custDistrict').value.trim();
+      const state = document.getElementById('custState').value.trim();
+      const pincode = document.getElementById('custPincode').value.trim();
+
+      const emailError = document.getElementById('emailError');
       if (email !== "") {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           emailError.classList.remove('hidden');
+          resetBtn(submitBtn);
           return;
         }
       }
       emailError.classList.add('hidden');
 
+      // Compile Full Address
+      let fullAddress = street;
+      if (landmark) fullAddress += `, Near ${landmark}`;
+      fullAddress += `, ${district}, ${state} - ${pincode}`;
+
+      // Calculate Totals & Format Order Details
       let subtotal = 0;
-      let msg = `Hello FloorAqua! I want to place a Cash on Delivery order:\n\n👤 *Customer:* ${name}\n📞 *Phone:* ${phone}\n📧 *Email:* ${email || 'Not provided'}\n📍 *Address:* ${addr}\n\n🛒 *Order Details:* \n`;
+      let orderDetailsString = "";
       
       cart.forEach((item, i) => { 
-        msg += `${i+1}. ${item.name} (${item.size}) x ${item.qty} = ₹${item.price * item.qty}\n`;
+        orderDetailsString += `${i+1}. ${item.name} (${item.size}) x ${item.qty} = ₹${item.price * item.qty}\n`;
         subtotal += (item.price * item.qty);
       });
       
       let deliveryFee = (subtotal >= FREE_DELIVERY_THRESHOLD) ? 0 : STANDARD_DELIVERY_CHARGE;
       let grandTotal = subtotal + deliveryFee;
-      
-      msg += `\n💵 *Items Subtotal:* ₹${subtotal}`;
-      
-      if (deliveryFee === 0) {
-         msg += `\n🚚 *Delivery Charge:* ~₹${STANDARD_DELIVERY_CHARGE}~ FREE`;
-      } else {
-         msg += `\n🚚 *Delivery Charge:* ₹${deliveryFee}`;
-      }
-      
-      msg += `\n💰 *Grand Total: ₹${grandTotal}*\n\nPlease confirm my delivery time!`;
-      
-      window.open(`https://wa.me/916398138894?text=${encodeURIComponent(msg)}`, '_blank');
-      cart = []; saveCart(); closeCheckout();
+
+      // 2. THE NEW SMART LABEL (formType: 'order')
+      const sheetData = {
+        formType: 'order',  
+        name: name,
+        phone: phone,
+        email: email || "N/A",
+        address: fullAddress,
+        orderDetails: orderDetailsString.trim(),
+        subtotal: subtotal,
+        delivery: deliveryFee,
+        total: grandTotal
+      };
+
+      // 3. Send to Google Sheets (Google now handles Telegram automatically)
+      try {
+        fetch(GOOGLE_WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sheetData)
+        });
+      } catch (err) { console.log("System Error:", err); }
+
+      // Finish & Show Thank You Screen
+      setTimeout(() => {
+        cart = []; 
+        saveCart(); 
+        closeCheckout();
+        document.getElementById('checkoutForm').reset();
+        document.getElementById('thankYouModal').style.display = 'flex';
+        resetBtn(submitBtn);
+      }, 800);
+    }
+
+    function resetBtn(btn) {
+      btn.innerHTML = "Place Order Now";
+      btn.disabled = false;
+      btn.classList.remove('opacity-75', 'cursor-not-allowed');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -436,4 +616,3 @@
   </script>
 </body>
 </html>
-
