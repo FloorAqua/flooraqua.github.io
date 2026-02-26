@@ -12,6 +12,9 @@
   <meta property="og:type" content="website">
 
   <script src="https://cdn.tailwindcss.com"></script> 
+  
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  
   <style>
     html { scroll-behavior: smooth; }
 
@@ -20,22 +23,12 @@
     .nav-up { transform: translateY(-100%) !important; }
 
     /* --- Smooth Load --- */
-    #pageContainer {
-      opacity: 0;
-      transition: opacity 0.4s ease-out; 
-    }
+    #pageContainer { opacity: 0; transition: opacity 0.4s ease-out; }
     #pageContainer.visible { opacity: 1; }
 
     /* FADE-IN ON SCROLL */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(15px); 
-      transition: all 0.6s ease-out;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .fade-in { opacity: 0; transform: translateY(15px); transition: all 0.6s ease-out; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
 
     /* SLIDE UP ANIMATION FOR SUCCESS MESSAGE */
     @keyframes slideUp {
@@ -50,7 +43,6 @@
 
   <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
     <div class="container mx-auto flex flex-wrap p-3 md:p-5 flex-col md:flex-row items-center justify-between">
-      
       <div class="flex justify-between items-center w-full md:w-auto">
         <a href="index.html" class="flex title-font font-medium items-center text-white">
           <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 md:h-12 w-auto object-contain bg-white rounded-full p-1">
@@ -71,12 +63,10 @@
       <button onclick="window.location.href='tel:+916398138894'" class="hidden md:inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105 active:scale-95">
         Call Now
       </button>
-
     </div>
   </header>
 
   <div id="pageContainer" class="flex-grow">
-    
     <section class="text-gray-600 body-font relative">
       <div class="container px-4 md:px-5 py-12 md:py-24 mx-auto">
         
@@ -147,9 +137,15 @@
                   </div>
                 </div>
 
-                <div class="w-full">
-                  <label class="leading-7 text-sm text-gray-600 font-bold">Email Address (Optional)</label>
-                  <input type="email" id="contactEmail" class="text-base w-full bg-gray-50 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-gray-700 py-3 px-4 transition-colors duration-200 shadow-sm">
+                <div class="flex flex-col md:flex-row gap-4">
+                  <div class="w-full">
+                    <label class="leading-7 text-sm text-gray-600 font-bold">Email Address (Optional)</label>
+                    <input type="email" id="contactEmail" class="text-base w-full bg-gray-50 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-gray-700 py-3 px-4 transition-colors duration-200 shadow-sm">
+                  </div>
+                  <div class="w-full">
+                    <label class="leading-7 text-sm text-gray-600 font-bold">Subject *</label>
+                    <input type="text" id="contactSubject" required placeholder="e.g., Bulk Order, Delivery Issue" class="text-base w-full bg-gray-50 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-gray-700 py-3 px-4 transition-colors duration-200 shadow-sm">
+                  </div>
                 </div>
                 
                 <div class="w-full">
@@ -157,6 +153,8 @@
                   <textarea id="contactMessage" required class="text-base w-full bg-gray-50 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-gray-700 py-3 px-4 h-32 resize-none transition-colors duration-200 shadow-sm"></textarea>
                 </div>
                 
+                <div class="cf-turnstile mt-4 flex justify-center w-full" data-sitekey="0x4AAAAAACioid7KgPiW3YB3"></div>
+
                 <button type="submit" id="submitBtn" class="w-full flex items-center justify-center gap-2 text-white bg-indigo-600 border-0 py-4 px-8 focus:outline-none hover:bg-indigo-700 rounded-xl text-base md:text-lg font-bold shadow-lg transition transform active:scale-95 mt-4">
                   Send Message 🚀
                 </button>
@@ -185,7 +183,6 @@
 
   <footer class="text-gray-600 body-font bg-gray-100 border-t border-gray-200 mt-auto fade-in">
     <div class="container px-5 py-10 md:py-16 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
-      
       <div class="w-full md:w-64 flex-shrink-0 mx-auto text-center md:text-left mb-8 md:mb-0">
         <a class="flex title-font font-medium items-center justify-center md:justify-start text-gray-900">
           <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 w-auto bg-white rounded-full p-1 shadow-sm">
@@ -193,9 +190,7 @@
         </a>
         <p class="mt-3 md:mt-4 text-xs md:text-sm text-gray-500 md:pr-4">Premium cleaning solutions for a spotless home and a healthier lifestyle.</p>
       </div>
-      
       <div class="flex-grow flex flex-wrap md:pl-20 text-left">
-        
         <div class="w-1/2 md:w-1/3 px-2 md:px-4 mb-6 md:mb-0">
           <h2 class="title-font font-bold text-gray-900 tracking-widest text-xs md:text-sm mb-3 uppercase">Company</h2>
           <nav class="list-none space-y-2.5">
@@ -204,7 +199,6 @@
             <li><a href="#top" class="text-gray-600 hover:text-indigo-600 transition text-sm">Contact Us</a></li>
           </nav>
         </div>
-        
         <div class="w-1/2 md:w-1/3 px-2 md:px-4 mb-6 md:mb-0">
           <h2 class="title-font font-bold text-gray-900 tracking-widest text-xs md:text-sm mb-3 uppercase">Products</h2>
           <nav class="list-none space-y-2.5">
@@ -214,41 +208,25 @@
             <li><a href="product.html" class="text-gray-600 hover:text-indigo-600 transition text-sm">Floor cleaner</a></li>
           </nav>
         </div>
-        
         <div class="w-full md:w-1/3 px-2 md:px-4 mt-2 md:mt-0">
           <h2 class="title-font font-bold text-gray-900 tracking-widest text-xs md:text-sm mb-3 uppercase">Reach Us</h2>
           <nav class="list-none space-y-3">
-            <li class="text-gray-600 text-sm flex items-start gap-2">
-              <span class="mt-0.5">📍</span> Central police hospital civil lines, Moradabad 244001
-            </li>
-            <li class="text-gray-600 text-sm flex items-center gap-2">
-              <span>📞</span> +91 63981 38894
-            </li>
-            <li class="text-gray-600 text-sm flex items-center gap-2">
-              <span>✉️</span> Flooraqua.org@gmail.com
-            </li>
+            <li class="text-gray-600 text-sm flex items-start gap-2"><span class="mt-0.5">📍</span> Central police hospital civil lines, Moradabad 244001</li>
+            <li class="text-gray-600 text-sm flex items-center gap-2"><span>📞</span> +91 63981 38894</li>
+            <li class="text-gray-600 text-sm flex items-center gap-2"><span>✉️</span> Flooraqua.org@gmail.com</li>
           </nav>
         </div>
-
       </div>
     </div>
-    
     <div class="bg-gray-200">
       <div class="container mx-auto py-4 px-5 flex flex-col sm:flex-row items-center justify-between">
-        <p class="text-gray-500 text-xs md:text-sm text-center sm:text-left">
-          © 2026 FloorAqua — <span class="text-gray-600 ml-1">Premium Cleaning Solutions</span>
-        </p>
+        <p class="text-gray-500 text-xs md:text-sm text-center sm:text-left">© 2026 FloorAqua — <span class="text-gray-600 ml-1">Premium Cleaning Solutions</span></p>
         <span class="inline-flex mt-3 sm:mt-0 justify-center sm:justify-start gap-3">
           <a href="https://www.facebook.com/share/1DbSC4GnFX/" target="_blank" class="text-gray-500 hover:text-blue-600 transition duration-300">
-            <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
-              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-            </svg>
+            <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path></svg>
           </a>
           <a href="https://www.instagram.com/flooraqua_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="text-gray-500 hover:text-pink-600 transition duration-300">
-            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
-              <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
-            </svg>
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path></svg>
           </a>
         </span>
       </div>
@@ -256,24 +234,15 @@
   </footer>
 
   <script>
-    // PREVENT SCROLL JUMP ON REFRESH
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
     window.scrollTo(0, 0);
 
     document.addEventListener("DOMContentLoaded", function() {
-      
-      // Initial Load Animation
       const container = document.getElementById('pageContainer');
-      requestAnimationFrame(() => {
-        container.classList.add('visible');
-      });
+      requestAnimationFrame(() => { container.classList.add('visible'); });
 
-      // Scroll Fade-in Animation
       const faders = document.querySelectorAll('.fade-in');
       const appearOptions = { threshold: 0.1, rootMargin: "0px 0px -20px 0px" };
-
       const appearOnScroll = new IntersectionObserver(function(entries, observer) {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
@@ -284,45 +253,46 @@
 
       faders.forEach(fader => { appearOnScroll.observe(fader); });
 
-      // Smart Header Logic
       let lastScrollTop = 0;
       const header = document.querySelector('header');
-
       window.addEventListener('scroll', function() {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         if (scrollTop > lastScrollTop && scrollTop > 80) header.classList.add('nav-up');
         else header.classList.remove('nav-up');
         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; 
       }, { passive: true });
-
     });
 
     // ==========================================
-    // 🚀 NEW BACKEND SUBMISSION LOGIC
+    // 🚀 BACKEND SUBMISSION LOGIC (With Cloudflare)
     // ==========================================
     async function submitContactForm(e) {
       e.preventDefault();
       
-      // YOUR MASTER LINK IS ALREADY HERE!
-      const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxvCNA0JhBgLMZXnP9TRyV6p--uX5HlaPOll91WJcv_1TG-WYWkB2SjYhiQ7WmZzlv2/exec"; 
+      // 🛡️ SECURITY CHECK: Turnstile verification
+      const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+      if (!turnstileResponse || !turnstileResponse.value) {
+        alert("Please complete the security check to prove you are human! 🛡️");
+        return; 
+      }
 
-      // Change button state to "Sending..."
+      const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQzp3_UHXEfi_pqJQ2wzB9UHiUIykYqi8ETqp26czqaPoMS1Kxmlr5Jg_uo8bozT5Z/exec"; 
+
       const btn = document.getElementById('submitBtn');
       btn.innerHTML = `Sending... <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
       btn.disabled = true;
       btn.classList.add('opacity-75', 'cursor-not-allowed');
 
-      // Gather Form Data
       const formData = {
-        formType: 'contact',  // Tells your script to route it to ContactMessages!
+        formType: 'contact',  
         name: document.getElementById('contactName').value.trim(),
         phone: document.getElementById('contactPhone').value.trim(),
         email: document.getElementById('contactEmail').value.trim() || "N/A",
-        subject: "Customer Inquiry", // Hidden subject to match your sheet columns
-        message: document.getElementById('contactMessage').value.trim()
+        subject: document.getElementById('contactSubject').value.trim(), // 🆕 Pulls from new input field
+        message: document.getElementById('contactMessage').value.trim(),
+        turnstileToken: turnstileResponse.value // 🛡️ Passes token to Google Script
       };
 
-      // Send to Google Sheets (Which triggers Telegram Support Bot)
       try {
         fetch(GOOGLE_WEB_APP_URL, {
           method: "POST",
@@ -332,14 +302,18 @@
         });
       } catch (err) { console.log("System Error:", err); }
 
-      // Hide form and show beautiful Success Message in the normal document flow
       setTimeout(() => {
         document.getElementById('formHeader').style.display = 'none';
         document.getElementById('smartContactForm').style.display = 'none';
         
+        // Reset the widget in case they want to send another message
+        if (typeof turnstile !== 'undefined') {
+          turnstile.reset();
+        }
+        
         const successDiv = document.getElementById('successMessage');
         successDiv.classList.remove('hidden');
-        successDiv.classList.add('flex'); // Triggers the flex-col layout
+        successDiv.classList.add('flex'); 
       }, 800);
     }
   </script>
