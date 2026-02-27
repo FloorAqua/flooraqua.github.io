@@ -28,6 +28,10 @@
     input[type="number"]::-webkit-inner-spin-button, 
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     
+    /* Hide scrollbar for carousel */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
     @keyframes shake {
       0% { transform: scale(1); }
       25% { transform: scale(1.2) rotate(15deg); }
@@ -186,15 +190,19 @@
 
   <div id="orderModal" class="fixed inset-0 flex items-center justify-center p-3 md:p-4 z-[105]">
     <div class="absolute inset-0" onclick="closeModal()"></div>
-    <div class="bg-white rounded-2xl md:rounded-3xl shadow-2xl w-[95%] max-w-sm overflow-hidden relative z-10 animate-slide-up">
-      <button onclick="closeModal()" class="absolute top-4 right-4 text-indigo-300 hover:text-indigo-600 z-10 bg-white rounded-full p-1">
+    <div class="bg-white rounded-2xl md:rounded-3xl shadow-2xl w-[95%] max-w-sm overflow-hidden relative z-10 animate-slide-up flex flex-col max-h-[90vh]">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-indigo-600 z-20 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-sm transition">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
-      <div class="bg-indigo-50 p-5 md:p-6 text-center border-b border-indigo-100 pr-10">
-        <h2 id="modalProductName" class="text-xl font-black text-indigo-900 leading-tight">Product Name</h2>
-        <div id="modalSubtitle"></div>
+      
+      <div id="modalCarousel" class="relative w-full h-48 md:h-64 bg-white overflow-hidden shrink-0 border-b border-gray-100">
+        </div>
+
+      <div class="bg-indigo-50 px-5 py-4 md:px-6 md:py-5 text-center border-b border-indigo-100 shrink-0">
+        <h2 id="modalProductName" class="text-xl md:text-2xl font-black text-indigo-900 leading-tight">Product Name</h2>
       </div>
-      <div class="p-4 md:p-6">
+
+      <div class="p-4 md:p-6 overflow-y-auto">
         <div id="variantContainer" class="mb-4"></div>
         <div class="flex justify-between items-center mb-6 px-1">
           <p class="text-xs md:text-sm text-gray-400 font-bold uppercase">Item Total</p>
@@ -311,11 +319,15 @@
     const FREE_DELIVERY_THRESHOLD = 499; 
     const STANDARD_DELIVERY_CHARGE = 80;
 
+    let currentImageIndex = 0;
+    let currentProductImages = [];
+
+    // HERE is where you define multiple images using "images: ['1.png', '2.png']"
     const products = [
-      { name: 'Floor Cleaner 5 Litre', img: 'floor_cleaner.png', discount: 25, variants: [ { size: '5 Litres', price: 269, recommended: true }]},
-      { name: 'Glass Cleaner 5 Litre', img: 'glass_cleaner.png', discount: 20, variants: [ { size: '5 Litres', price: 269, recommended: true }]},
-      { name: 'Floor Phenol 5 Litre', img: 'floor_phenol.png', discount: 15, variants: [ { size: '5 Litres', price: 219, recommended: true }]},
-      { name: 'Toilet Cleaner 5 Litre', img: 'toilet_cleaner.png', discount: 25, variants: [ { size: '5 Litres', price: 269, recommended: true }]}
+      { name: 'Floor Cleaner 5 Litre', img: 'floor_cleaner.png', images: ['floor_cleaner.png', 'floor_cleaner1.png'], discount: 25, variants: [ { size: '5 Litres', price: 269, recommended: true }]},
+      { name: 'Glass Cleaner 5 Litre', img: 'glass_cleaner.png', images: ['glass_cleaner.png', 'glass_cleaner1.png'], discount: 20, variants: [ { size: '5 Litres', price: 269, recommended: true }]},
+      { name: 'Floor Phenol 5 Litre', img: 'floor_phenol.png', images: ['floor_pheno.png', 'floor_phenol1.png'], discount: 15, variants: [ { size: '5 Litres', price: 219, recommended: true }]},
+      { name: 'Toilet Cleaner 5 Litre', img: 'toilet_cleaner.png', images: ['toilet_cleaner.png','toilet_cleaner1.png'], discount: 25, variants: [ { size: '5 Litres', price: 269, recommended: true }]}
     ];
 
     async function fetchLocation(pincode) {
@@ -359,11 +371,14 @@
       const p = products[prodIndex];
       curProdName = p.name;
       currentSelections = {}; 
+      
+      // Setup Carousel Data
+      currentProductImages = p.images && p.images.length > 0 ? p.images : [p.img];
+      currentImageIndex = 0;
+
       document.getElementById('modalProductName').innerText = p.name;
-      document.getElementById('modalSubtitle').innerHTML = '';
       
       let variantHtml = '';
-
       p.variants.forEach((v) => {
         let defaultQty = v.recommended ? 1 : 0;
         currentSelections[v.size] = { price: v.price, qty: defaultQty };
@@ -372,7 +387,6 @@
         let bgClass = v.recommended ? 'bg-indigo-50 border-indigo-100' : 'bg-gray-50 border-gray-200';
         let textTitleClass = v.recommended ? 'text-indigo-900' : 'text-gray-700';
         let textPriceClass = v.recommended ? 'text-indigo-600' : 'text-gray-500';
-        let btnHoverClass = v.recommended ? 'hover:bg-indigo-100' : 'hover:bg-gray-100';
 
         variantHtml += `
           <div class="flex justify-between items-center mb-3 ${bgClass} p-3 rounded-xl border">
@@ -381,24 +395,100 @@
               <p class="text-xs md:text-sm ${textPriceClass} font-bold mt-1">₹${v.price}</p>
             </div>
             <div class="flex items-center gap-2 md:gap-3">
-              <button onclick="changeQty('${v.size}', -1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg ${btnHoverClass} transition flex items-center justify-center">-</button>
-              <input type="number" id="qty-${safeId}" value="${defaultQty}" readonly class="w-6 md:w-8 text-center font-bold bg-transparent outline-none text-base md:text-lg">
-              <button onclick="changeQty('${v.size}', 1)" class="w-8 h-8 md:w-10 md:h-10 bg-white border rounded-full font-bold shadow-sm text-lg ${btnHoverClass} transition flex items-center justify-center">+</button>
+              <label for="qty-${safeId}" class="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wider">Qty</label>
+              <input type="text" inputmode="numeric" pattern="[0-9]*" id="qty-${safeId}" value="${defaultQty}" 
+                     oninput="this.value = this.value.replace(/[^0-9]/g, ''); handleManualQty('${v.size}', this.value)" 
+                     class="w-16 md:w-20 py-1.5 md:py-2 px-2 text-center font-extrabold text-gray-800 bg-white border-2 border-gray-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all text-base md:text-lg shadow-sm hover:border-gray-300" placeholder="0">
             </div>
           </div>
         `;
       });
 
       document.getElementById('variantContainer').innerHTML = variantHtml;
+      
+      renderCarousel();
       updateModalUI();
       document.getElementById('orderModal').style.display = 'flex';
     }
 
-    function changeQty(size, change) {
+    function renderCarousel() {
+      const carouselContainer = document.getElementById('modalCarousel');
+      let imgHtml = `<div class="flex transition-transform duration-300 ease-out h-full w-full" id="carouselInner" style="transform: translateX(0%); width: ${currentProductImages.length * 100}%;">`;
+
+      currentProductImages.forEach((imgSrc) => {
+         imgHtml += `<div class="w-full h-full flex-shrink-0 flex items-center justify-center bg-white p-2" style="width: ${100 / currentProductImages.length}%;"><img src="${imgSrc}" class="max-w-full max-h-full object-contain drop-shadow-sm" alt="Product Image"></div>`;
+      });
+      imgHtml += `</div>`;
+
+      // Add Arrows and Dots if there is more than 1 image
+      if (currentProductImages.length > 1) {
+        imgHtml += `
+          <button onclick="prevImage(event)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-1.5 rounded-full shadow-md hover:bg-white z-10 text-gray-700 hover:text-indigo-600 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button>
+          <button onclick="nextImage(event)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 p-1.5 rounded-full shadow-md hover:bg-white z-10 text-gray-700 hover:text-indigo-600 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg></button>
+        `;
+
+        imgHtml += `<div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10 bg-white/60 px-2 py-1 rounded-full backdrop-blur-sm">`;
+        currentProductImages.forEach((_, i) => {
+           imgHtml += `<div id="dot-${i}" class="w-2 h-2 rounded-full ${i === 0 ? 'bg-indigo-600 scale-110' : 'bg-gray-400'} transition-all duration-300"></div>`;
+        });
+        imgHtml += `</div>`;
+      }
+
+      carouselContainer.innerHTML = imgHtml;
+
+      // Mobile Swipe Logic
+      if(currentProductImages.length > 1) {
+        let startX = 0;
+        let isDragging = false;
+        const inner = document.getElementById('carouselInner');
+
+        inner.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; }, {passive: true});
+        inner.addEventListener('touchend', (e) => {
+          if(!isDragging) return;
+          isDragging = false;
+          let endX = e.changedTouches[0].clientX;
+          if(startX - endX > 40) nextImage();
+          else if(endX - startX > 40) prevImage();
+        });
+      }
+    }
+
+    function nextImage(e) {
+      if(e) e.stopPropagation();
+      if (currentImageIndex < currentProductImages.length - 1) {
+        currentImageIndex++;
+        updateCarouselPosition();
+      }
+    }
+
+    function prevImage(e) {
+      if(e) e.stopPropagation();
+      if (currentImageIndex > 0) {
+        currentImageIndex--;
+        updateCarouselPosition();
+      }
+    }
+
+    function updateCarouselPosition() {
+      const percentage = -(currentImageIndex * (100 / currentProductImages.length));
+      document.getElementById('carouselInner').style.transform = `translateX(${percentage}%)`;
+      
+      currentProductImages.forEach((_, i) => {
+        const dot = document.getElementById(`dot-${i}`);
+        if (dot) {
+           if(i === currentImageIndex) {
+             dot.classList.remove('bg-gray-400'); dot.classList.add('bg-indigo-600', 'scale-110');
+           } else {
+             dot.classList.remove('bg-indigo-600', 'scale-110'); dot.classList.add('bg-gray-400');
+           }
+        }
+      });
+    }
+
+    function handleManualQty(size, value) {
       if (currentSelections[size]) {
-        currentSelections[size].qty = Math.max(0, currentSelections[size].qty + change);
-        let safeId = size.replace(/\s+/g, '-');
-        document.getElementById(`qty-${safeId}`).value = currentSelections[size].qty;
+        let parsedVal = parseInt(value, 10);
+        currentSelections[size].qty = (isNaN(parsedVal) || parsedVal < 0) ? 0 : parsedVal;
         updateModalUI();
       }
     }
@@ -442,6 +532,17 @@
       }
     }
 
+    function handleCartManualQty(index, value) {
+      let parsed = parseInt(value, 10);
+      if (isNaN(parsed) || parsed <= 0) {
+        removeItem(index);
+      } else {
+        cart[index].qty = parsed;
+        saveCart();
+        renderCart();
+      }
+    }
+
     function renderCart() {
       const list = document.getElementById('cartItemsList');
       const progressContainer = document.getElementById('deliveryProgressContainer');
@@ -455,17 +556,21 @@
         subtotal += (item.price * item.qty);
         
         list.innerHTML += `
-        <div class="flex justify-between items-center bg-gray-50 p-3 md:p-4 rounded-2xl border border-gray-100">
-          <div>
-            <p class="font-bold text-gray-900 text-sm md:text-base">${item.name}</p>
-            <p class="text-xs text-gray-500">₹${item.price} x ${item.qty}</p>
+        <div class="flex justify-between items-start bg-gray-50 p-3 md:p-4 rounded-2xl border border-gray-100">
+          <div class="pr-2">
+            <p class="font-bold text-gray-900 text-sm md:text-base leading-tight">${item.name}</p>
+            <p class="text-xs text-gray-500 mt-1">₹${item.price} each</p>
+            <button onclick="removeItem(${index})" class="text-xs text-red-500 hover:text-red-700 font-bold mt-2 flex items-center gap-1 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              Remove
+            </button>
           </div>
-          <div class="flex flex-col items-end gap-2">
+          <div class="flex flex-col items-end gap-2 shrink-0">
             <p class="font-bold text-indigo-600 text-sm md:text-base">₹${item.price * item.qty}</p>
-            <div class="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1 shadow-sm">
-              <button onclick="updateCartQty(${index}, -1)" class="text-gray-500 font-bold px-1 hover:text-indigo-600 transition">-</button>
-              <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
-              <button onclick="updateCartQty(${index}, 1)" class="text-gray-500 font-bold px-1 hover:text-indigo-600 transition">+</button>
+            <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-1.5 py-1 shadow-sm">
+              <button onclick="updateCartQty(${index}, -1)" class="text-gray-500 font-bold w-6 h-6 flex justify-center items-center hover:bg-gray-100 rounded transition">-</button>
+              <input type="number" value="${item.qty}" onchange="handleCartManualQty(${index}, this.value)" class="text-xs font-bold w-8 text-center bg-transparent outline-none">
+              <button onclick="updateCartQty(${index}, 1)" class="text-gray-500 font-bold w-6 h-6 flex justify-center items-center hover:bg-gray-100 rounded transition">+</button>
             </div>
           </div>
         </div>`;
@@ -625,4 +730,3 @@
   </script>
 </body>
 </html>
-
