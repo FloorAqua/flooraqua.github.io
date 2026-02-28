@@ -263,7 +263,7 @@
         <div><input type="text" id="custName" required placeholder="Full Name *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm"></div>
         <div><input type="tel" id="custPhone" required pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit mobile number" placeholder="Mobile Number (10 digits) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
         <div>
-          <input type="email" id="custEmail" placeholder="Email Address (Optional)" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+          <input type="email" id="custEmail" required placeholder="Email Address *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
           <p id="emailError" class="text-red-500 text-xs mt-1 hidden font-medium pl-1">Please enter a valid email.</p>
         </div>
         
@@ -611,7 +611,7 @@
         return; 
       }
 
-      const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUDJH5V9wQpt9N2f62AwKDkiBuBI6E03LbfZouHeL-PYd4tEgrcyEIPXDoW2WBdOfP/exec"; 
+      const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx5edrViIEXKvgaLh0l8PZV1pYXDF-rKjnljwr9u7wOmPiZdF_NtCRIRgLRGocahCYY/exec"; 
 
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.innerHTML = `Processing <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
@@ -627,12 +627,15 @@
       const pincode = document.getElementById('custPincode').value.trim();
 
       const emailError = document.getElementById('emailError');
-      if (email !== "") {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          emailError.classList.remove('hidden'); resetBtn(submitBtn); return;
-        }
-      }
-      emailError.classList.add('hidden');
+
+// The validation now runs unconditionally
+if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  emailError.classList.remove('hidden'); 
+  resetBtn(submitBtn); 
+  return;
+}
+
+emailError.classList.add('hidden');
 
       let fullAddress = street + (landmark ? `, Near ${landmark}` : '') + `, ${district}, ${state} - ${pincode}`;
 
@@ -730,5 +733,4 @@
   </script>
 </body>
 </html>
-
 
