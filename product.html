@@ -28,18 +28,18 @@
     input[type="number"]::-webkit-inner-spin-button, 
     input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     
-    /* Hide scrollbar for carousel */
+    /* Hide scrollbar for carousel & categories */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     @keyframes shake {
       0% { transform: scale(1); }
-      25% { transform: scale(1.2) rotate(15deg); }
-      50% { transform: scale(1.2) rotate(-15deg); }
-      75% { transform: scale(1.2) rotate(15deg); }
+      25% { transform: scale(1.05) rotate(2deg); }
+      50% { transform: scale(1.05) rotate(-2deg); }
+      75% { transform: scale(1.05) rotate(2deg); }
       100% { transform: scale(1); }
     }
-    .cart-shake { animation: shake 0.5s ease-in-out; }
+    .cart-shake { animation: shake 0.3s ease-in-out; }
     
     @keyframes slideUp {
       from { transform: translateY(100%); }
@@ -47,16 +47,32 @@
     }
     .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
 
-    /* 🏷️ Professional Discount Pulse Animation */
-    @keyframes softPulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    /* 🏷️ Premium Glossy Shimmer Discount Animation */
+    .discount-badge { 
+      overflow: hidden; /* Keeps the light inside the badge */
+      box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.4); /* Smooth red shadow */
     }
-    .discount-badge { animation: softPulse 2s infinite; }
+    .discount-badge::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+      transform: skewX(-25deg);
+      animation: premiumShimmer 3s infinite;
+    }
+    @keyframes premiumShimmer {
+      0% { left: -150%; }
+      15% { left: 150%; }
+      100% { left: 150%; } /* Pauses for a moment before shining again */
+    }
+
+    .cat-active { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; }
   </style>
 </head>
-<body class="bg-gray-50 pb-10">
+<body class="bg-gray-50 pb-20 md:pb-10">
 
   <div id="toastNotification" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl z-[120] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm md:text-base flex items-center gap-2">
     <span id="toastMessage">Item added to cart!</span>
@@ -82,9 +98,16 @@
         <a href="contact.html" class="text-indigo-200 hover:text-white transition pb-1">Contact</a>
       </nav>
 
-      <button onclick="window.location.href='tel:+916398138894'" class="hidden md:inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105 active:scale-95">
-        Call Now
-      </button>
+      <div class="hidden md:flex items-center gap-4 mt-4 md:mt-0" id="desktopCartArea">
+        <button onclick="window.location.href='tel:+916398138894'" class="inline-flex items-center justify-center bg-white/20 text-white font-bold py-2.5 px-6 rounded-xl hover:bg-white/30 transition">
+          Call Now
+        </button>
+        <button onclick="toggleCart(true)" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-2.5 px-5 rounded-xl shadow-lg hover:bg-gray-100 transition gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          My Cart 
+          <span id="desktopCartCount" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-0.5 rounded-md ml-1">0</span>
+        </button>
+      </div>
 
     </div>
   </header>
@@ -93,7 +116,7 @@
     <section class="text-gray-600 body-font">
       <div class="container px-3 md:px-5 py-8 md:py-12 mx-auto">
         
-        <div class="text-center mb-10 md:mb-14 fade-in flex flex-col items-center">
+        <div class="text-center mb-8 md:mb-10 fade-in flex flex-col items-center">
           <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4 md:mb-6">Our Premium Range</h1>
           
           <div class="flex flex-col md:flex-row items-center gap-3 md:gap-4 mt-2">
@@ -106,8 +129,28 @@
           </div>
         </div>
 
+        <div class="flex overflow-x-auto no-scrollbar gap-2 md:gap-4 mb-8 pb-2 justify-start md:justify-center px-1 fade-in">
+          <button onclick="filterCategory('All')" id="btn-cat-All" class="cat-active bg-white text-gray-700 border border-gray-200 px-5 py-2 rounded-full text-sm font-bold shadow-sm shrink-0 transition hover:bg-gray-50">All Products</button>
+          <button onclick="filterCategory('Floor Care')" id="btn-cat-Floor Care" class="bg-white text-gray-700 border border-gray-200 px-5 py-2 rounded-full text-sm font-bold shadow-sm shrink-0 transition hover:bg-gray-50">Floor Care</button>
+          <button onclick="filterCategory('Washroom Care')" id="btn-cat-Washroom Care" class="bg-white text-gray-700 border border-gray-200 px-5 py-2 rounded-full text-sm font-bold shadow-sm shrink-0 transition hover:bg-gray-50">Washroom Care</button>
+          <button onclick="filterCategory('Glass Care')" id="btn-cat-Glass Care" class="bg-white text-gray-700 border border-gray-200 px-5 py-2 rounded-full text-sm font-bold shadow-sm shrink-0 transition hover:bg-gray-50">Glass Care</button>
+        </div>
         <div id="product-grid" class="flex flex-wrap -m-2 md:-m-4 justify-center"></div>
       </div>
+      <div class="mt-12 md:mt-16 mb-4 px-2 fade-in w-full max-w-3xl mx-auto">
+          <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl md:rounded-3xl p-6 md:p-10 text-center border border-indigo-100/60 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-6 -mr-6 w-32 h-32 bg-indigo-200 rounded-full opacity-40 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -mb-6 -ml-6 w-24 h-24 bg-blue-200 rounded-full opacity-40 blur-3xl"></div>
+            
+            <div class="relative z-10 flex flex-col items-center">
+              <span class="bg-white p-3 md:p-4 rounded-full shadow-sm text-2xl md:text-3xl mb-4 flex items-center justify-center border border-indigo-50">🚀</span>
+              <h3 class="text-lg md:text-2xl font-black text-indigo-900 mb-2 tracking-tight">More Products Coming Soon!</h3>
+              <p class="text-xs md:text-sm text-indigo-700/80 font-bold max-w-md mx-auto leading-relaxed">
+                Our lab is brewing exciting new premium cleaning solutions for your home. Stay tuned for our next big launch!
+              </p>
+            </div>
+          </div>
+        </div>
     </section>
 
     <footer class="text-gray-600 body-font bg-gray-100 border-t border-gray-200 mt-6 md:mt-10 fade-in">
@@ -136,9 +179,9 @@
             <h2 class="title-font font-bold text-gray-900 tracking-widest text-xs md:text-sm mb-3 uppercase">Categories</h2>
             <nav class="list-none space-y-2.5">
               <li><a href="product.html" class="text-gray-600 hover:text-indigo-600 transition text-sm">Shop All Products</a></li>
-              <li><a href="product.html" class="text-gray-600 hover:text-indigo-600 transition text-sm">Floor Care</a></li>
-              <li><a href="product.html" class="text-gray-600 hover:text-indigo-600 transition text-sm">Glass Care</a></li>
-              <li><a href="product.html" class="text-gray-600 hover:text-indigo-600 transition text-sm">Washroom Care</a></li>
+              <li><a href="#" onclick="filterCategory('Floor Care'); window.scrollTo(0,0);" class="text-gray-600 hover:text-indigo-600 transition text-sm">Floor Care</a></li>
+              <li><a href="#" onclick="filterCategory('Glass Care'); window.scrollTo(0,0);" class="text-gray-600 hover:text-indigo-600 transition text-sm">Glass Care</a></li>
+              <li><a href="#" onclick="filterCategory('Washroom Care'); window.scrollTo(0,0);" class="text-gray-600 hover:text-indigo-600 transition text-sm">Washroom Care</a></li>
             </nav>
           </div>
           
@@ -183,10 +226,18 @@
     </footer>
   </div>
 
-  <button id="floatingCart" onclick="toggleCart(true)" class="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 md:p-5 rounded-full shadow-2xl z-40 flex items-center transition-all duration-300">
-    <span id="cartCount" class="absolute -top-1 -left-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-white">0</span>
-    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-  </button>
+  <div id="mobileCartBar" onclick="toggleCart(true)" class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-3 pb-6 z-40 transition-transform duration-300 translate-y-full flex justify-center shadow-[0_-8px_15px_-3px_rgba(0,0,0,0.1)] cursor-pointer">
+    <div class="bg-indigo-600 text-white w-full max-w-md rounded-xl p-3 md:p-4 flex justify-between items-center shadow-md active:scale-[0.98] transition-transform">
+      <div class="flex flex-col">
+        <span class="text-xs font-semibold text-indigo-200 tracking-wide"><span id="mobileCartItemCount">0</span> ITEM<span id="mobileCartPlural">S</span></span>
+        <span class="text-lg font-bold flex items-center gap-1 leading-none mt-0.5">₹<span id="mobileCartTotal">0</span> <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded ml-1 font-medium">plus taxes</span></span>
+      </div>
+      <div class="flex items-center gap-2 font-bold text-sm bg-white/10 px-4 py-2 rounded-lg">
+        View Cart
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </div>
+    </div>
+  </div>
 
   <div id="orderModal" class="fixed inset-0 flex items-center justify-center p-3 md:p-4 z-[105]">
     <div class="absolute inset-0" onclick="closeModal()"></div>
@@ -218,33 +269,84 @@
   <div id="cartDrawer" class="fixed inset-0 flex justify-end z-[105]">
     <div class="absolute inset-0 bg-black/40" onclick="toggleCart(false)"></div>
     <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col relative z-10 transition-transform">
+      
       <div class="flex justify-between items-center border-b p-4 md:p-6 shrink-0 bg-white">
         <h2 class="text-xl md:text-2xl font-bold text-gray-900">Your Cart</h2>
         <button onclick="toggleCart(false)" class="text-gray-400 text-3xl hover:text-gray-600">&times;</button>
       </div>
-      <div class="flex-grow overflow-y-auto p-4 md:p-6">
+      
+      <div class="flex-grow overflow-y-auto p-4 md:p-6 bg-gray-50/50">
         <div id="deliveryProgressContainer" class="mb-4 hidden">
           <div id="deliveryBannerText" class="text-xs md:text-sm font-bold p-3 rounded-t-xl text-center"></div>
           <div id="deliveryProgressBarTrack" class="h-2 md:h-2.5 w-full bg-gray-200 rounded-b-xl overflow-hidden">
             <div id="deliveryProgressBarFill" class="h-full w-0 transition-all duration-700 ease-out"></div>
           </div>
         </div>
+        
         <div id="cartItemsList" class="space-y-3 md:space-y-4"></div>
       </div>
-      <div class="border-t bg-white p-4 md:p-6 shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-        <div class="flex justify-between text-xs md:text-sm text-gray-600 font-bold mb-2">
-          <span>Items Subtotal:</span>
-          <span>₹<span id="cartSubtotal">0</span></span>
+
+      <div class="bg-white shrink-0 shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.08)] z-20 flex flex-col border-t border-gray-100">
+        
+        <div class="px-4 md:px-5 pt-4 pb-3 bg-indigo-50/20 border-b border-gray-100">
+          
+          <div id="promoInputContainer" class="flex gap-2 transition-all">
+            <input type="text" id="promoInput" placeholder="Enter Promo Code (Optional)" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-xs md:text-sm font-bold uppercase outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition shadow-sm bg-white placeholder-gray-400">
+            <button onclick="applyPromo()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-xs md:text-sm font-bold shadow-md hover:bg-indigo-700 transition active:scale-95 shrink-0">
+              Apply
+            </button>
+          </div>
+          <p id="promoMessage" class="text-[10px] font-bold mt-1.5 text-red-500 hidden"></p>
+
+          <div id="promoAppliedContainer" class="hidden flex justify-between items-center bg-green-50 border border-green-200 rounded-lg p-2.5 shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="bg-green-500 text-white rounded-full p-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+              </div>
+              <div>
+                <p class="text-xs font-black text-green-800 uppercase tracking-wide leading-none mb-0.5"><span id="appliedPromoText">CODE</span></p>
+                <p class="text-[9px] font-bold text-green-600 uppercase tracking-wider">Promo Applied</p>
+              </div>
+            </div>
+            <button onclick="removePromo()" class="text-[10px] font-bold text-red-500 hover:text-white hover:bg-red-500 uppercase tracking-wider border border-red-200 px-3 py-1.5 rounded transition">Remove</button>
+          </div>
         </div>
-        <div class="flex justify-between text-xs md:text-sm text-gray-600 font-bold mb-3 md:mb-4 items-center">
-          <span>Delivery Charge:</span>
-          <span id="cartDeliveryFee" class="text-orange-600">₹0</span>
+
+        <div id="cartOrderSummary" class="hidden bg-gray-50 px-4 md:px-5 py-4 relative shadow-inner border-b border-gray-200">
+          <button onclick="toggleCartSummary()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-800 bg-gray-200/50 hover:bg-gray-200 rounded-full p-1.5 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+          <p class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mb-2.5 border-b border-gray-200 pb-2">Bill Summary</p>
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs md:text-sm text-gray-600 font-medium">
+              <span>Items Subtotal</span>
+              <span>₹<span id="cartSubtotal">0</span></span>
+            </div>
+            <div id="cartDiscountRow" class="flex justify-between text-xs md:text-sm text-green-600 font-bold hidden items-center">
+              <span>Promo Discount</span>
+              <span>-₹<span id="cartDiscountAmount">0</span></span>
+            </div>
+            <div class="flex justify-between text-xs md:text-sm text-gray-600 font-medium">
+              <span>Delivery Charge</span>
+              <span id="cartDeliveryFee" class="text-orange-600">₹0</span>
+            </div>
+          </div>
         </div>
-        <div class="flex justify-between text-xl md:text-2xl font-black mb-4 md:mb-6 border-t pt-3 md:pt-4">
-          <span>Grand Total:</span>
-          <span class="text-indigo-600">₹<span id="grandTotal">0</span></span>
+
+        <div class="px-4 md:px-5 py-4 flex justify-between items-center bg-white">
+          <div>
+            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Grand Total</p>
+            <p class="text-xl md:text-2xl font-black text-indigo-600 leading-none mb-1.5">₹<span id="grandTotal">0</span></p>
+            <button onclick="toggleCartSummary()" class="text-[11px] md:text-xs text-indigo-600 font-extrabold hover:text-indigo-800 flex items-center gap-1 transition bg-indigo-50 px-2 py-1 rounded-md">
+              <span id="cartSummaryBtnText">View Bill Summary</span>
+              <svg id="cartSummaryChevron" class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+          </div>
+          <button onclick="openCheckoutModal()" class="bg-indigo-600 text-white font-bold py-3.5 px-6 md:px-8 rounded-xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-sm md:text-base flex items-center gap-2">
+            Checkout <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
         </div>
-        <button onclick="openCheckoutModal()" class="w-full bg-indigo-600 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-indigo-700 transition">Proceed to Checkout</button>
+
       </div>
     </div>
   </div>
@@ -252,14 +354,14 @@
   <div id="checkoutModal" class="fixed inset-0 flex flex-col justify-end md:justify-center items-center p-0 md:p-4 z-[110]">
     <div class="absolute inset-0" onclick="closeCheckout()"></div>
     <div class="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full md:max-w-md p-5 md:p-6 relative flex flex-col max-h-[85vh] md:max-h-[90vh] z-10 animate-slide-up">
-      <div class="shrink-0 pb-3 md:pb-4 border-b mb-3 md:mb-4 relative">
-        <button onclick="closeCheckout()" class="absolute top-0 right-0 p-2 text-gray-400 hover:text-gray-600 bg-gray-50 rounded-full transition">
+      <div class="shrink-0 pb-3 md:pb-4 border-b mb-4 relative">
+        <button onclick="closeCheckout()" class="absolute top-0 right-0 p-1.5 text-gray-400 hover:text-gray-600 bg-gray-50 rounded-full transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
         <h2 class="text-xl md:text-2xl font-bold text-gray-900 text-center pr-8 pl-8">Delivery Details</h2>
       </div>
       
-      <form id="checkoutForm" onsubmit="finalizeOrder(event)" class="overflow-y-auto flex-grow px-1 space-y-3 md:space-y-4 pb-2">
+      <form id="checkoutForm" onsubmit="finalizeOrder(event)" class="overflow-y-auto flex-grow px-1 space-y-4 pb-2">
         <div><input type="text" id="custName" required placeholder="Full Name *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm"></div>
         <div><input type="tel" id="custPhone" required pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit mobile number" placeholder="Mobile Number (10 digits) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
         <div>
@@ -267,7 +369,7 @@
           <p id="emailError" class="text-red-500 text-xs mt-1 hidden font-medium pl-1">Please enter a valid email.</p>
         </div>
         
-        <div class="space-y-2 border-t pt-2 mt-2">
+        <div class="space-y-3 border-t pt-3 mt-2">
           <input type="text" id="custStreet" required placeholder="Street / House No. / Locality *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
           <input type="text" id="custLandmark" placeholder="Nearest Landmark / Area (Optional)" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
           <div class="relative">
@@ -275,8 +377,8 @@
             <span id="pincodeLoader" class="hidden absolute right-4 top-4 text-xs font-bold text-indigo-500">Searching...</span>
           </div>
           <div class="flex gap-2">
-            <input type="text" id="custDistrict" required placeholder="City / District *" class="text-base w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50">
-            <input type="text" id="custState" required placeholder="State *" class="text-base w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50">
+            <input type="text" id="custDistrict" required placeholder="City / District *" class="text-base w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50" readonly>
+            <input type="text" id="custState" required placeholder="State *" class="text-base w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50" readonly>
           </div>
         </div>
 
@@ -313,22 +415,23 @@
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
 
+    const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec";
+
     let cart = JSON.parse(localStorage.getItem('floorAquaCart')) || [];
     let curProdName = '';
+    let curProdImg = ''; 
     let currentSelections = {}; 
     const FREE_DELIVERY_THRESHOLD = 499; 
     const STANDARD_DELIVERY_CHARGE = 80;
 
     let currentImageIndex = 0;
     let currentProductImages = [];
-
-    // HERE is where you define multiple images using "images: ['1.png', '2.png']"
-    const products = [
-      { name: 'Floor Cleaner 5 Litre', img: 'floor_cleaner.png', images: ['floor_cleaner.png', 'floor_cleaner1.png'], discount: 25, variants: [ { size: '5 Litres', price: 269, recommended: true }]},
-      { name: 'Glass Cleaner 5 Litre', img: 'glass_cleaner.png', images: ['glass_cleaner.png', 'glass_cleaner1.png'], discount: 20, variants: [ { size: '5 Litres', price: 269, recommended: true }]},
-      { name: 'Floor Phenyl 5 Litre', img: 'floor_phenol.png', images: ['floor_phenol.png', 'floor_phenol1.png'], discount: 15, variants: [ { size: '5 Litres', price: 219, recommended: true }]},
-      { name: 'Toilet Cleaner 5 Litre', img: 'toilet_cleaner.png', images: ['toilet_cleaner.png','toilet_cleaner1.png'], discount: 25, variants: [ { size: '5 Litres', price: 269, recommended: true }]}
-    ];
+    
+    let products = [];
+    let promos = {}; 
+    let appliedPromoCode = null;
+    let appliedPromoDiscountAmount = 0;
+    let dismissedSuggestion = false; // New variable to track dismissed upsells
 
     async function fetchLocation(pincode) {
       const loader = document.getElementById('pincodeLoader');
@@ -367,12 +470,72 @@
       }, 3000);
     }
 
+    function filterCategory(category) {
+      document.querySelectorAll('[id^="btn-cat-"]').forEach(btn => {
+        btn.classList.remove('cat-active');
+      });
+      const activeBtn = document.getElementById('btn-cat-' + category);
+      if(activeBtn) activeBtn.classList.add('cat-active');
+
+      const productGrid = document.getElementById('product-grid');
+      let productsHTML = '';
+
+      if (products.length === 0) {
+        productGrid.innerHTML = '<p class="text-gray-500 text-center w-full py-10 font-medium">No products available at the moment.</p>';
+        return;
+      }
+
+      products.forEach((p, index) => {
+        if (category !== 'All' && p.category !== category) return; 
+
+        const minPrice = Math.min(...p.variants.map(v => v.price));
+        
+        let badgeHtml = '';
+        let mrpHtml = '';
+        
+        // ✨ NEW LOGIC: Only show MRP and Badge IF discount is greater than 0
+        if (p.discount && parseFloat(p.discount) > 0) {
+          const mrp = Math.round(minPrice / (1 - (p.discount / 100)));
+          badgeHtml = `<div class="absolute top-3 left-3 bg-red-500 text-white text-[10px] md:text-xs font-black px-3 py-1 rounded-full z-10 shadow-lg discount-badge">SAVE ${p.discount}%</div>`;
+          mrpHtml = `
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-gray-400 line-through text-[10px] md:text-sm">MRP ₹${mrp}</span>
+              <span class="bg-green-100 text-green-700 text-[9px] md:text-[10px] font-bold px-1.5 rounded uppercase">Deal</span>
+            </div>
+          `;
+        } else {
+          // If no discount, add a tiny invisible spacer so the title and price stay perfectly aligned with other products
+          mrpHtml = `<div class="h-4 md:h-5 mt-1"></div>`; 
+        }
+
+        productsHTML += `
+          <div class="lg:w-1/4 md:w-1/2 w-1/2 p-2 md:p-4 fade-in visible" onclick="openOrderModal(${index})">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden h-full flex flex-col relative">
+              ${badgeHtml}
+              <img class="h-32 md:h-56 w-full object-cover" src="${p.img}" alt="${p.name}">
+              <div class="p-3 md:p-6 text-center flex-grow flex flex-col justify-between">
+                <div>
+                  <h2 class="text-sm md:text-lg font-bold text-gray-900 mb-1 leading-tight">${p.name}</h2>
+                  <div class="flex flex-col items-center">
+                    ${mrpHtml}
+                    <span class="text-indigo-600 font-black text-lg md:text-2xl mt-1">₹${minPrice}</span>
+                  </div>
+                </div>
+                <p class="text-indigo-600 font-bold text-xs md:text-base mt-2 md:mt-4 bg-indigo-50 py-2 rounded-lg">Buy Now</p>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      productGrid.innerHTML = productsHTML;
+    }
+
     function openOrderModal(prodIndex) {
       const p = products[prodIndex];
       curProdName = p.name;
+      curProdImg = p.img; 
       currentSelections = {}; 
       
-      // Setup Carousel Data
       currentProductImages = p.images && p.images.length > 0 ? p.images : [p.img];
       currentImageIndex = 0;
 
@@ -405,7 +568,6 @@
       });
 
       document.getElementById('variantContainer').innerHTML = variantHtml;
-      
       renderCarousel();
       updateModalUI();
       document.getElementById('orderModal').style.display = 'flex';
@@ -420,7 +582,6 @@
       });
       imgHtml += `</div>`;
 
-      // Add Arrows and Dots if there is more than 1 image
       if (currentProductImages.length > 1) {
         imgHtml += `
           <button onclick="prevImage(event)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 p-1.5 rounded-full shadow-md hover:bg-white z-10 text-gray-700 hover:text-indigo-600 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg></button>
@@ -436,7 +597,6 @@
 
       carouselContainer.innerHTML = imgHtml;
 
-      // Mobile Swipe Logic
       if(currentProductImages.length > 1) {
         let startX = 0;
         let isDragging = false;
@@ -510,17 +670,56 @@
         if (qty > 0) {
           const existingItem = cart.find(i => i.name === curProdName && i.size === size);
           if (existingItem) existingItem.qty += qty;
-          else cart.push({ name: curProdName, size: size, qty: qty, price: price });
+          else cart.push({ name: curProdName, size: size, qty: qty, price: price, img: curProdImg });
           itemsAdded = true;
         }
       }
       if (!itemsAdded) return alert("Please add at least 1 quantity to proceed.");
+      
       saveCart(); closeModal(); showToast(`${curProdName} added! ✅`);
-      const cb = document.getElementById('floatingCart');
-      cb.classList.add('cart-shake'); setTimeout(() => cb.classList.remove('cart-shake'), 500);
+      
+      const desktopBtn = document.getElementById('desktopCartArea');
+      if(desktopBtn) { desktopBtn.classList.add('cart-shake'); setTimeout(() => desktopBtn.classList.remove('cart-shake'), 300); }
+      
+      const mobileBtn = document.getElementById('mobileCartBar');
+      if(mobileBtn) { mobileBtn.children[0].classList.add('cart-shake'); setTimeout(() => mobileBtn.children[0].classList.remove('cart-shake'), 300); }
     }
 
-    function saveCart() { localStorage.setItem('floorAquaCart', JSON.stringify(cart)); document.getElementById('cartCount').innerText = cart.length; }
+    function instantAddCrossSell(prodIndex) {
+      const p = products[prodIndex];
+      const variant = p.variants[0]; 
+      
+      const existingItem = cart.find(i => i.name === p.name && i.size === variant.size);
+      if (existingItem) existingItem.qty += 1;
+      else cart.push({ name: p.name, size: variant.size, qty: 1, price: variant.price, img: p.img });
+      
+      saveCart(); renderCart(); showToast(`${p.name} added! ✅`);
+    }
+
+    function saveCart() { 
+      localStorage.setItem('floorAquaCart', JSON.stringify(cart)); 
+      updateCartUI(); 
+    }
+
+    function updateCartUI() {
+      let totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      const desktopCount = document.getElementById('desktopCartCount');
+      if (desktopCount) desktopCount.innerText = totalQty;
+
+      const mobileBar = document.getElementById('mobileCartBar');
+      if (mobileBar) {
+        if (totalQty > 0) {
+          mobileBar.classList.remove('translate-y-full');
+          document.getElementById('mobileCartItemCount').innerText = totalQty;
+          document.getElementById('mobileCartPlural').innerText = totalQty === 1 ? '' : 'S';
+          document.getElementById('mobileCartTotal').innerText = subtotal; 
+        } else {
+          mobileBar.classList.add('translate-y-full');
+        }
+      }
+    }
 
     function updateCartQty(index, change) {
       if (cart[index].qty + change <= 0) {
@@ -543,6 +742,61 @@
       }
     }
 
+    function toggleCartSummary() {
+      const summary = document.getElementById('cartOrderSummary');
+      const chevron = document.getElementById('cartSummaryChevron');
+      const btnText = document.getElementById('cartSummaryBtnText');
+
+      if(summary.classList.contains('hidden')) {
+        summary.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+        btnText.innerText = 'Hide Bill Summary';
+      } else {
+        summary.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+        btnText.innerText = 'View Bill Summary';
+      }
+    }
+
+    function applyPromo() {
+      const inputVal = document.getElementById('promoInput').value.trim().toUpperCase();
+      const msgBox = document.getElementById('promoMessage');
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      if (!inputVal) return;
+
+      if (promos[inputVal]) {
+        let promo = promos[inputVal];
+        
+        if (subtotal < promo.minOrder) {
+          msgBox.innerText = `Add ₹${promo.minOrder - subtotal} more to use this code.`;
+          msgBox.classList.remove('hidden');
+          return;
+        }
+
+        appliedPromoCode = inputVal;
+        document.getElementById('promoInput').value = ""; 
+        msgBox.classList.add('hidden');
+        renderCart();
+      } else {
+        msgBox.innerText = "Invalid or expired promo code.";
+        msgBox.classList.remove('hidden');
+      }
+    }
+
+    function removePromo() {
+      appliedPromoCode = null;
+      appliedPromoDiscountAmount = 0;
+      document.getElementById('promoMessage').classList.add('hidden');
+      renderCart();
+    }
+
+    // --- NEW: Dismiss Suggestion Tracker ---
+    function dismissSuggestion() {
+      dismissedSuggestion = true;
+      renderCart();
+    }
+
     function renderCart() {
       const list = document.getElementById('cartItemsList');
       const progressContainer = document.getElementById('deliveryProgressContainer');
@@ -551,38 +805,127 @@
       const progressBarTrack = document.getElementById('deliveryProgressBarTrack');
 
       let subtotal = 0;
-      list.innerHTML = cart.length === 0 ? '<p class="text-gray-400 text-center py-10 text-sm">Your cart is empty</p>' : '';
+      list.innerHTML = cart.length === 0 ? '<div class="text-center py-10"><span class="text-4xl block mb-2">🛒</span><p class="text-gray-400 font-medium">Your cart is empty</p></div>' : '';
+      
       cart.forEach((item, index) => {
         subtotal += (item.price * item.qty);
+        let itemImage = item.img ? item.img : 'flooraqua.png';
         
         list.innerHTML += `
-        <div class="flex justify-between items-start bg-gray-50 p-3 md:p-4 rounded-2xl border border-gray-100">
-          <div class="pr-2">
-            <p class="font-bold text-gray-900 text-sm md:text-base leading-tight">${item.name}</p>
-            <p class="text-xs text-gray-500 mt-1">₹${item.price} each</p>
-            <button onclick="removeItem(${index})" class="text-xs text-red-500 hover:text-red-700 font-bold mt-2 flex items-center gap-1 transition-colors">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <div class="flex items-center bg-white p-3 md:p-4 rounded-2xl border border-gray-100 shadow-sm">
+          <div class="w-16 h-16 md:w-20 md:h-20 shrink-0 bg-gray-50 rounded-xl p-1 border border-gray-100 flex items-center justify-center mr-3 md:mr-4">
+            <img src="${itemImage}" class="max-w-full max-h-full object-contain mix-blend-multiply" alt="Product">
+          </div>
+          <div class="flex-grow pr-2">
+            <p class="font-bold text-gray-900 text-sm md:text-base leading-tight mb-1">${item.name}</p>
+            <p class="text-xs text-gray-500 font-medium">₹${item.price} x ${item.qty}</p>
+            <button onclick="removeItem(${index})" class="text-[11px] text-gray-400 hover:text-red-500 font-bold mt-2 flex items-center transition-colors">
               Remove
             </button>
           </div>
           <div class="flex flex-col items-end gap-2 shrink-0">
-            <p class="font-bold text-indigo-600 text-sm md:text-base">₹${item.price * item.qty}</p>
-            <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-lg px-1.5 py-1 shadow-sm">
-              <button onclick="updateCartQty(${index}, -1)" class="text-gray-500 font-bold w-6 h-6 flex justify-center items-center hover:bg-gray-100 rounded transition">-</button>
-              <input type="number" value="${item.qty}" onchange="handleCartManualQty(${index}, this.value)" class="text-xs font-bold w-8 text-center bg-transparent outline-none">
-              <button onclick="updateCartQty(${index}, 1)" class="text-gray-500 font-bold w-6 h-6 flex justify-center items-center hover:bg-gray-100 rounded transition">+</button>
+            <p class="font-black text-indigo-600 text-base md:text-lg">₹${item.price * item.qty}</p>
+            <div class="flex items-center bg-indigo-50 border border-indigo-100 rounded-lg shadow-sm overflow-hidden">
+              <button onclick="updateCartQty(${index}, -1)" class="text-indigo-600 font-bold w-7 h-7 flex justify-center items-center hover:bg-indigo-100 transition">-</button>
+              <input type="number" value="${item.qty}" onchange="handleCartManualQty(${index}, this.value)" class="text-xs font-black w-8 text-center bg-transparent outline-none text-indigo-900 border-x border-indigo-100">
+              <button onclick="updateCartQty(${index}, 1)" class="text-indigo-600 font-bold w-7 h-7 flex justify-center items-center hover:bg-indigo-100 transition">+</button>
             </div>
           </div>
         </div>`;
       });
 
+      // --- REDESIGNED: UPSELL SUGGESTION WIDGET ---
+      if (cart.length > 0 && products.length > 0 && !dismissedSuggestion) {
+        let hasFloorCleaner = cart.some(i => i.name.toLowerCase().includes('floor cleaner'));
+        let hasPhenyl = cart.some(i => i.name.toLowerCase().includes('phenyl'));
+        let hasToilet = cart.some(i => i.name.toLowerCase().includes('toilet'));
+        let hasGlass = cart.some(i => i.name.toLowerCase().includes('glass'));
+
+        let suggestIndex = -1;
+        
+        if (hasFloorCleaner && !hasPhenyl) suggestIndex = products.findIndex(p => p.name.toLowerCase().includes('phenyl'));
+        else if (hasPhenyl && !hasFloorCleaner) suggestIndex = products.findIndex(p => p.name.toLowerCase().includes('floor cleaner'));
+        else if (hasToilet && !hasGlass) suggestIndex = products.findIndex(p => p.name.toLowerCase().includes('glass'));
+        else if (hasGlass && !hasToilet) suggestIndex = products.findIndex(p => p.name.toLowerCase().includes('toilet'));
+
+        if (suggestIndex !== -1) {
+          const suggestion = products[suggestIndex];
+          const sugPrice = Math.min(...suggestion.variants.map(v => v.price));
+          
+          list.innerHTML += `
+          <div class="mt-6 mb-2 relative animate-slide-up">
+            <div class="flex items-center justify-between mb-2 px-1">
+               <p class="text-xs font-extrabold text-indigo-600 uppercase tracking-wider flex items-center gap-1">
+                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                 Recommended for you
+               </p>
+               <button onclick="dismissSuggestion()" class="text-gray-400 hover:text-red-500 transition p-1">
+                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+               </button>
+            </div>
+            <div class="flex items-center bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100/50 p-2.5 rounded-xl shadow-sm">
+              <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center p-1 shrink-0 shadow-sm border border-gray-100">
+                 <img src="${suggestion.img}" class="max-w-full max-h-full object-contain mix-blend-multiply">
+              </div>
+              <div class="flex-grow px-3">
+                 <p class="text-[13px] font-bold text-gray-800 leading-tight">${suggestion.name}</p>
+                 <p class="text-xs text-indigo-600 font-black mt-0.5">₹${sugPrice}</p>
+              </div>
+              <button onclick="instantAddCrossSell(${suggestIndex})" class="bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-600 hover:text-white transition shrink-0 font-bold text-xs uppercase tracking-wide px-4 py-2.5 rounded-lg shadow-sm">
+                 Add
+              </button>
+            </div>
+          </div>`;
+        }
+      }
+
+      appliedPromoDiscountAmount = 0;
+      if (appliedPromoCode && promos[appliedPromoCode]) {
+        let promo = promos[appliedPromoCode];
+        if (subtotal < promo.minOrder) {
+          appliedPromoCode = null; 
+          const msgBox = document.getElementById('promoMessage');
+          msgBox.innerText = `Promo removed. Minimum order is ₹${promo.minOrder}.`;
+          msgBox.classList.remove('hidden');
+        } else {
+          if (promo.type === 'Percentage') {
+            appliedPromoDiscountAmount = Math.round(subtotal * (promo.value / 100));
+          } else if (promo.type === 'Flat') {
+            appliedPromoDiscountAmount = promo.value;
+          }
+          if (appliedPromoDiscountAmount > subtotal) appliedPromoDiscountAmount = subtotal;
+        }
+      }
+      
+      let totalAfterDiscount = subtotal - appliedPromoDiscountAmount;
       let deliveryFee = (subtotal > 0 && subtotal < FREE_DELIVERY_THRESHOLD) ? STANDARD_DELIVERY_CHARGE : 0;
-      const grandTotal = subtotal + deliveryFee;
+      let grandTotal = totalAfterDiscount + deliveryFee;
 
       let progressPercentage = Math.min((subtotal / FREE_DELIVERY_THRESHOLD) * 100, 100);
       setTimeout(() => { progressBarFill.style.width = progressPercentage + '%'; }, 50);
 
       document.getElementById('cartSubtotal').innerText = subtotal;
+      
+      const inputContainer = document.getElementById('promoInputContainer');
+      const appliedContainer = document.getElementById('promoAppliedContainer');
+      const discountRow = document.getElementById('cartDiscountRow');
+
+      if (appliedPromoDiscountAmount > 0) {
+        inputContainer.classList.add('hidden');
+        appliedContainer.classList.remove('hidden');
+        document.getElementById('appliedPromoText').innerText = appliedPromoCode;
+        
+        discountRow.classList.remove('hidden');
+        discountRow.classList.add('flex');
+        document.getElementById('cartDiscountAmount').innerText = appliedPromoDiscountAmount;
+      } else {
+        inputContainer.classList.remove('hidden');
+        appliedContainer.classList.add('hidden');
+        
+        discountRow.classList.add('hidden');
+        discountRow.classList.remove('flex');
+      }
+
       document.getElementById('grandTotal').innerText = grandTotal;
       const deliveryElement = document.getElementById('cartDeliveryFee');
 
@@ -595,10 +938,17 @@
         deliveryElement.innerHTML = `<span class="text-gray-400 line-through font-medium text-xs mr-2">₹${STANDARD_DELIVERY_CHARGE}</span>FREE`; deliveryElement.className = "text-green-600 font-bold flex items-center";
         progressContainer.style.display = 'block'; bannerText.className = "bg-green-50 text-green-700 text-xs md:text-sm font-bold p-3 rounded-t-xl text-center border-t border-l border-r border-green-100"; bannerText.innerHTML = `🎉 You've unlocked <b>Free Delivery!</b>`; progressBarFill.className = "h-full bg-green-500 transition-all duration-700 ease-out"; progressBarTrack.className = "h-2 md:h-2.5 w-full bg-green-100 rounded-b-xl overflow-hidden border-b border-l border-r border-green-100";
       }
+      updateCartUI(); 
     }
 
     function removeItem(index) { cart.splice(index, 1); saveCart(); renderCart(); }
-    function openCheckoutModal() { if(cart.length === 0) return; toggleCart(false); document.getElementById('checkoutModal').style.display = 'flex'; }
+    
+    function openCheckoutModal() { 
+      if(cart.length === 0) return; 
+      toggleCart(false); 
+      document.getElementById('checkoutModal').style.display = 'flex'; 
+    }
+    
     function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; document.getElementById('emailError').classList.add('hidden');}
     function closeThankYou() { document.getElementById('thankYouModal').style.display = 'none'; }
 
@@ -610,8 +960,6 @@
         alert("Please complete the security check to prove you are human! 🛡️");
         return; 
       }
-
-      const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
 
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.innerHTML = `Processing <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
@@ -628,14 +976,13 @@
 
       const emailError = document.getElementById('emailError');
 
-// The validation now runs unconditionally
-if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-  emailError.classList.remove('hidden'); 
-  resetBtn(submitBtn); 
-  return;
-}
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailError.classList.remove('hidden'); 
+        resetBtn(submitBtn); 
+        return;
+      }
 
-emailError.classList.add('hidden');
+      emailError.classList.add('hidden');
 
       let fullAddress = street + (landmark ? `, Near ${landmark}` : '') + `, ${district}, ${state} - ${pincode}`;
 
@@ -646,7 +993,7 @@ emailError.classList.add('hidden');
       });
       
       let deliveryFee = (subtotal >= FREE_DELIVERY_THRESHOLD) ? 0 : STANDARD_DELIVERY_CHARGE;
-      let grandTotal = subtotal + deliveryFee;
+      let grandTotal = (subtotal - appliedPromoDiscountAmount) + deliveryFee;
 
       const sheetData = {
         formType: 'order',  
@@ -656,6 +1003,8 @@ emailError.classList.add('hidden');
         address: fullAddress,
         orderDetails: orderDetailsString.trim(),
         subtotal: subtotal,
+        promoCode: appliedPromoCode, 
+        promoDiscountAmount: appliedPromoDiscountAmount,
         delivery: deliveryFee,
         total: grandTotal,
         turnstileToken: turnstileResponse.value
@@ -669,8 +1018,12 @@ emailError.classList.add('hidden');
       } catch (err) { console.log("System Error:", err); }
 
       setTimeout(() => {
-        cart = []; saveCart(); closeCheckout();
+        cart = []; 
+        appliedPromoCode = null; 
+        appliedPromoDiscountAmount = 0;
+        saveCart(); closeCheckout();
         document.getElementById('checkoutForm').reset();
+        document.getElementById('promoMessage').classList.add('hidden');
         if (typeof turnstile !== 'undefined') turnstile.reset(); 
         document.getElementById('thankYouModal').style.display = 'flex';
         resetBtn(submitBtn);
@@ -682,46 +1035,87 @@ emailError.classList.add('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('contentContainer').classList.add('visible'); 
       const productGrid = document.getElementById('product-grid');
-      let productsHTML = '';
-
-      products.forEach((p, index) => {
-        const minPrice = Math.min(...p.variants.map(v => v.price));
-        const mrp = Math.round(minPrice / (1 - (p.discount / 100)));
-
-        productsHTML += `
-          <div class="lg:w-1/4 md:w-1/2 w-1/2 p-2 md:p-4 fade-in" onclick="openOrderModal(${index})">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1 overflow-hidden h-full flex flex-col relative">
-              
-              <div class="absolute top-3 left-3 bg-red-500 text-white text-[10px] md:text-xs font-black px-3 py-1 rounded-full z-10 shadow-lg discount-badge">
-                SAVE ${p.discount}%
-              </div>
-
-              <img class="h-32 md:h-56 w-full object-cover" src="${p.img}" alt="${p.name}">
-              <div class="p-3 md:p-6 text-center flex-grow flex flex-col justify-between">
-                <div>
-                  <h2 class="text-sm md:text-lg font-bold text-gray-900 mb-1 leading-tight">${p.name}</h2>
-                  
-                  <div class="flex flex-col items-center mt-1">
-                    <div class="flex items-center gap-2">
-                      <span class="text-gray-400 line-through text-[10px] md:text-sm">MRP ₹${mrp}</span>
-                      <span class="bg-green-100 text-green-700 text-[9px] md:text-[10px] font-bold px-1.5 rounded uppercase">Deal</span>
-                    </div>
-                    <span class="text-indigo-600 font-black text-lg md:text-2xl mt-1">₹${minPrice}</span>
-                  </div>
-
-                </div>
-                <p class="text-indigo-600 font-bold text-xs md:text-base mt-2 md:mt-4 bg-indigo-50 py-2 rounded-lg">Buy Now</p>
-              </div>
-            </div>
+      
+      const cachedProducts = localStorage.getItem('floorAquaProductsCache');
+      const cachedPromos = localStorage.getItem('floorAquaPromosCache');
+      
+      if (cachedProducts) {
+        try {
+          products = JSON.parse(cachedProducts);
+          if (cachedPromos) promos = JSON.parse(cachedPromos);
+          filterCategory('All'); 
+        } catch(e) { console.error("Cache error", e); }
+      } else {
+        productGrid.innerHTML = `
+          <div class="w-full text-center py-16">
+            <svg class="animate-spin h-10 w-10 text-indigo-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-gray-500 font-bold">Loading Premium Products...</p>
           </div>
         `;
-      });
-      productGrid.innerHTML = productsHTML;
+      }
 
-      document.getElementById('contentContainer').classList.add('visible'); saveCart();
+      fetch(GOOGLE_WEB_APP_URL)
+        .then(response => response.json())
+        .then(data => {
+          if(data.error || !data.products) return; 
+          
+          const freshProducts = data.products.filter(p => {
+            return (
+              p && p.name && String(p.name).trim() !== "" &&
+              p.category && String(p.category).trim() !== "" &&
+              p.img && String(p.img).trim() !== "" &&
+              p.variants && p.variants[0] && 
+              p.variants[0].size && String(p.variants[0].size).trim() !== "" &&
+              p.variants[0].price !== "" && !isNaN(parseFloat(p.variants[0].price)) &&
+              p.discount !== "" && !isNaN(parseFloat(p.discount))
+            );
+          });
+
+          const freshPromos = {};
+          if (data.promos) {
+            for (let key in data.promos) {
+              let p = data.promos[key];
+              if (
+                key && String(key).trim() !== "" &&
+                p.type && (p.type === 'Percentage' || p.type === 'Flat') &&
+                !isNaN(parseFloat(p.value)) && parseFloat(p.value) > 0
+              ) {
+                freshPromos[key] = { 
+                  type: p.type, 
+                  value: parseFloat(p.value),
+                  minOrder: p.minOrder ? parseFloat(p.minOrder) : 0
+                };
+              }
+            }
+          }
+          
+          const isProdChanged = JSON.stringify(freshProducts) !== localStorage.getItem('floorAquaProductsCache');
+          const isPromoChanged = JSON.stringify(freshPromos) !== localStorage.getItem('floorAquaPromosCache');
+          
+          if (isProdChanged || isPromoChanged || !cachedProducts) {
+            products = freshProducts;
+            promos = freshPromos;
+            localStorage.setItem('floorAquaProductsCache', JSON.stringify(freshProducts));
+            localStorage.setItem('floorAquaPromosCache', JSON.stringify(freshPromos));
+            
+            const activeCategoryBtn = document.querySelector('.cat-active');
+            const currentCat = activeCategoryBtn ? activeCategoryBtn.id.replace('btn-cat-', '') : 'All';
+            filterCategory(currentCat);
+            renderCart(); 
+          }
+        })
+        .catch(error => console.error("Background fetch failed:", error));
+
+      saveCart(); 
+      
       const obs = new IntersectionObserver((es) => { es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
       document.querySelectorAll('.fade-in').forEach(f => obs.observe(f));
+      
       let lastScroll = 0; const header = document.querySelector('header');
       window.addEventListener('scroll', () => {
         let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
@@ -733,4 +1127,3 @@ emailError.classList.add('hidden');
   </script>
 </body>
 </html>
-
