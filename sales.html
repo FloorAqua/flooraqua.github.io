@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            body: JSON.stringify({ action: "getSalesData", turnstileToken: "bypass" }),
+            body: JSON.stringify({ action: "getSalesData", pin: document.getElementById('overlayPinInput').value.trim() }),
             headers: { "Content-Type": "text/plain;charset=utf-8" }
         })
         .then(res => res.json())
@@ -398,3 +398,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
+
