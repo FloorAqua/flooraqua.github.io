@@ -367,6 +367,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusDiv = document.getElementById('status');
         const tsTokenInput = document.querySelector('[name="cf-turnstile-response"]');
         
+        // This is optional since Turnstile isn't strictly checked for staff in the backend, 
+        // but it's good practice to keep it if you want the visual check on the form.
         if (!tsTokenInput || !tsTokenInput.value) { 
             alert("Please complete the security check."); 
             return; 
@@ -461,6 +463,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetchHistory({ 
             action: "getHistory", 
+            pin: validatedPin,
             searchType: "phone",
             phone: phone 
         }, this);
@@ -478,6 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fetchHistory({ 
             action: "getHistory", 
+            pin: validatedPin,
             searchType: "date",
             startDate: startDate,
             endDate: endDate
