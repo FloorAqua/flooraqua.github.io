@@ -2,91 +2,104 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FloorAqua - Offline Entry</title>
     <link rel="icon" href="flooraqua.png" type="image/png">
     <style>
         :root { --primary: #0056b3; --primary-dark: #004494; --bg: #f0f2f5; --text: #333; --border: #d1d5db; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); margin: 0; padding: 15px; color: var(--text); padding-top: 60px; /* Space for top bar */ }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); margin: 0; padding: 15px; color: var(--text); padding-top: 70px; }
         
-        /* UI Components */
+        /* --- TOP BAR --- */
+        .top-bar { position: fixed; top: 0; left: 0; width: 100%; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; box-sizing: border-box; z-index: 100; }
+        .top-bar-logo { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--primary); font-size: 18px; }
+        .top-bar-logo img { width: 35px; height: 35px; border-radius: 4px; object-fit: cover; }
+        .history-btn { background: #e0f2fe; color: var(--primary); border: 1px solid #bae6fd; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .history-btn:hover { background: #bae6fd; }
+
+        /* --- MAIN CONTAINER --- */
         .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
-        .logo-img { max-width: 80px; display: block; margin: 0 auto 15px auto; border-radius: 8px;}
         h2 { text-align: center; color: var(--primary); margin-top: 0; margin-bottom: 20px; font-size: 22px; }
         
-        /* Form Elements */
+        /* --- FORM ELEMENTS --- */
         .input-group { margin-bottom: 15px; }
         label { font-weight: 600; display: block; margin-bottom: 5px; font-size: 14px; color: #444; }
-        input[type="text"], input[type="tel"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.2s; }
+        input[type="text"], input[type="tel"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s; }
         input:focus, select:focus { outline: none; border-color: var(--primary); }
-        button { width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background-color: var(--primary-dark); }
-        button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        button.action-btn { width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button.action-btn:hover { background-color: var(--primary-dark); }
+        button.action-btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
-        /* Products Section */
+        /* --- PRODUCTS SECTION --- */
         .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 25px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; font-weight: bold; }
+        .product-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding: 0 10px; font-size: 12px; font-weight: bold; color: #666; }
+        .header-labels { display: flex; gap: 8px; flex: 1.5; justify-content: flex-end; }
+        .header-labels span { width: 65px; text-align: center; display: inline-block; }
         .product-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 10px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; }
         .product-name { flex: 2; font-size: 14px; font-weight: 500; }
         .product-inputs { display: flex; gap: 8px; flex: 1.5; justify-content: flex-end; }
         .product-inputs input { width: 65px; padding: 8px; text-align: center; font-size: 14px; }
 
-        /* Billing Section */
+        /* --- BILLING SECTION --- */
         .bill-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; margin-top: 20px; }
-        .bill-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
-        .bill-row.subtotal { font-weight: 600; }
+        .bill-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #555; }
+        .bill-row.subtotal { font-weight: 600; color: #333; }
         .toggle-btn { color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; margin: 10px 0; padding: 5px; background: #eff6ff; border-radius: 6px; }
         .hidden-fields { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb; }
         .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .discount-flex { display: flex; gap: 5px; }
-        .discount-flex select { padding: 8px; width: 45%; }
-        .discount-flex input { padding: 8px; width: 55%; }
+        .discount-flex select { padding: 8px; font-size: 14px; width: 45%; }
+        .discount-flex input { padding: 8px; font-size: 14px; width: 55%; }
         .grand-total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 2px solid #eee; font-size: 18px; font-weight: bold; color: #1e3a8a; }
-
-        /* --- NEW: FLOATING TOP BAR --- */
-        .top-bar { position: fixed; top: 0; left: 0; width: 100%; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; box-sizing: border-box; z-index: 100; }
-        .top-bar-logo { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--primary); font-size: 18px;}
-        .top-bar-logo img { width: 30px; height: 30px; border-radius: 4px;}
-        .history-btn { background: #e0f2fe; color: var(--primary); border: 1px solid #bae6fd; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;}
-        .history-btn:hover { background: #bae6fd; }
-
-        /* --- NEW: MODALS (Preview & History) --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;}
-        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; position: relative; }
-        .close-btn { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; font-size: 18px; font-weight: bold; color: #666; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center;}
-        .close-btn:hover { background: #e5e7eb; color: #000; }
-        
-        /* Preview Modal Specifics */
-        #previewDetails { background: #f9fafb; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 14px; white-space: pre-wrap; margin-bottom: 20px; border: 1px solid #eee; }
-        .modal-actions { display: flex; gap: 10px; }
-        .btn-cancel { background: #fff; color: #444; border: 1px solid #ccc; }
-        .btn-cancel:hover { background: #f3f4f6; }
-
-        /* History Modal Specifics */
-        .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
-        .history-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 14px;}
-        .h-date { font-weight: bold; color: var(--primary); font-size: 12px; margin-bottom: 5px;}
-        .h-total { font-weight: bold; margin-top: 5px; border-top: 1px dashed #ccc; padding-top: 5px; color: #1e3a8a;}
 
         /* --- FULL SCREEN PIN OVERLAY --- */
         #pinOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #pinOverlay img { max-width: 100px; margin-bottom: 20px; border-radius: 10px;}
-        #pinOverlay h2 { color: var(--primary); margin-bottom: 10px; font-size: 28px; }
-        #pinOverlay input { width: 200px; padding: 15px; font-size: 28px; text-align: center; letter-spacing: 8px; border: 2px solid #d1d5db; border-radius: 8px; margin-bottom: 15px; }
+        .overlay-logo { width: 80px; height: 80px; border-radius: 10px; margin-bottom: 20px; object-fit: cover; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        #pinOverlay h2 { color: var(--primary); margin-bottom: 5px; font-size: 28px; }
+        #pinOverlay p { color: #666; font-size: 15px; margin-bottom: 25px; text-align: center; }
+        #pinOverlay input { width: 220px; padding: 15px; font-size: 32px; text-align: center; letter-spacing: 12px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
         #pinErrorMsg { color: #dc2626; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 15px; text-align: center; padding: 0 20px; }
+        .turnstile-container { margin-bottom: 20px; min-height: 65px; }
 
-        #mainContent { display: none; } /* Hidden until PIN success */
+        /* --- MODALS (PREVIEW & HISTORY) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; backdrop-filter: blur(3px); }
+        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; font-size: 16px; font-weight: bold; color: #555; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
+        .close-btn:hover { background: #e5e7eb; color: #000; }
+        
+        /* Preview Modal Specifics */
+        .preview-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #334155; }
+        .preview-box strong { color: #0f172a; }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-cancel { flex: 1; padding: 12px; background: white; color: #475569; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-confirm { flex: 2; padding: 12px; background: #16a34a; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-confirm:disabled { background: #9ca3af; }
+
+        /* History Modal Specifics */
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-box input { flex: 1; margin-bottom: 0; }
+        .search-box button { width: auto; padding: 0 20px; margin: 0; }
+        .history-card { background: #fff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .h-date { font-weight: bold; color: var(--primary); font-size: 13px; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .h-items { font-family: monospace; font-size: 13px; color: #475569; white-space: pre-wrap; margin-bottom: 8px; }
+        .h-total { font-weight: bold; color: #16a34a; font-size: 15px; text-align: right; }
+
+        #mainContent { display: none; }
+        #status { text-align: center; margin-top: 15px; font-size: 14px; font-weight: bold; min-height: 20px; }
     </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
 <div id="pinOverlay">
-    <img src="flooraqua.png" alt="FloorAqua Logo" onerror="this.style.display='none'">
-    <h2>Staff Access</h2>
-    <div id="pinErrorMsg">Please enter your PIN and complete the security check.</div>
+    <img src="flooraqua.png" alt="FloorAqua Logo" class="overlay-logo" onerror="this.style.display='none'">
+    <h2>Staff Portal</h2>
+    <p>Enter authorized PIN to proceed</p>
     <input type="password" id="overlayPinInput" maxlength="4" placeholder="••••">
-    <div class="cf-turnstile" data-sitekey="YOUR_CLOUDFLARE_SITE_KEY_HERE" style="margin-bottom: 15px;"></div>
-    <button id="overlayUnlockBtn" style="width: 200px;">Unlock System</button>
+    <div class="turnstile-container">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAACioid7KgPiW3YB3"></div>
+    </div>
+    <div id="pinErrorMsg"></div>
+    <button id="overlayUnlockBtn" class="action-btn" style="width: 250px;">Verify & Unlock</button>
 </div>
 
 <div class="top-bar" id="topBar" style="display:none;">
@@ -94,30 +107,28 @@
         <img src="flooraqua.png" alt="Logo" onerror="this.style.display='none'">
         FloorAqua
     </div>
-    <button class="history-btn" id="openHistoryBtn">🔍 Search History</button>
+    <button class="history-btn" onclick="openModal('historyModal')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        Delivery History
+    </button>
 </div>
 
 <div id="mainContent">
     <div class="container">
         <h2>Offline Order Entry</h2>
         <form id="offlineForm">
-            <input type="hidden" id="finalSubtotal">
-            <input type="hidden" id="finalDiscount">
-            <input type="hidden" id="finalExtra">
-            <input type="hidden" id="finalGrandTotal">
-            <input type="hidden" id="finalDetailsString">
-
+            
             <div class="input-group">
                 <label>Customer Name *</label>
-                <input type="text" id="name" required placeholder="Enter name">
+                <input type="text" id="custName" required placeholder="Enter name">
             </div>
 
             <div class="input-group">
                 <label>Mobile Number *</label>
-                <input type="tel" id="phone" required placeholder="10-digit number">
+                <input type="tel" id="custPhone" required placeholder="e.g., 9876543210">
             </div>
 
-            <div class="section-title">Products</div>
+            <div class="section-title">Select Products</div>
 
             <div class="product-header">
                 <div style="flex: 2;"></div>
@@ -162,7 +173,7 @@
                     <div class="extras-grid">
                         <div>
                             <label>Extra Charges (₹)</label>
-                            <input type="number" id="extraCharges" placeholder="0" min="0" style="padding: 8px;">
+                            <input type="number" id="extraCharges" placeholder="0" min="0">
                         </div>
                         <div>
                             <label>Discount</label>
@@ -178,8 +189,8 @@
                 </div>
             </div>
 
-            <button type="button" id="reviewBtn" style="margin-top: 20px;">Review Order</button>
-            <div id="status" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+            <button type="button" class="action-btn" id="reviewBtn" style="margin-top: 20px;">Review Order</button>
+            <div id="status"></div>
         </form>
     </div>
 </div>
@@ -187,11 +198,11 @@
 <div class="modal-overlay" id="previewModal">
     <div class="modal-content">
         <button class="close-btn" onclick="closeModal('previewModal')">✕</button>
-        <h2 style="margin-top:0;">Order Preview</h2>
-        <div id="previewDetails"></div>
+        <h2 style="margin-top:0; color:#333;">Order Preview</h2>
+        <div class="preview-box" id="previewDetailsBox"></div>
         <div class="modal-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal('previewModal')">Edit</button>
-            <button type="button" id="confirmSubmitBtn">Confirm & Submit</button>
+            <button type="button" class="btn-cancel" onclick="closeModal('previewModal')">Back to Edit</button>
+            <button type="button" class="btn-confirm" id="confirmSubmitBtn">Confirm & Submit</button>
         </div>
     </div>
 </div>
@@ -199,14 +210,13 @@
 <div class="modal-overlay" id="historyModal">
     <div class="modal-content">
         <button class="close-btn" onclick="closeModal('historyModal')">✕</button>
-        <h2 style="margin-top:0;">Delivery History</h2>
-        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Search past offline orders by phone number.</p>
+        <h2 style="margin-top:0; color:#333;">Delivery History</h2>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Search past offline orders by customer phone number.</p>
         <div class="search-box">
-            <input type="tel" id="searchPhone" placeholder="Enter phone number">
-            <button id="searchBtn" style="width: 100px;">Search</button>
+            <input type="tel" id="searchPhone" placeholder="Enter Phone Number">
+            <button class="action-btn" id="searchBtn">Search</button>
         </div>
-        <div id="historyResults" style="margin-top: 15px;">
-            </div>
+        <div id="historyResults"></div>
     </div>
 </div>
 
@@ -214,14 +224,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // ==========================================
-    // CONFIGURATION
+    // CONFIGURATION - PASTE WEB APP URL HERE
     // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; // PASTE NEW URL HERE
+    const GOOGLE_SCRIPT_URL = "YOUR_GOOGLE_SCRIPT_WEB_APP_URL_HERE"; 
+    
     let validatedPin = ""; 
-    let validatedTurnstile = "";
+
+    // --- MODAL CONTROLS ---
+    window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; }
+    window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
 
     // ==========================================
-    // 1. OVERLAY & SECURITY LOGIC
+    // 1. PIN & CAPTCHA VERIFICATION
     // ==========================================
     const overlay = document.getElementById('pinOverlay');
     const overlayPinInput = document.getElementById('overlayPinInput');
@@ -229,51 +243,64 @@ document.addEventListener('DOMContentLoaded', function() {
     const pinErrorMsg = document.getElementById('pinErrorMsg');
 
     overlayPinInput.focus();
-
-    overlayPinInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') overlayUnlockBtn.click();
-    });
+    overlayPinInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') overlayUnlockBtn.click(); });
 
     overlayUnlockBtn.addEventListener('click', function() {
         const enteredPin = overlayPinInput.value.trim();
         const tsToken = document.querySelector('[name="cf-turnstile-response"]');
 
-        if (!enteredPin) return pinErrorMsg.innerText = "Please enter a PIN.";
-        if (!tsToken || !tsToken.value) return pinErrorMsg.innerText = "Please complete the security check.";
+        if (!enteredPin) { pinErrorMsg.innerText = "Please enter a PIN."; return; }
+        if (!tsToken || !tsToken.value) { pinErrorMsg.innerText = "Please complete the security check."; return; }
 
         overlayUnlockBtn.innerText = "Verifying...";
         overlayUnlockBtn.disabled = true;
+        pinErrorMsg.innerText = "";
 
-        // We send a dummy order just to trigger the PIN and Turnstile check on the server
         const verifyData = {
-            formType: "offline_order", pin: enteredPin, turnstileToken: tsToken.value, 
-            name: "VERIFY_AUTH", phone: "000", orderDetails: "", subtotal: 0, discount: 0, extra: 0, total: 0
+            action: "verifyPin",
+            pin: enteredPin,
+            turnstileToken: tsToken.value
         };
 
-        fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify(verifyData), headers: { "Content-Type": "text/plain;charset=utf-8" } })
-        .then(res => res.json())
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(verifyData),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+        })
+        .then(response => response.json())
         .then(result => {
             if (result.result === "success") {
                 validatedPin = enteredPin;
-                validatedTurnstile = tsToken.value; // Store the valid token
                 overlay.style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 document.getElementById('topBar').style.display = 'flex';
             } else {
                 pinErrorMsg.innerText = result.error;
                 overlayPinInput.value = '';
+                overlayPinInput.focus();
                 if(typeof turnstile !== 'undefined') turnstile.reset();
             }
         })
-        .catch(() => { pinErrorMsg.innerText = "Connection failed. Check internet."; })
-        .finally(() => { overlayUnlockBtn.innerText = "Unlock System"; overlayUnlockBtn.disabled = false; });
+        .catch(error => {
+            pinErrorMsg.innerText = "Failed to connect to server. Check internet.";
+            if(typeof turnstile !== 'undefined') turnstile.reset();
+        })
+        .finally(() => {
+            overlayUnlockBtn.innerText = "Unlock System";
+            overlayUnlockBtn.disabled = false;
+        });
     });
 
     // ==========================================
-    // 2. FORM UI & CALCULATION LOGIC
+    // 2. CALCULATION & TOGGLE LOGIC
     // ==========================================
     const extrasSection = document.getElementById('extrasSection');
     const toggleBtn = document.getElementById('toggleExtrasBtn');
+    let currentSubtotal = 0;
+    let currentGrandTotal = 0;
+    let currentDiscount = 0;
+    let currentExtra = 0;
+    let currentOrderString = "";
     
     toggleBtn.addEventListener('click', () => {
         const isHidden = extrasSection.style.display === 'none' || extrasSection.style.display === '';
@@ -282,86 +309,83 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function calculateTotal() {
-        let subtotal = 0;
+        currentSubtotal = 0;
+        currentOrderString = "";
+        
         document.querySelectorAll('.product-row').forEach(row => {
             const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
             const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            subtotal += (qty * price);
+            const name = row.querySelector('.item-qty').dataset.name;
+            
+            if (qty > 0) {
+                currentSubtotal += (qty * price);
+                currentOrderString += `${qty}x ${name} (@ ₹${price})\n`;
+            }
         });
         
-        const extra = parseFloat(document.getElementById('extraCharges').value) || 0;
+        currentExtra = parseFloat(document.getElementById('extraCharges').value) || 0;
         const rawDiscountValue = parseFloat(document.getElementById('discountAmount').value) || 0;
         const discType = document.getElementById('discountType').value;
         
-        let calculatedDiscount = (discType === 'percent') ? (subtotal * (rawDiscountValue / 100)) : rawDiscountValue;
+        if (discType === 'percent') {
+            currentDiscount = currentSubtotal * (rawDiscountValue / 100);
+        } else {
+            currentDiscount = rawDiscountValue;
+        }
         
-        let grandTotal = subtotal + extra - calculatedDiscount;
-        if (grandTotal < 0) grandTotal = 0;
+        currentGrandTotal = currentSubtotal + currentExtra - currentDiscount;
+        if (currentGrandTotal < 0) currentGrandTotal = 0;
 
-        document.getElementById('displaySubtotal').innerText = subtotal;
-        document.getElementById('displayGrandTotal').innerText = Math.round(grandTotal); 
-
-        // Store values for submission
-        document.getElementById('finalSubtotal').value = subtotal;
-        document.getElementById('finalDiscount').value = Math.round(calculatedDiscount);
-        document.getElementById('finalExtra').value = extra;
-        document.getElementById('finalGrandTotal').value = Math.round(grandTotal);
+        document.getElementById('displaySubtotal').innerText = currentSubtotal;
+        document.getElementById('displayGrandTotal').innerText = Math.round(currentGrandTotal); 
     }
 
     document.querySelectorAll('.item-qty, .item-price, #extraCharges, #discountAmount').forEach(el => el.addEventListener('input', calculateTotal));
     document.getElementById('discountType').addEventListener('change', calculateTotal); 
 
     // ==========================================
-    // 3. PREVIEW & SUBMISSION LOGIC
+    // 3. PREVIEW & SUBMIT LOGIC
     // ==========================================
-    window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
-
     document.getElementById('reviewBtn').addEventListener('click', function() {
-        // Validation
         const name = document.getElementById('name').value.trim();
         const phone = document.getElementById('phone').value.trim();
-        if (!name || !phone) return alert("Customer Name and Phone are required.");
-
-        let details = "";
-        document.querySelectorAll('.product-row').forEach(row => {
-            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-            const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            if (qty > 0) details += `${qty}x ${row.querySelector('.item-qty').dataset.name} (@₹${price})\n`;
-        });
         
-        if (details === "") return alert("Please add at least one product.");
-        document.getElementById('finalDetailsString').value = details.trim();
+        if (!name || !phone) {
+            alert("Customer Name and Phone are required.");
+            return;
+        }
+        if (currentOrderString === "") {
+            alert("Please add at least one product quantity.");
+            return;
+        }
 
-        // Build Preview Text
-        const sub = document.getElementById('finalSubtotal').value;
-        const disc = document.getElementById('finalDiscount').value;
-        const ext = document.getElementById('finalExtra').value;
-        const gt = document.getElementById('finalGrandTotal').value;
+        let html = `<strong>Customer:</strong> ${name}<br><strong>Phone:</strong> ${phone}<br><br>`;
+        html += `<strong>Items:</strong><br>${currentOrderString.replace(/\n/g, '<br>')}<br>`;
+        html += `<strong>Subtotal:</strong> ₹${currentSubtotal}<br>`;
+        if(currentDiscount > 0) html += `<strong>Discount:</strong> -₹${Math.round(currentDiscount)}<br>`;
+        if(currentExtra > 0) html += `<strong>Extra Charges:</strong> +₹${currentExtra}<br>`;
+        html += `<br><strong style="font-size:18px; color:var(--primary);">Grand Total: ₹${Math.round(currentGrandTotal)}</strong>`;
 
-        let previewHTML = `<b>Name:</b> ${name}\n<b>Phone:</b> ${phone}\n\n<b>Items:</b>\n${details}\n------------------\n<b>Subtotal:</b> ₹${sub}`;
-        if(disc > 0) previewHTML += `\n<b>Discount:</b> -₹${disc}`;
-        if(ext > 0) previewHTML += `\n<b>Extra:</b> +₹${ext}`;
-        previewHTML += `\n\n<b style="font-size:16px; color:#0056b3;">Grand Total: ₹${gt}</b>`;
-
-        document.getElementById('previewDetails').innerHTML = previewHTML;
-        document.getElementById('previewModal').style.display = 'flex';
+        document.getElementById('previewDetailsBox').innerHTML = html;
+        openModal('previewModal');
     });
 
     document.getElementById('confirmSubmitBtn').addEventListener('click', function() {
-        const confirmBtn = document.getElementById('confirmSubmitBtn');
+        const btn = this;
         const statusDiv = document.getElementById('status');
         
-        confirmBtn.disabled = true; confirmBtn.innerText = "Submitting...";
+        btn.disabled = true; btn.innerText = "Submitting...";
         
         const data = {
-            formType: "offline_order", pin: validatedPin, turnstileToken: validatedTurnstile,
+            formType: "offline_order",
+            pin: validatedPin,
             name: document.getElementById('name').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            orderDetails: document.getElementById('finalDetailsString').value,
-            subtotal: document.getElementById('finalSubtotal').value,
-            discount: document.getElementById('finalDiscount').value,
-            extra: document.getElementById('finalExtra').value,
-            total: document.getElementById('finalGrandTotal').value
+            orderDetails: currentOrderString.trim(),
+            subtotal: currentSubtotal,
+            discount: Math.round(currentDiscount),
+            extra: currentExtra,
+            total: Math.round(currentGrandTotal)
         };
 
         fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "text/plain;charset=utf-8" } })
@@ -375,55 +399,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => { statusDiv.innerText = ""; }, 5000);
             } else {
                 alert("Error: " + result.error);
-                if (result.error.includes("LOCKED")) location.reload(); // Force reload to show lock screen
+                if (result.error.includes("LOCKED")) location.reload(); // Boot them back to lock screen
             }
         })
         .catch(() => alert("Connection error. Try again."))
-        .finally(() => { confirmBtn.disabled = false; confirmBtn.innerText = "Confirm & Submit"; });
+        .finally(() => { btn.disabled = false; btn.innerText = "Confirm & Submit"; });
     });
 
     // ==========================================
     // 4. HISTORY SEARCH LOGIC
     // ==========================================
-    document.getElementById('openHistoryBtn').addEventListener('click', function() {
-        document.getElementById('historyModal').style.display = 'flex';
-        document.getElementById('historyResults').innerHTML = "";
-        document.getElementById('searchPhone').value = "";
-    });
-
     document.getElementById('searchBtn').addEventListener('click', function() {
         const phone = document.getElementById('searchPhone').value.trim();
         const resultsDiv = document.getElementById('historyResults');
         if(!phone) return;
 
-        this.innerText = "..."; this.disabled = true;
-        resultsDiv.innerHTML = "<p style='text-align:center;'>Searching...</p>";
+        this.innerText = "Wait..."; this.disabled = true;
+        resultsDiv.innerHTML = "<p style='text-align:center; color:#666;'>Searching records...</p>";
 
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
-            body: JSON.stringify({ action: "getHistory", phone: phone }),
+            body: JSON.stringify({ action: "getHistory", pin: validatedPin, phone: phone }),
             headers: { "Content-Type": "text/plain;charset=utf-8" }
         })
         .then(res => res.json())
         .then(data => {
             if (data.result === "success" && data.history.length > 0) {
-                let html = "";
+                let html = `<p style="color:var(--primary); font-weight:bold; margin-bottom:10px;">Found ${data.history.length} order(s):</p>`;
                 data.history.forEach(order => {
                     const dateObj = new Date(order.date);
                     const formattedDate = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     html += `<div class="history-card">
                                 <div class="h-date">${formattedDate}</div>
-                                <div><b>Name:</b> ${order.name}</div>
-                                <div style="white-space: pre-wrap; margin-top:5px; font-family:monospace;">${order.details}</div>
-                                <div class="h-total">Total Paid: ₹${order.total}</div>
+                                <div><b>Customer:</b> ${order.name}</div>
+                                <div class="h-items">${order.details}</div>
+                                <div class="h-total">Total: ₹${order.total}</div>
                              </div>`;
                 });
                 resultsDiv.innerHTML = html;
+            } else if (data.result === "error") {
+                resultsDiv.innerHTML = `<p style='color:red;'>${data.error}</p>`;
+                if (data.error.includes("LOCKED")) location.reload();
             } else {
                 resultsDiv.innerHTML = "<p style='text-align:center; color:#666;'>No orders found for this number.</p>";
             }
         })
-        .catch(() => resultsDiv.innerHTML = "<p style='color:red;'>Error fetching history.</p>")
+        .catch(() => resultsDiv.innerHTML = "<p style='color:red; text-align:center;'>Error fetching history.</p>")
         .finally(() => { this.innerText = "Search"; this.disabled = false; });
     });
 
