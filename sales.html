@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FloorAqua - Sales Dashboard</title>
+    <link rel="icon" href="flooraqua.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-dark: #1d4ed8; 
+            --primary-light: #eff6ff;
+            --bg: #f8fafc; 
+            --text-main: #0f172a; 
+            --text-muted: #64748b; 
+            --border: #e2e8f0; 
+            --card-bg: #ffffff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            color: var(--text-main); 
+            padding-top: 80px; 
+            padding-bottom: 40px;
+        }
+        
+        /* --- TOP NAV --- */
+        .top-bar { 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background: var(--card-bg); 
+            box-shadow: var(--shadow-sm); 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px 24px; box-sizing: border-box; z-index: 100; 
+            border-bottom: 1px solid var(--border);
+        }
+        .top-bar-logo { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--text-main); font-size: 18px; letter-spacing: -0.5px;}
+        .top-bar-logo img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; box-shadow: var(--shadow-sm); }
+        .logout-btn { 
+            background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; 
+            padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; 
+            cursor: pointer; transition: all 0.2s; 
+        }
+        .logout-btn:hover { background: #fee2e2; }
+
+        /* --- DASHBOARD LAYOUT --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        /* --- FILTER SECTION --- */
+        .filter-card { 
+            background: var(--card-bg); padding: 24px; border-radius: 12px; 
+            box-shadow: var(--shadow-sm); margin-bottom: 24px; border: 1px solid var(--border); 
+        }
+        .filter-header { margin-top: 0; margin-bottom: 16px; font-size: 16px; font-weight: 600; color: var(--text-main); }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; align-items: end; }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        .filter-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .filter-group input, .filter-group select { 
+            padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; 
+            font-size: 14px; outline: none; transition: all 0.2s; font-family: 'Inter', sans-serif; color: var(--text-main); background: #fff;
+        }
+        .filter-group input:focus, .filter-group select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .btn-apply { 
+            background: var(--primary); color: white; border: none; padding: 12px 16px; 
+            border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; 
+            transition: all 0.2s; height: 42px; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-apply:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .btn-apply:active { transform: translateY(0); }
+
+        /* --- STATS CARDS --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        .stat-card { 
+            background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--border); 
+            box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 8px; transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .stat-title { font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+        .stat-value { font-size: 32px; font-weight: 800; color: var(--text-main); letter-spacing: -1px;}
+        .stat-value.green { color: var(--success); }
+
+        /* --- DATA TABLE --- */
+        .table-container { 
+            background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); 
+            overflow-x: auto; box-shadow: var(--shadow-sm); 
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
+        th { 
+            background: #f8fafc; padding: 16px; font-size: 12px; font-weight: 600; 
+            color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; 
+            border-bottom: 1px solid var(--border); 
+        }
+        td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text-main); vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: var(--primary-light); }
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-online { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .badge-offline { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .items-cell { white-space: pre-wrap; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+        /* --- SECURITY OVERLAY --- */
+        #pinOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: var(--bg); z-index: 9999; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; 
+        }
+        .overlay-card {
+            background: white; padding: 40px; border-radius: 16px; box-shadow: var(--shadow-md);
+            border: 1px solid var(--border); text-align: center; max-width: 400px; width: 90%;
+        }
+        .overlay-logo { width: 72px; height: 72px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+        .overlay-card h2 { color: var(--text-main); margin: 0 0 8px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+        .overlay-card p { color: var(--text-muted); font-size: 14px; margin: 0 0 24px 0; }
+        #pinOverlay input { 
+            width: 100%; box-sizing: border-box; padding: 16px; font-size: 28px; text-align: center; 
+            letter-spacing: 16px; border: 2px solid var(--border); border-radius: 8px; 
+            margin-bottom: 12px; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif;
+        }
+        #pinOverlay input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        #pinErrorMsg { color: var(--danger); font-size: 13px; font-weight: 600; min-height: 20px; margin-bottom: 16px; }
+        
+        #dashboardContent { display: none; }
+        
+        .loading-state { 
+            text-align: center; padding: 60px 20px; color: var(--text-muted); 
+            font-weight: 500; font-size: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .spinner {
+            width: 32px; height: 32px; border: 3px solid var(--border); 
+            border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+<div id="pinOverlay">
+    <div class="overlay-card">
+        <img src="flooraqua.png" alt="FloorAqua Logo" class="overlay-logo" onerror="this.style.display='none'">
+        <h2>Analytics Portal</h2>
+        <p>Enter Master PIN to view sales data</p>
+        <input type="password" id="overlayPinInput" maxlength="4" placeholder="••••">
+        <div id="pinErrorMsg"></div>
+        <button id="overlayUnlockBtn" class="btn-apply" style="width: 100%;">Access Dashboard</button>
+    </div>
+</div>
+
+<div class="top-bar" id="topBar" style="display:none;">
+    <div class="top-bar-logo">
+        <img src="flooraqua.png" alt="Logo" onerror="this.style.display='none'">
+        FloorAqua Analytics
+    </div>
+    <button class="logout-btn" onclick="location.reload()">🔒 Lock App</button>
+</div>
+
+<div id="dashboardContent" class="container">
+    
+    <div class="filter-card">
+        <h3 class="filter-header">Sales Filters</h3>
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label>Start Date</label>
+                <input type="date" id="filterStart">
+            </div>
+            <div class="filter-group">
+                <label>End Date</label>
+                <input type="date" id="filterEnd">
+            </div>
+            <div class="filter-group">
+                <label>Order Source</label>
+                <select id="filterSource">
+                    <option value="All">All Orders (Online + Offline)</option>
+                    <option value="Online">Online Only</option>
+                    <option value="Offline">Offline Only</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Specific Product</label>
+                <select id="filterProduct">
+                    <option value="All">All Products</option>
+                    <option value="Floor Cleaner 5L">Floor Cleaner (5L)</option>
+                    <option value="Floor Phenyl 5L">Floor Phenyl (5L)</option>
+                    <option value="Glass Cleaner 5L">Glass Cleaner (5L)</option>
+                    <option value="Toilet Cleaner 5L">Toilet Cleaner (5L)</option>
+                </select>
+            </div>
+            <button class="btn-apply" id="applyFilterBtn">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                Show Sales
+            </button>
+        </div>
+    </div>
+
+    <div id="loadingIndicator" class="loading-state" style="display:none;">
+        <div class="spinner"></div>
+        Fetching latest sales data...
+    </div>
+
+    <div class="stats-grid" id="statsSection" style="display:none;">
+        <div class="stat-card">
+            <div class="stat-title">Total Sales Revenue</div>
+            <div class="stat-value green" id="statRevenue">₹0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Total Orders</div>
+            <div class="stat-value" id="statOrders">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-title">Units Sold (Filtered)</div>
+            <div class="stat-value" id="statUnits">0</div>
+        </div>
+    </div>
+
+    <div class="table-container" id="tableSection" style="display:none;">
+        <table id="salesTable">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Source</th>
+                    <th>Customer</th>
+                    <th>Order Details</th>
+                    <th style="text-align:right;">Grand Total</th>
+                </tr>
+            </thead>
+            <tbody id="salesTableBody">
+                </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
+    const HARDCODED_PIN = "9639"; 
+    
+    let allSalesData = []; 
+
+    // ==========================================
+    // 1. PIN VERIFICATION
+    // ==========================================
+    const overlayPinInput = document.getElementById('overlayPinInput');
+    const overlayUnlockBtn = document.getElementById('overlayUnlockBtn');
+    
+    overlayPinInput.focus();
+    overlayPinInput.addEventListener('keypress', e => { if (e.key === 'Enter') overlayUnlockBtn.click(); });
+
+    overlayUnlockBtn.addEventListener('click', function() {
+        if (overlayPinInput.value.trim() === HARDCODED_PIN) {
+            document.getElementById('pinOverlay').style.display = 'none';
+            document.getElementById('topBar').style.display = 'flex';
+            document.getElementById('dashboardContent').style.display = 'block';
+            fetchSalesData(); 
+        } else {
+            document.getElementById('pinErrorMsg').innerText = "Incorrect Master PIN.";
+            overlayPinInput.value = '';
+        }
+    });
+
+    // ==========================================
+    // 2. FETCH DATA FROM SERVER
+    // ==========================================
+    function fetchSalesData() {
+        document.getElementById('loadingIndicator').style.display = 'flex';
+        document.getElementById('statsSection').style.display = 'none';
+        document.getElementById('tableSection').style.display = 'none';
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getSalesData" }),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.result === "success") {
+                allSalesData = data.data;
+                // Default view: Last 30 days
+                let d = new Date();
+                d.setDate(d.getDate() - 30);
+                document.getElementById('filterStart').valueAsDate = d;
+                document.getElementById('filterEnd').valueAsDate = new Date();
+                
+                applyFilters(); 
+            } else {
+                alert("Failed to load data: " + data.error);
+            }
+        })
+        .catch(err => alert("Connection error while fetching sales."))
+        .finally(() => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        });
+    }
+
+    // ==========================================
+    // 3. FILTERING & CALCULATION LOGIC
+    // ==========================================
+    document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
+
+    function applyFilters() {
+        const startDateVal = document.getElementById('filterStart').value;
+        const endDateVal = document.getElementById('filterEnd').value;
+        const sourceFilter = document.getElementById('filterSource').value;
+        const productFilter = document.getElementById('filterProduct').value;
+
+        let startDate = startDateVal ? new Date(startDateVal) : new Date(0);
+        let endDate = endDateVal ? new Date(endDateVal) : new Date();
+        startDate.setHours(0,0,0,0);
+        endDate.setHours(23,59,59,999);
+
+        let filteredSales = [];
+        let totalRevenue = 0;
+        let totalUnits = 0;
+
+        allSalesData.forEach(sale => {
+            let saleDate = new Date(sale.date);
+            
+            if (saleDate < startDate || saleDate > endDate) return;
+            if (sourceFilter !== "All" && sale.source !== sourceFilter) return;
+
+            let itemQty = extractQuantity(sale.details, productFilter);
+            if (productFilter !== "All" && itemQty === 0) return;
+
+            filteredSales.push(sale);
+            totalRevenue += parseFloat(sale.total) || 0;
+            totalUnits += itemQty;
+        });
+
+        filteredSales.sort((a, b) => new Date(b.date) - new Date(a.date));
+        updateUI(filteredSales, totalRevenue, totalUnits);
+    }
+
+    function extractQuantity(detailsStr, targetProduct) {
+        if (!detailsStr) return 0;
+        let count = 0;
+        
+        if (targetProduct === "All") {
+            let matches = detailsStr.match(/(\d+)x/g);
+            if (matches) {
+                matches.forEach(m => count += parseInt(m));
+            }
+        } else {
+            let safeProduct = targetProduct.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            let regex = new RegExp('(\\d+)x\\s*' + safeProduct, 'i');
+            let match = detailsStr.match(regex);
+            if (match) count = parseInt(match[1]);
+        }
+        return count;
+    }
+
+    // ==========================================
+    // 4. RENDER UI
+    // ==========================================
+    function updateUI(filteredData, totalRev, totalQty) {
+        document.getElementById('statsSection').style.display = 'grid';
+        document.getElementById('tableSection').style.display = 'block';
+
+        document.getElementById('statRevenue').innerText = "₹" + Math.round(totalRev).toLocaleString('en-IN');
+        document.getElementById('statOrders').innerText = filteredData.length.toLocaleString('en-IN');
+        document.getElementById('statUnits').innerText = totalQty.toLocaleString('en-IN');
+
+        const tbody = document.getElementById('salesTableBody');
+        tbody.innerHTML = "";
+
+        if (filteredData.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding: 40px; color:var(--text-muted); font-weight:500;'>No sales found for this criteria.</td></tr>";
+            return;
+        }
+
+        filteredData.forEach(sale => {
+            const dateObj = new Date(sale.date);
+            const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + " • " + dateObj.toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'});
+            
+            const badgeClass = sale.source === "Online" ? "badge-online" : "badge-offline";
+            const amt = Math.round(parseFloat(sale.total) || 0);
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${dateStr.split(' • ')[0]}</strong><br><span style="color:var(--text-muted); font-size:12px;">${dateStr.split(' • ')[1]}</span></td>
+                <td><span class="badge ${badgeClass}">${sale.source}</span></td>
+                <td><strong style="color:var(--primary-dark);">${sale.name}</strong></td>
+                <td class="items-cell">${sale.details}</td>
+                <td style="text-align:right; font-weight:700; color:var(--text-main); font-size:15px;">₹${amt.toLocaleString('en-IN')}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+});
+</script>
+</body>
+</html>
