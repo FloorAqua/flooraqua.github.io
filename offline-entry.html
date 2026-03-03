@@ -58,7 +58,9 @@
         #pinOverlay p { color: #666; font-size: 15px; margin-bottom: 25px; text-align: center; }
         #pinOverlay input { width: 220px; padding: 15px; font-size: 32px; text-align: center; letter-spacing: 12px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
         #pinErrorMsg { color: #dc2626; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 15px; text-align: center; padding: 0 20px; }
-        .turnstile-container { margin-bottom: 20px; min-height: 65px; }
+        
+        /* Turnstile specific styling */
+        .turnstile-container { display: flex; justify-content: center; margin-bottom: 20px; min-height: 65px; }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; backdrop-filter: blur(3px); }
@@ -93,9 +95,6 @@
     <h2>Staff Portal</h2>
     <p>Enter authorized PIN to proceed</p>
     <input type="password" id="overlayPinInput" maxlength="4" placeholder="••••">
-    <div class="turnstile-container">
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAACioid7KgPiW3YB3"></div>
-    </div>
     <div id="pinErrorMsg"></div>
     <button id="overlayUnlockBtn" class="action-btn" style="width: 250px; background-color: #0056b3; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer;">Verify & Unlock</button>
 </div>
@@ -197,6 +196,11 @@
         <button class="close-btn" onclick="closeModal('previewModal')">✕</button>
         <h2 style="margin-top:0; color:#333;">Order Preview</h2>
         <div class="preview-box" id="previewDetailsBox"></div>
+        
+        <div class="turnstile-container">
+            <div class="cf-turnstile" data-sitekey="0x4AAAAAACioid7KgPiW3YB3"></div>
+        </div>
+
         <div class="modal-actions">
             <button type="button" class="btn-cancel" onclick="closeModal('previewModal')">Back to Edit</button>
             <button type="button" class="btn-confirm" id="confirmSubmitBtn" style="background-color: #16a34a; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; flex: 2;">Confirm & Submit</button>
@@ -225,6 +229,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==========================================
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
     
+    // SET YOUR HTML PASSWORD HERE
+    const HARDCODED_PIN = "9639"; 
+
     let validatedPin = ""; 
 
     // --- MODAL CONTROLS ---
@@ -232,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
 
     // ==========================================
-    // 1. PIN & CAPTCHA VERIFICATION
+    // 1. PIN VERIFICATION (Frontend Only)
     // ==========================================
     const overlay = document.getElementById('pinOverlay');
     const overlayPinInput = document.getElementById('overlayPinInput');
@@ -244,46 +251,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     overlayUnlockBtn.addEventListener('click', function() {
         const enteredPin = overlayPinInput.value.trim();
-        const tsToken = document.querySelector('[name="cf-turnstile-response"]');
 
-        if (!enteredPin) { pinErrorMsg.innerText = "Please enter a PIN."; return; }
-        if (!tsToken || !tsToken.value) { pinErrorMsg.innerText = "Please complete the security check."; return; }
+        if (!enteredPin) { 
+            pinErrorMsg.innerText = "Please enter a PIN."; 
+            return; 
+        }
 
-        overlayUnlockBtn.innerText = "Verifying...";
-        overlayUnlockBtn.disabled = true;
-        pinErrorMsg.innerText = "";
-
-        // Verify the PIN with the server
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                action: "verifyAuth",
-                pin: enteredPin,
-                turnstileToken: tsToken.value
-            }),
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.result === "success") {
-                validatedPin = enteredPin;
-                overlay.style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                document.getElementById('topBar').style.display = 'flex';
-            } else {
-                pinErrorMsg.innerText = result.error;
-                overlayPinInput.value = '';
-                if(typeof turnstile !== 'undefined') turnstile.reset();
-            }
-        })
-        .catch(error => {
-            pinErrorMsg.innerText = "Failed to connect to server. Check internet.";
-            if(typeof turnstile !== 'undefined') turnstile.reset();
-        })
-        .finally(() => {
-            overlayUnlockBtn.innerText = "Unlock System";
-            overlayUnlockBtn.disabled = false;
-        });
+        if (enteredPin === HARDCODED_PIN) {
+            validatedPin = enteredPin;
+            overlay.style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('topBar').style.display = 'flex';
+        } else {
+            pinErrorMsg.innerText = "Incorrect PIN. Try again.";
+            overlayPinInput.value = '';
+        }
     });
 
     // ==========================================
@@ -339,11 +321,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('discountType').addEventListener('change', calculateTotal); 
 
     // ==========================================
-    // 3. PREVIEW & SUBMIT LOGIC
+    // 3. PREVIEW & SUBMIT LOGIC WITH TURNSTILE
     // ==========================================
     document.getElementById('reviewBtn').addEventListener('click', function() {
-        const name = document.getElementById('name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
+        // FIXED ID BUG HERE
+        const name = document.getElementById('custName').value.trim();
+        const phone = document.getElementById('custPhone').value.trim();
         
         if (!name || !phone) {
             alert("Customer Name and Phone are required.");
@@ -368,15 +351,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirmSubmitBtn').addEventListener('click', function() {
         const btn = this;
         const statusDiv = document.getElementById('status');
+        const tsTokenInput = document.querySelector('[name="cf-turnstile-response"]');
+        
+        // Ensure Turnstile is checked before submitting
+        if (!tsTokenInput || !tsTokenInput.value) { 
+            alert("Please complete the security check."); 
+            return; 
+        }
         
         btn.disabled = true; btn.innerText = "Submitting...";
         
         const data = {
             formType: "offline_order",
             pin: validatedPin,
-            turnstileToken: "bypass",
-            name: document.getElementById('name').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
+            turnstileToken: tsTokenInput.value, // Now sends actual token on form submit
+            name: document.getElementById('custName').value.trim(), // FIXED ID
+            phone: document.getElementById('custPhone').value.trim(), // FIXED ID
             orderDetails: currentOrderString.trim(),
             subtotal: currentSubtotal,
             discount: Math.round(currentDiscount),
@@ -399,7 +389,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(() => alert("Connection error. Try again."))
-        .finally(() => { btn.disabled = false; btn.innerText = "Confirm & Submit"; });
+        .finally(() => { 
+            btn.disabled = false; 
+            btn.innerText = "Confirm & Submit"; 
+            if(typeof turnstile !== 'undefined') turnstile.reset(); // Reset turnstile widget for the next order
+        });
     });
 
     // ==========================================
