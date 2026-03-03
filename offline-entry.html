@@ -159,19 +159,24 @@
 </div>
 
 <script>
+// IMPORTANT: Wrap ALL script logic inside DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+
     // --- UI Toggle Logic ---
     const extrasSection = document.getElementById('extrasSection');
     const toggleBtn = document.getElementById('toggleExtrasBtn');
     
-    toggleBtn.addEventListener('click', () => {
-        if (extrasSection.style.display === 'block') {
-            extrasSection.style.display = 'none';
-            toggleBtn.innerText = '▼ Add Discount / Charges';
-        } else {
-            extrasSection.style.display = 'block';
-            toggleBtn.innerText = '▲ Hide Extra Fields';
-        }
-    });
+    if(toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            if (extrasSection.style.display === 'block') {
+                extrasSection.style.display = 'none';
+                toggleBtn.innerText = '▼ Add Discount / Charges';
+            } else {
+                extrasSection.style.display = 'block';
+                toggleBtn.innerText = '▲ Hide Extra Fields';
+            }
+        });
+    }
 
     // --- Calculation Logic ---
     const qtyInputs = document.querySelectorAll('.item-qty');
@@ -199,7 +204,7 @@
         const extra = parseFloat(extraInput.value) || 0;
         const rawDiscountValue = parseFloat(discountInput.value) || 0;
         
-        if (discountType.value === 'percent') {
+        if (discountType && discountType.value === 'percent') {
             calculatedDiscount = subtotal * (rawDiscountValue / 100);
         } else {
             calculatedDiscount = rawDiscountValue;
@@ -208,109 +213,126 @@
         grandTotal = subtotal + extra - calculatedDiscount;
         if (grandTotal < 0) grandTotal = 0;
 
-        displaySubtotal.innerText = subtotal;
-        displayGrandTotal.innerText = Math.round(grandTotal); 
+        if (displaySubtotal) displaySubtotal.innerText = subtotal;
+        if (displayGrandTotal) displayGrandTotal.innerText = Math.round(grandTotal); 
     }
 
     qtyInputs.forEach(input => input.addEventListener('input', calculateTotal));
     priceInputs.forEach(input => input.addEventListener('input', calculateTotal));
-    extraInput.addEventListener('input', calculateTotal);
-    discountInput.addEventListener('input', calculateTotal);
-    discountType.addEventListener('change', calculateTotal); 
+    if (extraInput) extraInput.addEventListener('input', calculateTotal);
+    if (discountInput) discountInput.addEventListener('input', calculateTotal);
+    if (discountType) discountType.addEventListener('change', calculateTotal); 
 
     // --- Form Submission Logic ---
-    document.getElementById("offlineForm").addEventListener("submit", function(e) {
-        e.preventDefault();
-        
-        const statusDiv = document.getElementById("status");
-        const submitBtn = document.getElementById("submitBtn");
-        
-        const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
-        if (!turnstileResponse || !turnstileResponse.value) {
-            statusDiv.style.color = "#dc2626";
-            statusDiv.innerText = "Please complete the security check.";
-            return;
-        }
-
-        let orderDetailsString = "";
-        document.querySelectorAll('.product-row').forEach(row => {
-            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-            const price = parseFloat(row.querySelector('.item-price').value) || 0;
-            const name = row.querySelector('.item-qty').getAttribute('data-name');
-            if (qty > 0) {
-                orderDetailsString += `${qty}x ${name} (₹${price})\n`; 
+    const offlineForm = document.getElementById("offlineForm");
+    
+    if (offlineForm) {
+        offlineForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            
+            const statusDiv = document.getElementById("status");
+            const submitBtn = document.getElementById("submitBtn");
+            
+            const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+            if (!turnstileResponse || !turnstileResponse.value) {
+                if(statusDiv) {
+                    statusDiv.style.color = "#dc2626";
+                    statusDiv.innerText = "Please complete the security check.";
+                }
+                return;
             }
+
+            let orderDetailsString = "";
+            document.querySelectorAll('.product-row').forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const name = row.querySelector('.item-qty').getAttribute('data-name');
+                if (qty > 0) {
+                    orderDetailsString += `${qty}x ${name} (₹${price})\n`; 
+                }
+            });
+
+            const extra = parseFloat(extraInput ? extraInput.value : 0) || 0;
+            const rawDiscountValue = parseFloat(discountInput ? discountInput.value : 0) || 0;
+
+            if (extra > 0) orderDetailsString += `\n➕ Extra Charges: ₹${extra}`;
+            if (rawDiscountValue > 0) {
+                if (discountType && discountType.value === 'percent') {
+                    orderDetailsString += `\n➖ Discount: ${rawDiscountValue}% (₹${Math.round(calculatedDiscount)})`;
+                } else {
+                    orderDetailsString += `\n➖ Discount: ₹${rawDiscountValue}`;
+                }
+            }
+
+            if (orderDetailsString.trim() === "") {
+                orderDetailsString = "No specific items logged.";
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+            if(statusDiv) statusDiv.innerText = "";
+
+            const staffPinElement = document.getElementById("staffPin");
+            const nameElement = document.getElementById("name");
+            const phoneElement = document.getElementById("phone");
+
+            const data = {
+                formType: "offline_order",
+                pin: staffPinElement ? staffPinElement.value.trim() : "", 
+                name: nameElement ? nameElement.value.trim() : "",
+                phone: phoneElement ? phoneElement.value.trim() : "",
+                orderDetails: orderDetailsString.trim(),
+                subtotal: subtotal, 
+                total: Math.round(grandTotal),  
+                turnstileToken: turnstileResponse.value
+            };
+
+            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: { "Content-Type": "text/plain;charset=utf-8" }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.result === "success") {
+                    if(statusDiv) {
+                        statusDiv.style.color = "#16a34a";
+                        statusDiv.innerText = "✅ Order successfully logged!";
+                    }
+                    
+                    const savedPin = staffPinElement ? staffPinElement.value : "";
+                    offlineForm.reset();
+                    if(staffPinElement) staffPinElement.value = savedPin;
+                    
+                    calculateTotal(); 
+                    if(typeof turnstile !== 'undefined') turnstile.reset(); 
+                    if(extrasSection) extrasSection.style.display = 'none'; 
+                    if(toggleBtn) toggleBtn.innerText = '▼ Add Discount / Charges';
+                } else {
+                    if(statusDiv) {
+                        statusDiv.style.color = "#dc2626";
+                        statusDiv.innerText = "Error: " + result.error;
+                    }
+                    if(typeof turnstile !== 'undefined') turnstile.reset();
+                }
+            })
+            .catch(error => {
+                if(statusDiv) {
+                    statusDiv.style.color = "#dc2626";
+                    statusDiv.innerText = "Failed to connect to server.";
+                }
+                if(typeof turnstile !== 'undefined') turnstile.reset();
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Send Order to System";
+            });
         });
+    }
 
-        const extra = parseFloat(extraInput.value) || 0;
-        const rawDiscountValue = parseFloat(discountInput.value) || 0;
-
-        if (extra > 0) orderDetailsString += `\n➕ Extra Charges: ₹${extra}`;
-        if (rawDiscountValue > 0) {
-            if (discountType.value === 'percent') {
-                orderDetailsString += `\n➖ Discount: ${rawDiscountValue}% (₹${Math.round(calculatedDiscount)})`;
-            } else {
-                orderDetailsString += `\n➖ Discount: ₹${rawDiscountValue}`;
-            }
-        }
-
-        if (orderDetailsString.trim() === "") {
-            orderDetailsString = "No specific items logged.";
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Processing...";
-        statusDiv.innerText = "";
-
-        const data = {
-            formType: "offline_order",
-            pin: document.getElementById("staffPin").value.trim(), // Send the PIN to Google
-            name: document.getElementById("name").value.trim(),
-            phone: document.getElementById("phone").value.trim(),
-            orderDetails: orderDetailsString.trim(),
-            subtotal: subtotal, 
-            total: Math.round(grandTotal),  
-            turnstileToken: turnstileResponse.value
-        };
-
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
-
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: { "Content-Type": "text/plain;charset=utf-8" }
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.result === "success") {
-                statusDiv.style.color = "#16a34a";
-                statusDiv.innerText = "✅ Order successfully logged!";
-                
-                // Clear the form but keep the PIN so you don't have to re-type it for the next order
-                const savedPin = document.getElementById("staffPin").value;
-                document.getElementById("offlineForm").reset();
-                document.getElementById("staffPin").value = savedPin;
-                
-                calculateTotal(); 
-                turnstile.reset(); 
-                extrasSection.style.display = 'none'; 
-                toggleBtn.innerText = '▼ Add Discount / Charges';
-            } else {
-                statusDiv.style.color = "#dc2626";
-                statusDiv.innerText = "Error: " + result.error;
-                turnstile.reset();
-            }
-        })
-        .catch(error => {
-            statusDiv.style.color = "#dc2626";
-            statusDiv.innerText = "Failed to connect to server.";
-            turnstile.reset();
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Send Order to System";
-        });
-    });
+}); // END OF DOMContentLoaded WRAPPER
 </script>
 
 </body>
