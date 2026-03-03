@@ -4,336 +4,430 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FloorAqua - Offline Entry</title>
+    <link rel="icon" href="flooraqua.png" type="image/png">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: #f0f2f5; padding: 15px; margin: 0; color: #333; }
-        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 450px; margin: 0 auto; }
-        h2 { text-align: center; color: #0056b3; margin-top: 0; margin-bottom: 25px; font-size: 22px; }
+        :root { --primary: #0056b3; --primary-dark: #004494; --bg: #f0f2f5; --text: #333; --border: #d1d5db; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); margin: 0; padding: 15px; color: var(--text); padding-top: 60px; /* Space for top bar */ }
         
+        /* UI Components */
+        .container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
+        .logo-img { max-width: 80px; display: block; margin: 0 auto 15px auto; border-radius: 8px;}
+        h2 { text-align: center; color: var(--primary); margin-top: 0; margin-bottom: 20px; font-size: 22px; }
+        
+        /* Form Elements */
         .input-group { margin-bottom: 15px; }
         label { font-weight: 600; display: block; margin-bottom: 5px; font-size: 14px; color: #444; }
-        input[type="text"], input[type="tel"], input[type="number"], input[type="password"], select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s; }
-        input:focus, select:focus { outline: none; border-color: #0056b3; }
+        input[type="text"], input[type="tel"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.2s; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+        button { width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: var(--primary-dark); }
+        button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
+        /* Products Section */
         .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin: 25px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; font-weight: bold; }
-
-        /* Product Grid & Headers */
-        .product-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; padding: 0 10px; font-size: 12px; font-weight: bold; color: #666; }
-        .header-labels { display: flex; gap: 8px; flex: 1.5; justify-content: flex-end; }
-        .header-labels span { width: 65px; text-align: center; display: inline-block; }
-
         .product-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 10px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; }
         .product-name { flex: 2; font-size: 14px; font-weight: 500; }
         .product-inputs { display: flex; gap: 8px; flex: 1.5; justify-content: flex-end; }
         .product-inputs input { width: 65px; padding: 8px; text-align: center; font-size: 14px; }
 
-        /* Blinkit Style Billing Section */
-        .bill-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .bill-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #555; }
-        .bill-row.subtotal { font-weight: 600; color: #333; }
-        
-        /* Toggle for Discount/Charges */
-        .toggle-btn { color: #0056b3; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; margin: 10px 0; padding: 5px; border-radius: 6px; background: #eff6ff; transition: 0.2s; }
-        .toggle-btn:hover { background: #dbeafe; }
-        
+        /* Billing Section */
+        .bill-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; margin-top: 20px; }
+        .bill-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; }
+        .bill-row.subtotal { font-weight: 600; }
+        .toggle-btn { color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; margin: 10px 0; padding: 5px; background: #eff6ff; border-radius: 6px; }
         .hidden-fields { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e5e7eb; }
         .extras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .extras-grid label { font-size: 12px; color: #666; }
-
         .discount-flex { display: flex; gap: 5px; }
-        .discount-flex select { padding: 8px; font-size: 14px; width: 45%; }
-        .discount-flex input { padding: 8px; font-size: 14px; width: 55%; }
-
+        .discount-flex select { padding: 8px; width: 45%; }
+        .discount-flex input { padding: 8px; width: 55%; }
         .grand-total-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 10px; border-top: 2px solid #eee; font-size: 18px; font-weight: bold; color: #1e3a8a; }
 
-        button { width: 100%; padding: 14px; background-color: #0056b3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; margin-top: 20px; cursor: pointer; transition: background-color 0.2s; }
-        button:hover { background-color: #004494; }
-        button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        /* --- NEW: FLOATING TOP BAR --- */
+        .top-bar { position: fixed; top: 0; left: 0; width: 100%; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; box-sizing: border-box; z-index: 100; }
+        .top-bar-logo { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--primary); font-size: 18px;}
+        .top-bar-logo img { width: 30px; height: 30px; border-radius: 4px;}
+        .history-btn { background: #e0f2fe; color: var(--primary); border: 1px solid #bae6fd; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;}
+        .history-btn:hover { background: #bae6fd; }
+
+        /* --- NEW: MODALS (Preview & History) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box;}
+        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .close-btn { position: absolute; top: 15px; right: 15px; background: #f3f4f6; border: none; font-size: 18px; font-weight: bold; color: #666; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center;}
+        .close-btn:hover { background: #e5e7eb; color: #000; }
         
-        #status { text-align: center; margin-top: 15px; font-size: 14px; font-weight: bold; min-height: 20px; }
+        /* Preview Modal Specifics */
+        #previewDetails { background: #f9fafb; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 14px; white-space: pre-wrap; margin-bottom: 20px; border: 1px solid #eee; }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-cancel { background: #fff; color: #444; border: 1px solid #ccc; }
+        .btn-cancel:hover { background: #f3f4f6; }
+
+        /* History Modal Specifics */
+        .search-box { display: flex; gap: 5px; margin-bottom: 20px; }
+        .history-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 14px;}
+        .h-date { font-weight: bold; color: var(--primary); font-size: 12px; margin-bottom: 5px;}
+        .h-total { font-weight: bold; margin-top: 5px; border-top: 1px dashed #ccc; padding-top: 5px; color: #1e3a8a;}
+
+        /* --- FULL SCREEN PIN OVERLAY --- */
+        #pinOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #pinOverlay img { max-width: 100px; margin-bottom: 20px; border-radius: 10px;}
+        #pinOverlay h2 { color: var(--primary); margin-bottom: 10px; font-size: 28px; }
+        #pinOverlay input { width: 200px; padding: 15px; font-size: 28px; text-align: center; letter-spacing: 8px; border: 2px solid #d1d5db; border-radius: 8px; margin-bottom: 15px; }
+        #pinErrorMsg { color: #dc2626; font-size: 14px; font-weight: bold; min-height: 20px; margin-bottom: 15px; text-align: center; padding: 0 20px; }
+
+        #mainContent { display: none; } /* Hidden until PIN success */
     </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
-<div class="container">
-    <h2>💧 FloorAqua Offline Entry</h2>
-    <form id="offlineForm">
-        
-        <div class="input-group">
-            <label>Staff PIN *</label>
-            <input type="password" id="staffPin" required maxlength="4" placeholder="••••" style="text-align: center; letter-spacing: 5px; font-size: 20px;">
-        </div>
+<div id="pinOverlay">
+    <img src="flooraqua.png" alt="FloorAqua Logo" onerror="this.style.display='none'">
+    <h2>Staff Access</h2>
+    <div id="pinErrorMsg">Please enter your PIN and complete the security check.</div>
+    <input type="password" id="overlayPinInput" maxlength="4" placeholder="••••">
+    <div class="cf-turnstile" data-sitekey="YOUR_CLOUDFLARE_SITE_KEY_HERE" style="margin-bottom: 15px;"></div>
+    <button id="overlayUnlockBtn" style="width: 200px;">Unlock System</button>
+</div>
 
-        <div class="input-group">
-            <label>Customer Name *</label>
-            <input type="text" id="name" required placeholder="Enter name">
-        </div>
+<div class="top-bar" id="topBar" style="display:none;">
+    <div class="top-bar-logo">
+        <img src="flooraqua.png" alt="Logo" onerror="this.style.display='none'">
+        FloorAqua
+    </div>
+    <button class="history-btn" id="openHistoryBtn">🔍 Search History</button>
+</div>
 
-        <div class="input-group">
-            <label>Mobile Number *</label>
-            <input type="tel" id="phone" required placeholder="e.g., 9876543210">
-        </div>
+<div id="mainContent">
+    <div class="container">
+        <h2>Offline Order Entry</h2>
+        <form id="offlineForm">
+            <input type="hidden" id="finalSubtotal">
+            <input type="hidden" id="finalDiscount">
+            <input type="hidden" id="finalExtra">
+            <input type="hidden" id="finalGrandTotal">
+            <input type="hidden" id="finalDetailsString">
 
-        <div class="section-title">Select Products</div>
-
-        <div class="product-header">
-            <div style="flex: 2;"></div>
-            <div class="header-labels">
-                <span>Qty</span>
-                <span>Price</span>
-            </div>
-        </div>
-
-        <div class="product-row">
-            <div class="product-name">Floor Cleaner (5L)</div>
-            <div class="product-inputs">
-                <input type="number" class="item-qty" data-name="Floor Cleaner 5L" placeholder="0" min="0">
-                <input type="number" class="item-price" value="269" placeholder="₹" min="0">
-            </div>
-        </div>
-
-        <div class="product-row">
-            <div class="product-name">Floor Phenyl (5L)</div>
-            <div class="product-inputs">
-                <input type="number" class="item-qty" data-name="Floor Phenyl 5L" placeholder="0" min="0">
-                <input type="number" class="item-price" value="219" placeholder="₹" min="0">
-            </div>
-        </div>
-
-        <div class="product-row">
-            <div class="product-name">Glass Cleaner (5L)</div>
-            <div class="product-inputs">
-                <input type="number" class="item-qty" data-name="Glass Cleaner 5L" placeholder="0" min="0">
-                <input type="number" class="item-price" value="269" placeholder="₹" min="0">
-            </div>
-        </div>
-
-        <div class="product-row">
-            <div class="product-name">Toilet Cleaner (5L)</div>
-            <div class="product-inputs">
-                <input type="number" class="item-qty" data-name="Toilet Cleaner 5L" placeholder="0" min="0">
-                <input type="number" class="item-price" value="269" placeholder="₹" min="0">
-            </div>
-        </div>
-
-        <div class="bill-card">
-            <div class="bill-row subtotal">
-                <span>Item Subtotal</span>
-                <span>₹<span id="displaySubtotal">0</span></span>
+            <div class="input-group">
+                <label>Customer Name *</label>
+                <input type="text" id="name" required placeholder="Enter name">
             </div>
 
-            <div class="toggle-btn" id="toggleExtrasBtn">▼ Add Discount / Charges</div>
+            <div class="input-group">
+                <label>Mobile Number *</label>
+                <input type="tel" id="phone" required placeholder="10-digit number">
+            </div>
 
-            <div class="hidden-fields" id="extrasSection">
-                <div class="extras-grid">
-                    <div>
-                        <label>Delivery / Extra (₹)</label>
-                        <input type="number" id="extraCharges" placeholder="0" min="0" style="padding: 8px; font-size: 14px;">
-                    </div>
-                    <div>
-                        <label>Discount</label>
-                        <div class="discount-flex">
-                            <select id="discountType">
-                                <option value="flat">₹</option>
-                                <option value="percent">%</option>
-                            </select>
-                            <input type="number" id="discountAmount" placeholder="0" min="0">
-                        </div>
-                    </div>
+            <div class="section-title">Products</div>
+
+            <div class="product-header">
+                <div style="flex: 2;"></div>
+                <div class="header-labels"><span>Qty</span><span>Price</span></div>
+            </div>
+
+            <div class="product-row">
+                <div class="product-name">Floor Cleaner (5L)</div>
+                <div class="product-inputs">
+                    <input type="number" class="item-qty" data-name="Floor Cleaner 5L" placeholder="0" min="0">
+                    <input type="number" class="item-price" value="269" min="0">
+                </div>
+            </div>
+            <div class="product-row">
+                <div class="product-name">Floor Phenyl (5L)</div>
+                <div class="product-inputs">
+                    <input type="number" class="item-qty" data-name="Floor Phenyl 5L" placeholder="0" min="0">
+                    <input type="number" class="item-price" value="219" min="0">
+                </div>
+            </div>
+            <div class="product-row">
+                <div class="product-name">Glass Cleaner (5L)</div>
+                <div class="product-inputs">
+                    <input type="number" class="item-qty" data-name="Glass Cleaner 5L" placeholder="0" min="0">
+                    <input type="number" class="item-price" value="269" min="0">
+                </div>
+            </div>
+            <div class="product-row">
+                <div class="product-name">Toilet Cleaner (5L)</div>
+                <div class="product-inputs">
+                    <input type="number" class="item-qty" data-name="Toilet Cleaner 5L" placeholder="0" min="0">
+                    <input type="number" class="item-price" value="269" min="0">
                 </div>
             </div>
 
-            <div class="grand-total-row">
-                <span>Grand Total</span>
-                <span>₹<span id="displayGrandTotal">0</span></span>
+            <div class="bill-card">
+                <div class="bill-row subtotal">
+                    <span>Item Subtotal</span><span>₹<span id="displaySubtotal">0</span></span>
+                </div>
+                <div class="toggle-btn" id="toggleExtrasBtn">▼ Add Discount / Charges</div>
+                <div class="hidden-fields" id="extrasSection">
+                    <div class="extras-grid">
+                        <div>
+                            <label>Extra Charges (₹)</label>
+                            <input type="number" id="extraCharges" placeholder="0" min="0" style="padding: 8px;">
+                        </div>
+                        <div>
+                            <label>Discount</label>
+                            <div class="discount-flex">
+                                <select id="discountType"><option value="flat">₹</option><option value="percent">%</option></select>
+                                <input type="number" id="discountAmount" placeholder="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grand-total-row">
+                    <span>Grand Total</span><span>₹<span id="displayGrandTotal">0</span></span>
+                </div>
             </div>
-        </div>
 
-        <div style="margin-top: 20px; display: flex; justify-content: center;">
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAACioid7KgPiW3YB3"></div>
-        </div>
+            <button type="button" id="reviewBtn" style="margin-top: 20px;">Review Order</button>
+            <div id="status" style="text-align: center; margin-top: 15px; font-weight: bold;"></div>
+        </form>
+    </div>
+</div>
 
-        <button type="submit" id="submitBtn">Send Order to System</button>
-        <div id="status"></div>
-    </form>
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal('previewModal')">✕</button>
+        <h2 style="margin-top:0;">Order Preview</h2>
+        <div id="previewDetails"></div>
+        <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal('previewModal')">Edit</button>
+            <button type="button" id="confirmSubmitBtn">Confirm & Submit</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="historyModal">
+    <div class="modal-content">
+        <button class="close-btn" onclick="closeModal('historyModal')">✕</button>
+        <h2 style="margin-top:0;">Delivery History</h2>
+        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Search past offline orders by phone number.</p>
+        <div class="search-box">
+            <input type="tel" id="searchPhone" placeholder="Enter phone number">
+            <button id="searchBtn" style="width: 100px;">Search</button>
+        </div>
+        <div id="historyResults" style="margin-top: 15px;">
+            </div>
+    </div>
 </div>
 
 <script>
-// IMPORTANT: Wrap ALL script logic inside DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; // PASTE NEW URL HERE
+    let validatedPin = ""; 
+    let validatedTurnstile = "";
 
-    // --- UI Toggle Logic ---
+    // ==========================================
+    // 1. OVERLAY & SECURITY LOGIC
+    // ==========================================
+    const overlay = document.getElementById('pinOverlay');
+    const overlayPinInput = document.getElementById('overlayPinInput');
+    const overlayUnlockBtn = document.getElementById('overlayUnlockBtn');
+    const pinErrorMsg = document.getElementById('pinErrorMsg');
+
+    overlayPinInput.focus();
+
+    overlayPinInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') overlayUnlockBtn.click();
+    });
+
+    overlayUnlockBtn.addEventListener('click', function() {
+        const enteredPin = overlayPinInput.value.trim();
+        const tsToken = document.querySelector('[name="cf-turnstile-response"]');
+
+        if (!enteredPin) return pinErrorMsg.innerText = "Please enter a PIN.";
+        if (!tsToken || !tsToken.value) return pinErrorMsg.innerText = "Please complete the security check.";
+
+        overlayUnlockBtn.innerText = "Verifying...";
+        overlayUnlockBtn.disabled = true;
+
+        // We send a dummy order just to trigger the PIN and Turnstile check on the server
+        const verifyData = {
+            formType: "offline_order", pin: enteredPin, turnstileToken: tsToken.value, 
+            name: "VERIFY_AUTH", phone: "000", orderDetails: "", subtotal: 0, discount: 0, extra: 0, total: 0
+        };
+
+        fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify(verifyData), headers: { "Content-Type": "text/plain;charset=utf-8" } })
+        .then(res => res.json())
+        .then(result => {
+            if (result.result === "success") {
+                validatedPin = enteredPin;
+                validatedTurnstile = tsToken.value; // Store the valid token
+                overlay.style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('topBar').style.display = 'flex';
+            } else {
+                pinErrorMsg.innerText = result.error;
+                overlayPinInput.value = '';
+                if(typeof turnstile !== 'undefined') turnstile.reset();
+            }
+        })
+        .catch(() => { pinErrorMsg.innerText = "Connection failed. Check internet."; })
+        .finally(() => { overlayUnlockBtn.innerText = "Unlock System"; overlayUnlockBtn.disabled = false; });
+    });
+
+    // ==========================================
+    // 2. FORM UI & CALCULATION LOGIC
+    // ==========================================
     const extrasSection = document.getElementById('extrasSection');
     const toggleBtn = document.getElementById('toggleExtrasBtn');
     
-    if(toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            if (extrasSection.style.display === 'block') {
-                extrasSection.style.display = 'none';
-                toggleBtn.innerText = '▼ Add Discount / Charges';
-            } else {
-                extrasSection.style.display = 'block';
-                toggleBtn.innerText = '▲ Hide Extra Fields';
-            }
-        });
-    }
-
-    // --- Calculation Logic ---
-    const qtyInputs = document.querySelectorAll('.item-qty');
-    const priceInputs = document.querySelectorAll('.item-price');
-    const extraInput = document.getElementById('extraCharges');
-    const discountInput = document.getElementById('discountAmount');
-    const discountType = document.getElementById('discountType');
-    
-    const displaySubtotal = document.getElementById('displaySubtotal');
-    const displayGrandTotal = document.getElementById('displayGrandTotal');
-
-    let subtotal = 0;
-    let grandTotal = 0;
-    let calculatedDiscount = 0;
+    toggleBtn.addEventListener('click', () => {
+        const isHidden = extrasSection.style.display === 'none' || extrasSection.style.display === '';
+        extrasSection.style.display = isHidden ? 'block' : 'none';
+        toggleBtn.innerText = isHidden ? '▲ Hide Extra Fields' : '▼ Add Discount / Charges';
+    });
 
     function calculateTotal() {
-        subtotal = 0;
-        
+        let subtotal = 0;
         document.querySelectorAll('.product-row').forEach(row => {
             const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
             const price = parseFloat(row.querySelector('.item-price').value) || 0;
             subtotal += (qty * price);
         });
         
-        const extra = parseFloat(extraInput.value) || 0;
-        const rawDiscountValue = parseFloat(discountInput.value) || 0;
+        const extra = parseFloat(document.getElementById('extraCharges').value) || 0;
+        const rawDiscountValue = parseFloat(document.getElementById('discountAmount').value) || 0;
+        const discType = document.getElementById('discountType').value;
         
-        if (discountType && discountType.value === 'percent') {
-            calculatedDiscount = subtotal * (rawDiscountValue / 100);
-        } else {
-            calculatedDiscount = rawDiscountValue;
-        }
+        let calculatedDiscount = (discType === 'percent') ? (subtotal * (rawDiscountValue / 100)) : rawDiscountValue;
         
-        grandTotal = subtotal + extra - calculatedDiscount;
+        let grandTotal = subtotal + extra - calculatedDiscount;
         if (grandTotal < 0) grandTotal = 0;
 
-        if (displaySubtotal) displaySubtotal.innerText = subtotal;
-        if (displayGrandTotal) displayGrandTotal.innerText = Math.round(grandTotal); 
+        document.getElementById('displaySubtotal').innerText = subtotal;
+        document.getElementById('displayGrandTotal').innerText = Math.round(grandTotal); 
+
+        // Store values for submission
+        document.getElementById('finalSubtotal').value = subtotal;
+        document.getElementById('finalDiscount').value = Math.round(calculatedDiscount);
+        document.getElementById('finalExtra').value = extra;
+        document.getElementById('finalGrandTotal').value = Math.round(grandTotal);
     }
 
-    qtyInputs.forEach(input => input.addEventListener('input', calculateTotal));
-    priceInputs.forEach(input => input.addEventListener('input', calculateTotal));
-    if (extraInput) extraInput.addEventListener('input', calculateTotal);
-    if (discountInput) discountInput.addEventListener('input', calculateTotal);
-    if (discountType) discountType.addEventListener('change', calculateTotal); 
+    document.querySelectorAll('.item-qty, .item-price, #extraCharges, #discountAmount').forEach(el => el.addEventListener('input', calculateTotal));
+    document.getElementById('discountType').addEventListener('change', calculateTotal); 
 
-    // --- Form Submission Logic ---
-    const offlineForm = document.getElementById("offlineForm");
-    
-    if (offlineForm) {
-        offlineForm.addEventListener("submit", function(e) {
-            e.preventDefault();
-            
-            const statusDiv = document.getElementById("status");
-            const submitBtn = document.getElementById("submitBtn");
-            
-            const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
-            if (!turnstileResponse || !turnstileResponse.value) {
-                if(statusDiv) {
-                    statusDiv.style.color = "#dc2626";
-                    statusDiv.innerText = "Please complete the security check.";
-                }
-                return;
-            }
+    // ==========================================
+    // 3. PREVIEW & SUBMISSION LOGIC
+    // ==========================================
+    window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; }
 
-            let orderDetailsString = "";
-            document.querySelectorAll('.product-row').forEach(row => {
-                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-                const price = parseFloat(row.querySelector('.item-price').value) || 0;
-                const name = row.querySelector('.item-qty').getAttribute('data-name');
-                if (qty > 0) {
-                    orderDetailsString += `${qty}x ${name} (₹${price})\n`; 
-                }
-            });
+    document.getElementById('reviewBtn').addEventListener('click', function() {
+        // Validation
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        if (!name || !phone) return alert("Customer Name and Phone are required.");
 
-            const extra = parseFloat(extraInput ? extraInput.value : 0) || 0;
-            const rawDiscountValue = parseFloat(discountInput ? discountInput.value : 0) || 0;
-
-            if (extra > 0) orderDetailsString += `\n➕ Extra Charges: ₹${extra}`;
-            if (rawDiscountValue > 0) {
-                if (discountType && discountType.value === 'percent') {
-                    orderDetailsString += `\n➖ Discount: ${rawDiscountValue}% (₹${Math.round(calculatedDiscount)})`;
-                } else {
-                    orderDetailsString += `\n➖ Discount: ₹${rawDiscountValue}`;
-                }
-            }
-
-            if (orderDetailsString.trim() === "") {
-                orderDetailsString = "No specific items logged.";
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Processing...";
-            if(statusDiv) statusDiv.innerText = "";
-
-            const staffPinElement = document.getElementById("staffPin");
-            const nameElement = document.getElementById("name");
-            const phoneElement = document.getElementById("phone");
-
-            const data = {
-                formType: "offline_order",
-                pin: staffPinElement ? staffPinElement.value.trim() : "", 
-                name: nameElement ? nameElement.value.trim() : "",
-                phone: phoneElement ? phoneElement.value.trim() : "",
-                orderDetails: orderDetailsString.trim(),
-                subtotal: subtotal, 
-                total: Math.round(grandTotal),  
-                turnstileToken: turnstileResponse.value
-            };
-
-            const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
-
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: { "Content-Type": "text/plain;charset=utf-8" }
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.result === "success") {
-                    if(statusDiv) {
-                        statusDiv.style.color = "#16a34a";
-                        statusDiv.innerText = "✅ Order successfully logged!";
-                    }
-                    
-                    const savedPin = staffPinElement ? staffPinElement.value : "";
-                    offlineForm.reset();
-                    if(staffPinElement) staffPinElement.value = savedPin;
-                    
-                    calculateTotal(); 
-                    if(typeof turnstile !== 'undefined') turnstile.reset(); 
-                    if(extrasSection) extrasSection.style.display = 'none'; 
-                    if(toggleBtn) toggleBtn.innerText = '▼ Add Discount / Charges';
-                } else {
-                    if(statusDiv) {
-                        statusDiv.style.color = "#dc2626";
-                        statusDiv.innerText = "Error: " + result.error;
-                    }
-                    if(typeof turnstile !== 'undefined') turnstile.reset();
-                }
-            })
-            .catch(error => {
-                if(statusDiv) {
-                    statusDiv.style.color = "#dc2626";
-                    statusDiv.innerText = "Failed to connect to server.";
-                }
-                if(typeof turnstile !== 'undefined') turnstile.reset();
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Send Order to System";
-            });
+        let details = "";
+        document.querySelectorAll('.product-row').forEach(row => {
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value) || 0;
+            if (qty > 0) details += `${qty}x ${row.querySelector('.item-qty').dataset.name} (@₹${price})\n`;
         });
-    }
+        
+        if (details === "") return alert("Please add at least one product.");
+        document.getElementById('finalDetailsString').value = details.trim();
 
-}); // END OF DOMContentLoaded WRAPPER
+        // Build Preview Text
+        const sub = document.getElementById('finalSubtotal').value;
+        const disc = document.getElementById('finalDiscount').value;
+        const ext = document.getElementById('finalExtra').value;
+        const gt = document.getElementById('finalGrandTotal').value;
+
+        let previewHTML = `<b>Name:</b> ${name}\n<b>Phone:</b> ${phone}\n\n<b>Items:</b>\n${details}\n------------------\n<b>Subtotal:</b> ₹${sub}`;
+        if(disc > 0) previewHTML += `\n<b>Discount:</b> -₹${disc}`;
+        if(ext > 0) previewHTML += `\n<b>Extra:</b> +₹${ext}`;
+        previewHTML += `\n\n<b style="font-size:16px; color:#0056b3;">Grand Total: ₹${gt}</b>`;
+
+        document.getElementById('previewDetails').innerHTML = previewHTML;
+        document.getElementById('previewModal').style.display = 'flex';
+    });
+
+    document.getElementById('confirmSubmitBtn').addEventListener('click', function() {
+        const confirmBtn = document.getElementById('confirmSubmitBtn');
+        const statusDiv = document.getElementById('status');
+        
+        confirmBtn.disabled = true; confirmBtn.innerText = "Submitting...";
+        
+        const data = {
+            formType: "offline_order", pin: validatedPin, turnstileToken: validatedTurnstile,
+            name: document.getElementById('name').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            orderDetails: document.getElementById('finalDetailsString').value,
+            subtotal: document.getElementById('finalSubtotal').value,
+            discount: document.getElementById('finalDiscount').value,
+            extra: document.getElementById('finalExtra').value,
+            total: document.getElementById('finalGrandTotal').value
+        };
+
+        fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "text/plain;charset=utf-8" } })
+        .then(res => res.json())
+        .then(result => {
+            if (result.result === "success") {
+                document.getElementById('offlineForm').reset();
+                calculateTotal();
+                closeModal('previewModal');
+                statusDiv.style.color = "#16a34a"; statusDiv.innerText = "✅ Order successfully logged!";
+                setTimeout(() => { statusDiv.innerText = ""; }, 5000);
+            } else {
+                alert("Error: " + result.error);
+                if (result.error.includes("LOCKED")) location.reload(); // Force reload to show lock screen
+            }
+        })
+        .catch(() => alert("Connection error. Try again."))
+        .finally(() => { confirmBtn.disabled = false; confirmBtn.innerText = "Confirm & Submit"; });
+    });
+
+    // ==========================================
+    // 4. HISTORY SEARCH LOGIC
+    // ==========================================
+    document.getElementById('openHistoryBtn').addEventListener('click', function() {
+        document.getElementById('historyModal').style.display = 'flex';
+        document.getElementById('historyResults').innerHTML = "";
+        document.getElementById('searchPhone').value = "";
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        const phone = document.getElementById('searchPhone').value.trim();
+        const resultsDiv = document.getElementById('historyResults');
+        if(!phone) return;
+
+        this.innerText = "..."; this.disabled = true;
+        resultsDiv.innerHTML = "<p style='text-align:center;'>Searching...</p>";
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getHistory", phone: phone }),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.result === "success" && data.history.length > 0) {
+                let html = "";
+                data.history.forEach(order => {
+                    const dateObj = new Date(order.date);
+                    const formattedDate = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    html += `<div class="history-card">
+                                <div class="h-date">${formattedDate}</div>
+                                <div><b>Name:</b> ${order.name}</div>
+                                <div style="white-space: pre-wrap; margin-top:5px; font-family:monospace;">${order.details}</div>
+                                <div class="h-total">Total Paid: ₹${order.total}</div>
+                             </div>`;
+                });
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = "<p style='text-align:center; color:#666;'>No orders found for this number.</p>";
+            }
+        })
+        .catch(() => resultsDiv.innerHTML = "<p style='color:red;'>Error fetching history.</p>")
+        .finally(() => { this.innerText = "Search"; this.disabled = false; });
+    });
+
+});
 </script>
-
 </body>
 </html>
