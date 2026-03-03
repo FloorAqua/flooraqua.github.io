@@ -284,6 +284,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ==========================================
+    // SMART INPUT LOGIC (Auto-clear zeros)
+    // ==========================================
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        // When user clicks/taps into the field
+        input.addEventListener('focus', function() {
+            if (this.value === '0') {
+                this.value = ''; // Instantly clear it for fast typing
+            } else {
+                this.select(); // If it's a price like 269, highlight it so typing overwrites it
+            }
+        });
+
+        // When user clicks out of the field
+        input.addEventListener('blur', function() {
+            if (this.value === '') {
+                this.value = '0'; // Put the zero back safely if left blank
+                calculateTotal(); // Update the math
+            }
+        });
+    });
+
+    // ==========================================
     // 2. CALCULATION & TOGGLE LOGIC
     // ==========================================
     const extrasSection = document.getElementById('extrasSection');
@@ -367,8 +389,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusDiv = document.getElementById('status');
         const tsTokenInput = document.querySelector('[name="cf-turnstile-response"]');
         
-        // This is optional since Turnstile isn't strictly checked for staff in the backend, 
-        // but it's good practice to keep it if you want the visual check on the form.
         if (!tsTokenInput || !tsTokenInput.value) { 
             alert("Please complete the security check."); 
             return; 
@@ -412,9 +432,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ==========================================
-    // 4. HISTORY SEARCH LOGIC (Updated)
+    // 4. HISTORY SEARCH LOGIC 
     // ==========================================
-    
     function fetchHistory(payload, buttonElement) {
         const resultsDiv = document.getElementById('historyResults');
         const originalText = buttonElement.innerText;
