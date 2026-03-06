@@ -13,13 +13,6 @@
 
   <script src="https://cdn.tailwindcss.com"></script> 
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <script 
-  async 
-  crossorigin="anonymous" 
-  data-clerk-publishable-key="pk_live_Y2xlcmsuZmxvb3JhcXVhLmdpdGh1Yi5pbyQ" 
-  src="https://clerk.flooraqua.github.io/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" 
-  type="text/javascript">
-</script>
   
   <style>
     html { scroll-behavior: smooth; }
@@ -73,7 +66,7 @@
           <button onclick="window.location.href='tel:+916398138894'" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-1.5 px-4 rounded-full shadow-md hover:bg-gray-100 transition text-sm">
             Call
           </button>
-          <a href="login.html" class="account-link inline-flex items-center justify-center w-9 h-9 bg-white/20 text-white rounded-full hover:bg-white/30 transition">
+          <a href="login.html" class="account-link relative inline-flex items-center justify-center w-9 h-9 bg-white/20 text-white rounded-full hover:bg-white/30 transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
           </a>
         </div>
@@ -96,7 +89,7 @@
           Cart <span id="desktopCartCount" class="bg-indigo-600 text-white text-[11px] px-2 py-0.5 rounded-full ml-1">0</span>
         </button>
 
-        <a href="login.html" class="account-link inline-flex items-center justify-center w-11 h-11 bg-white/20 text-white rounded-xl hover:bg-white/30 transition shadow-sm">
+        <a href="login.html" class="account-link relative inline-flex items-center justify-center w-11 h-11 bg-white/20 text-white rounded-xl hover:bg-white/30 transition shadow-sm">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
         </a>
       </div>
@@ -397,6 +390,53 @@
     </div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+    // 🔑 YOUR UNIQUE FLOORAQUA CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyCx_gDD74ZnTeIhWHSG42ExK67fUQaNNQE",
+      authDomain: "flooraqua-2e835.firebaseapp.com",
+      projectId: "flooraqua-2e835",
+      storageBucket: "flooraqua-2e835.firebasestorage.app",
+      messagingSenderId: "591654459926",
+      appId: "1:591654459926:web:1d9d8615ee4e71c39df337"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Expose global variables so your checkout script can read the auth state
+    window.firebaseAuthLoaded = false;
+    window.currentUserEmail = null;
+
+    // Listen for login state changes
+    onAuthStateChanged(auth, (user) => {
+      window.firebaseAuthLoaded = true;
+      const accountLinks = document.querySelectorAll('.account-link');
+      
+      if (user) {
+        window.currentUserEmail = user.email;
+        // Direct logged-in users straight to their dashboard
+        accountLinks.forEach(link => {
+          link.href = 'account.html';
+          // Add a subtle green dot to the account icon to show they are logged in
+          link.innerHTML = `
+            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-indigo-600 rounded-full"></span>`;
+        });
+      } else {
+        window.currentUserEmail = null;
+        // Keep pointing to login for guests
+        accountLinks.forEach(link => {
+          link.href = 'login.html';
+          link.innerHTML = `<svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>`;
+        });
+      }
+    });
+  </script>
+
   <script>
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
     window.scrollTo(0, 0);
@@ -535,7 +575,7 @@
       const desktopCount = document.getElementById('desktopCartCount');
       if (desktopCount) desktopCount.innerText = totalQty;
 
-      const mobileBar = document.getElementById('mobileBar');
+      const mobileBar = document.getElementById('mobileCartBar');
       if (mobileBar) {
         if (totalQty > 0) {
           mobileBar.classList.remove('translate-y-full');
@@ -762,25 +802,20 @@
     async function openCheckoutModal() { 
       if(cart.length === 0) return; 
 
-      // 1. Safety Check: If Clerk hasn't downloaded yet, tell them to wait
-      if (typeof window.Clerk === 'undefined') {
+      // 1. Safety Check: If Firebase hasn't loaded yet
+      if (typeof window.firebaseAuthLoaded === 'undefined' || !window.firebaseAuthLoaded) {
         showToast("Secure connection loading... please wait a second! ⏳");
         return;
       }
 
-      // 2. Wait for Clerk to initialize
-      if (!window.Clerk.loaded) {
-        await window.Clerk.load();
-      }
-
-      // 3. Auth Check
-      if (!window.Clerk.user) {
+      // 2. Auth Check: Kick out unverified users
+      if (!window.currentUserEmail) {
         alert("Please log in or create a free account to securely place your order! 🔒");
         window.location.href = "login.html";
         return; 
       }
 
-      const userEmail = window.Clerk.user.primaryEmailAddress.emailAddress;
+      const userEmail = window.currentUserEmail;
 
       // 3. UI: Open Modal & Lock Email
       toggleCart(false); 
@@ -924,4 +959,3 @@
   </script>
 </body>
 </html>
-
