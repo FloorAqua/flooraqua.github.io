@@ -13,6 +13,13 @@
 
   <script src="https://cdn.tailwindcss.com"></script> 
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <script 
+    async 
+    crossorigin="anonymous" 
+    data-clerk-publishable-key="pk_live_Y2xlcmsuZmxvb3JhcXVhLmdpdGh1Yi5pbyQ" 
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" 
+    type="text/javascript">
+  </script>
   
   <style>
     html { scroll-behavior: smooth; }
@@ -342,11 +349,11 @@
       </div>
       
       <form id="checkoutForm" onsubmit="finalizeOrder(event)" class="overflow-y-auto flex-grow px-1 space-y-4 pb-2">
-        <div><input type="text" id="checkoutCustName" required placeholder="Full Name *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm"></div>
-        <div><input type="tel" id="checkoutCustPhone" required pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit mobile number" placeholder="Mobile Number (10 digits) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
+        <div><input type="text" id="custName" required placeholder="Full Name *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm"></div>
+        <div><input type="tel" id="custPhone" required pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit mobile number" placeholder="Mobile Number (10 digits) *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm" oninput="this.value = this.value.replace(/[^0-9]/g, '')"></div>
         <div>
-          <input type="email" id="checkoutCustEmail" required placeholder="Email Address *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
-          <p id="checkoutEmailError" class="text-red-500 text-xs mt-1 hidden font-medium pl-1">Please enter a valid email.</p>
+          <input type="email" id="custEmail" required placeholder="Email Address *" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+          <p id="emailError" class="text-red-500 text-xs mt-1 hidden font-medium pl-1">Please enter a valid email.</p>
         </div>
         
         <div class="space-y-3 border-t pt-3 mt-2">
@@ -366,7 +373,7 @@
       </form>
       
       <div class="shrink-0 pt-4 mt-2 border-t bg-white">
-        <button type="submit" id="checkoutSubmitBtn" form="checkoutForm" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base flex justify-center items-center">
+        <button type="submit" id="submitBtn" form="checkoutForm" class="w-full bg-green-500 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-green-600 transition text-sm md:text-base flex justify-center items-center">
           Place Order (Cash on Delivery)
         </button>
         <button type="button" onclick="closeCheckout()" class="w-full mt-3 text-gray-500 text-sm font-medium hover:text-gray-700 py-2">
@@ -528,7 +535,7 @@
       const desktopCount = document.getElementById('desktopCartCount');
       if (desktopCount) desktopCount.innerText = totalQty;
 
-      const mobileBar = document.getElementById('mobileCartBar');
+      const mobileBar = document.getElementById('mobileBar');
       if (mobileBar) {
         if (totalQty > 0) {
           mobileBar.classList.remove('translate-y-full');
@@ -752,41 +759,75 @@
       updateCartUI(); 
     }
 
-    function openCheckoutModal() { 
-  if(cart.length === 0) return; 
+    async function openCheckoutModal() { 
+      if(cart.length === 0) return; 
 
-  // 1. Check if the user is logged in by looking for their email in memory
-  const userEmail = localStorage.getItem('floorAquaUserEmail');
+      // 1. Safety Check: If Clerk hasn't downloaded yet, tell them to wait
+      if (typeof window.Clerk === 'undefined') {
+        showToast("Secure connection loading... please wait a second! ⏳");
+        return;
+      }
 
-  if (!userEmail) {
-    // 2. If they are NOT logged in, show an alert and redirect them
-    alert("Please log in or create a free account to securely place your order! 🔒");
-    window.location.href = "login.html";
-    return; // Stop the function here so the checkout modal doesn't open
-  }
+      // 2. Wait for Clerk to initialize
+      if (!window.Clerk.loaded) {
+        await window.Clerk.load();
+      }
 
-  // 3. If they ARE logged in, proceed to open the checkout modal
-  toggleCart(false); 
-  document.getElementById('checkoutModal').style.display = 'flex'; 
+      // 3. Auth Check
+      if (!window.Clerk.user) {
+        alert("Please log in or create a free account to securely place your order! 🔒");
+        window.location.href = "login.html";
+        return; 
+      }
 
-  // 4. Auto-fill the email input box with their verified account email
-  const emailInput = document.getElementById('custEmail');
-  if (emailInput) {
-    emailInput.value = userEmail;
+      const userEmail = window.Clerk.user.primaryEmailAddress.emailAddress;
+
+      // 3. UI: Open Modal & Lock Email
+      toggleCart(false); 
+      document.getElementById('checkoutModal').style.display = 'flex'; 
+      const emailInput = document.getElementById('custEmail');
+      if (emailInput) {
+        emailInput.value = userEmail;
+        emailInput.readOnly = true;
+        emailInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+      }
+
+      // 4. ✨ NEW: AUTO-FILL SAVED ADDRESS FROM GOOGLE SHEETS ✨
+      const savedData = localStorage.getItem('floorAquaSavedAddress');
+      if (savedData) {
+        fillAddressFields(JSON.parse(savedData));
+      } else {
+        try {
+          const response = await fetch(GOOGLE_WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "getUserProfile", email: userEmail })
+          });
+          const data = await response.json();
+          if (data.result === "success" && data.profile) {
+            fillAddressFields(data.profile);
+            localStorage.setItem('floorAquaSavedAddress', JSON.stringify(data.profile));
+          }
+        } catch (e) { console.log("Cloud address fetch skipped."); }
+      }
+    }
+
+    function fillAddressFields(p) {
+      if (p.name) document.getElementById('custName').value = p.name;
+      if (p.phone) document.getElementById('custPhone').value = p.phone;
+      if (p.street) document.getElementById('custStreet').value = p.street;
+      if (p.landmark) document.getElementById('custLandmark').value = p.landmark;
+      if (p.pincode) document.getElementById('custPincode').value = p.pincode;
+      if (p.district) document.getElementById('custDistrict').value = p.district;
+      if (p.state) document.getElementById('custState').value = p.state;
+    }
     
-    // 5. Lock the email box so they can't tamper with it
-    emailInput.readOnly = true;
-    emailInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
-  }
-}
-    
-    function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; document.getElementById('checkoutEmailError').classList.add('hidden');}
+    function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; document.getElementById('emailError').classList.add('hidden');}
     function closeThankYou() { document.getElementById('thankYouModal').style.display = 'none'; }
 
     async function finalizeOrder(e) {
       e.preventDefault();
       
-      const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
+      const turnstileResponse = e.target.querySelector('[name="cf-turnstile-response"]');
       if (!turnstileResponse || !turnstileResponse.value) {
         alert("Please complete the security check to prove you are human! 🛡️");
         return; 
@@ -815,18 +856,13 @@
 
       emailError.classList.add('hidden');
 
-      // =========================================================
-      // ✨ AUTO-SAVE PROFILE ON PURCHASE MAGIC ✨
-      // =========================================================
       const newProfileData = {
         name: name, phone: phone, street: street, 
         landmark: landmark, pincode: pincode, district: district, state: state
       };
       
-      // 1. Save to local browser memory instantly for a fast experience next time
       localStorage.setItem('floorAquaSavedAddress', JSON.stringify(newProfileData));
       
-      // 2. Secretly send to Google Sheets to save in their Cloud Profile!
       try {
         fetch(GOOGLE_WEB_APP_URL, {
           method: "POST", mode: "no-cors",
@@ -835,7 +871,6 @@
       } catch(err) {
         console.log("Background profile sync error", err);
       }
-      // =========================================================
 
       let fullAddress = street + (landmark ? `, Near ${landmark}` : '') + `, ${district}, ${state} - ${pincode}`;
 
@@ -863,7 +898,6 @@
         turnstileToken: turnstileResponse.value
       };
 
-      // Send the actual Order Data to Google Sheets
       try {
         fetch(GOOGLE_WEB_APP_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
