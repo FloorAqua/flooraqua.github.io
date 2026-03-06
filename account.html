@@ -209,10 +209,14 @@
         document.getElementById('userEmailDisplay').textContent = currentUserEmail;
         document.getElementById('userInitial').innerHTML = currentUserEmail.charAt(0).toUpperCase(); 
         
-        loadSavedProfile(); // ✨ Fetches the address from Google Sheets!
-        fetchUserOrders();  // ✨ Fetches the orders from Google Sheets!
+        // ✨ THE FIX: Make the container AND all fade-in elements visible immediately
+        pageContainer.classList.add('visible');
+        document.querySelectorAll('.fade-in').forEach(el => {
+          el.classList.add('visible');
+        });
         
-        setTimeout(() => pageContainer.classList.add('visible'), 50);
+        loadSavedProfile(); // Fetches address
+        fetchUserOrders();  // Fetches orders
       } else {
         window.location.replace("login.html"); 
       }
@@ -446,3 +450,4 @@
 </body>
 
 </html>
+
