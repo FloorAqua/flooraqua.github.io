@@ -62,28 +62,38 @@
           <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 md:h-12 w-auto object-contain bg-white rounded-full p-1">
           <span class="ml-2 md:ml-3 text-xl md:text-2xl font-bold tracking-tight">FloorAqua</span>
         </a>
-        <button onclick="window.location.href='tel:+916398138894'" class="md:hidden inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-1.5 px-4 rounded-full shadow-md hover:bg-gray-100 transition text-sm">
-          Call Now 
-        </button>
+        <div class="flex items-center gap-2 md:hidden">
+          <button onclick="window.location.href='tel:+916398138894'" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-1.5 px-4 rounded-full shadow-md hover:bg-gray-100 transition text-sm">
+            Call
+          </button>
+          <a href="login.html" class="account-link inline-flex items-center justify-center w-9 h-9 bg-white/20 text-white rounded-full hover:bg-white/30 transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          </a>
+        </div>
       </div>
 
       <nav class="w-full md:w-auto md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-sm md:text-base justify-center gap-x-5 gap-y-2 mt-3 md:mt-0">
         <a href="index.html" class="text-indigo-200 hover:text-white transition pb-1">Home</a>
         <a href="product.html" class="text-indigo-200 hover:text-white transition pb-1">Products</a>
-        <a href="#top" class="text-white font-bold border-b-2 border-white transition pb-1">About</a>
+        <a href="about.html" class="text-indigo-200 hover:text-white transition pb-1">About</a>
         <a href="contact.html" class="text-indigo-200 hover:text-white transition pb-1">Contact</a>
       </nav>
 
-      <div class="hidden md:flex items-center gap-4 mt-4 md:mt-0" id="desktopCartArea">
+      <div class="hidden md:flex items-center gap-3 mt-4 md:mt-0">
         <button onclick="window.location.href='tel:+916398138894'" class="inline-flex items-center justify-center bg-white/20 text-white font-bold py-2.5 px-6 rounded-xl hover:bg-white/30 transition">
           Call Now
         </button>
-        <button onclick="toggleCart(true)" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-2.5 px-5 rounded-xl shadow-lg hover:bg-gray-100 transition gap-2">
+        
+        <button id="desktopCartArea" onclick="toggleCart(true)" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-2.5 px-5 rounded-xl shadow-lg hover:bg-gray-100 transition gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-          My Cart 
-          <span id="desktopCartCount" class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-0.5 rounded-md ml-1">0</span>
+          Cart <span id="desktopCartCount" class="bg-indigo-600 text-white text-[11px] px-2 py-0.5 rounded-full ml-1">0</span>
         </button>
+
+        <a href="login.html" class="account-link inline-flex items-center justify-center w-11 h-11 bg-white/20 text-white rounded-xl hover:bg-white/30 transition shadow-sm">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        </a>
       </div>
+
     </div>
   </header>
 
@@ -743,10 +753,32 @@
     }
 
     function openCheckoutModal() { 
-      if(cart.length === 0) return; 
-      toggleCart(false); 
-      document.getElementById('checkoutModal').style.display = 'flex'; 
-    }
+  if(cart.length === 0) return; 
+
+  // 1. Check if the user is logged in by looking for their email in memory
+  const userEmail = localStorage.getItem('floorAquaUserEmail');
+
+  if (!userEmail) {
+    // 2. If they are NOT logged in, show an alert and redirect them
+    alert("Please log in or create a free account to securely place your order! 🔒");
+    window.location.href = "login.html";
+    return; // Stop the function here so the checkout modal doesn't open
+  }
+
+  // 3. If they ARE logged in, proceed to open the checkout modal
+  toggleCart(false); 
+  document.getElementById('checkoutModal').style.display = 'flex'; 
+
+  // 4. Auto-fill the email input box with their verified account email
+  const emailInput = document.getElementById('custEmail');
+  if (emailInput) {
+    emailInput.value = userEmail;
+    
+    // 5. Lock the email box so they can't tamper with it
+    emailInput.readOnly = true;
+    emailInput.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+  }
+}
     
     function closeCheckout() { document.getElementById('checkoutModal').style.display = 'none'; document.getElementById('checkoutEmailError').classList.add('hidden');}
     function closeThankYou() { document.getElementById('thankYouModal').style.display = 'none'; }
@@ -754,27 +786,26 @@
     async function finalizeOrder(e) {
       e.preventDefault();
       
-      // Specifically targeting the checkout form's turnstile token
-      const turnstileResponse = e.target.querySelector('[name="cf-turnstile-response"]');
+      const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]');
       if (!turnstileResponse || !turnstileResponse.value) {
         alert("Please complete the security check to prove you are human! 🛡️");
         return; 
       }
 
-      const submitBtn = document.getElementById('checkoutSubmitBtn');
+      const submitBtn = document.getElementById('submitBtn');
       submitBtn.innerHTML = `Processing <svg class="animate-spin ml-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
       submitBtn.disabled = true; submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-      const name = document.getElementById('checkoutCustName').value.trim();
-      const phone = document.getElementById('checkoutCustPhone').value.trim();
-      const email = document.getElementById('checkoutCustEmail').value.trim();
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const email = document.getElementById('custEmail').value.trim();
       const street = document.getElementById('custStreet').value.trim();
       const landmark = document.getElementById('custLandmark').value.trim();
       const district = document.getElementById('custDistrict').value.trim();
       const state = document.getElementById('custState').value.trim();
       const pincode = document.getElementById('custPincode').value.trim();
 
-      const emailError = document.getElementById('checkoutEmailError');
+      const emailError = document.getElementById('emailError');
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         emailError.classList.remove('hidden'); 
@@ -783,6 +814,28 @@
       }
 
       emailError.classList.add('hidden');
+
+      // =========================================================
+      // ✨ AUTO-SAVE PROFILE ON PURCHASE MAGIC ✨
+      // =========================================================
+      const newProfileData = {
+        name: name, phone: phone, street: street, 
+        landmark: landmark, pincode: pincode, district: district, state: state
+      };
+      
+      // 1. Save to local browser memory instantly for a fast experience next time
+      localStorage.setItem('floorAquaSavedAddress', JSON.stringify(newProfileData));
+      
+      // 2. Secretly send to Google Sheets to save in their Cloud Profile!
+      try {
+        fetch(GOOGLE_WEB_APP_URL, {
+          method: "POST", mode: "no-cors",
+          body: JSON.stringify({ action: "saveUserProfile", email: email, profile: newProfileData })
+        });
+      } catch(err) {
+        console.log("Background profile sync error", err);
+      }
+      // =========================================================
 
       let fullAddress = street + (landmark ? `, Near ${landmark}` : '') + `, ${district}, ${state} - ${pincode}`;
 
@@ -810,6 +863,7 @@
         turnstileToken: turnstileResponse.value
       };
 
+      // Send the actual Order Data to Google Sheets
       try {
         fetch(GOOGLE_WEB_APP_URL, {
           method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" },
