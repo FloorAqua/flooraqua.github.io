@@ -3,175 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Log In | FloorAqua</title>
   
-  <title>Log In or Sign Up | FloorAqua</title>
-  <meta name="description" content="Securely log in or create a new FloorAqua account using your email. No passwords required.">
+  <meta name="description" content="Log in to your FloorAqua account to manage your premium cleaning supplies orders.">
   
-  <script src="https://cdn.tailwindcss.com"></script> 
+  <script src="https://cdn.tailwindcss.com"></script>
   
+  <script 
+    async 
+    crossorigin="anonymous" 
+    data-clerk-publishable-key="pk_live_Y2xlcmsuZmxvb3JhcXVhLmdpdGh1Yi5pbyQ" 
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" 
+    type="text/javascript">
+  </script>
+
   <style>
-    html { scroll-behavior: smooth; }
-    #pageContainer { opacity: 0; transition: opacity 0.4s ease-out; }
-    #pageContainer.visible { opacity: 1; }
-    .fade-in { opacity: 0; transform: translateY(15px); transition: all 0.6s ease-out; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    /* Smooth reveal animation */
+    #loginContainer { opacity: 0; transform: translateY(15px); transition: all 0.6s ease-out; }
+    #loginContainer.visible { opacity: 1; transform: translateY(0); }
+    
+    /* Subtle background glow effects to look premium */
+    .bg-blob {
+      position: absolute; width: 300px; height: 300px;
+      background: linear-gradient(to right, #4f46e5, #3b82f6);
+      border-radius: 50%; filter: blur(80px); opacity: 0.15; z-index: 0;
+    }
   </style>
 </head>
 
-<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+<body class="bg-gray-50 flex flex-col min-h-screen relative overflow-hidden font-sans">
 
-  <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto flex flex-wrap p-3 md:p-5 flex-col md:flex-row items-center justify-between">
-      <div class="flex justify-between items-center w-full md:w-auto">
-        <a href="index.html" class="flex title-font font-medium items-center text-white">
-          <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 md:h-12 w-auto object-contain bg-white rounded-full p-1">
-          <span class="ml-2 md:ml-3 text-xl md:text-2xl font-bold tracking-tight">FloorAqua</span>
-        </a>
-      </div>
-      <nav class="w-full md:w-auto md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-sm md:text-base justify-center gap-x-5 gap-y-2 mt-3 md:mt-0">
-        <a href="index.html" class="text-indigo-200 hover:text-white transition pb-1">Home</a>
-        <a href="product.html" class="text-indigo-200 hover:text-white transition pb-1">Products</a>
-        <a href="about.html" class="text-indigo-200 hover:text-white transition pb-1">About</a>
-        <a href="contact.html" class="text-indigo-200 hover:text-white transition pb-1">Contact</a>
-      </nav>
-    </div>
+  <div class="bg-blob top-[-10%] left-[-10%] hidden md:block"></div>
+  <div class="bg-blob bottom-[-10%] right-[-10%] bg-blue-400 hidden md:block"></div>
+
+  <header class="w-full p-4 md:p-6 relative z-10 flex justify-center md:justify-start">
+    <a href="index.html" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 transition font-bold text-sm md:text-base group bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-indigo-50">
+      <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Back to Store
+    </a>
   </header>
 
-  <div id="pageContainer" class="flex-grow flex items-center justify-center px-4 py-12 md:py-20">
-    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 w-full max-w-md p-6 md:p-10 fade-in relative overflow-hidden">
-      <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-blue-500"></div>
-
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+  <div class="flex-grow flex flex-col items-center justify-center p-4 relative z-10">
+    
+    <div id="loginContainer" class="w-full max-w-md flex flex-col items-center">
+      
+      <div class="text-center mb-6 md:mb-8">
+        <div class="inline-block bg-white p-3 md:p-4 rounded-full shadow-lg mb-4 border border-gray-100">
+          <img src="flooraqua.png" alt="FloorAqua Logo" class="w-12 h-12 md:w-14 md:h-14 object-contain">
         </div>
-        <h2 id="formTitle" class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">Log In or Sign Up</h2>
-        <p id="formSubtitle" class="text-sm md:text-base text-gray-500 mt-2">Enter your email to receive a secure, password-free access link.</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Welcome Back</h1>
+        <p class="text-gray-500 text-sm md:text-base font-medium">Sign in to manage your orders securely.</p>
       </div>
 
-      <div id="authMessage" class="hidden text-sm font-bold p-4 rounded-2xl mb-6 text-center"></div>
+      <div id="loader" class="flex flex-col items-center justify-center py-6">
+        <svg class="animate-spin h-8 w-8 text-indigo-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-indigo-600 font-bold text-sm">Securing connection...</p>
+      </div>
 
-      <form id="authForm" class="space-y-5">
-        <div>
-          <label for="userEmail" class="block text-sm font-bold text-gray-700 mb-1.5 pl-1">Email Address</label>
-          <input type="email" id="userEmail" required placeholder="you@example.com" class="text-base w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm bg-gray-50 focus:bg-white">
-        </div>
+      <div id="clerk-sign-in" class="w-full flex justify-center drop-shadow-2xl hidden transition-all duration-300"></div>
 
-        <button type="submit" id="authSubmitBtn" class="w-full bg-indigo-600 text-white font-bold py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-sm md:text-base flex justify-center items-center mt-2">
-          Send Login / Sign Up Link
-        </button>
-      </form>
-
-      <p class="mt-6 text-xs text-center text-gray-400 font-medium leading-relaxed px-2">
-        If you don't have an account, we will create one for you automatically. No passwords to remember!
-      </p>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+  <script>
+    window.addEventListener('load', async function () {
+      const loginContainer = document.getElementById('loginContainer');
+      const loader = document.getElementById('loader');
+      const clerkBox = document.getElementById('clerk-sign-in');
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCx_gDD74ZnTeIhWHSG42ExK67fUQaNNQE",
-      authDomain: "flooraqua-2e835.firebaseapp.com",
-      projectId: "flooraqua-2e835",
-      storageBucket: "flooraqua-2e835.firebasestorage.app",
-      messagingSenderId: "591654459926",
-      appId: "1:591654459926:web:1d9d8615ee4e71c39df337"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const msgBox = document.getElementById('authMessage');
-
-    // ==========================================
-    // 1. MAGIC LINK VERIFICATION (The Landing Logic)
-    // ==========================================
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-      let email = window.localStorage.getItem('emailForSignIn');
-      if (!email) {
-        email = window.prompt('Please provide your email for confirmation:');
-      }
-
-      if (email) {
-        msgBox.innerText = "Authenticating securely...";
-        msgBox.className = "bg-blue-50 text-blue-600 border border-blue-200 text-sm font-bold p-4 rounded-2xl mb-6 text-center block";
-        msgBox.classList.remove('hidden');
-
-        signInWithEmailLink(auth, email, window.location.href)
-          .then(() => {
-            window.localStorage.removeItem('emailForSignIn');
-            // State listener below handles the redirect to account.html
-          })
-          .catch((error) => {
-            msgBox.innerText = "Login link expired or invalid. Please request a new one.";
-            msgBox.className = "bg-red-50 text-red-600 border border-red-200 text-sm font-bold p-4 rounded-2xl mb-6 text-center block";
-            msgBox.classList.remove('hidden');
-          });
-      }
-    }
-
-    // ==========================================
-    // 2. AUTH STATE LISTENER (The Router)
-    // ==========================================
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Save email globally for the shopping cart
-        window.localStorage.setItem('floorAquaUserEmail', user.email);
-        // Take them to their dashboard
-        window.location.replace("account.html");
-      } else {
-        // Just show the login form for guests
-        document.getElementById('pageContainer').classList.add('visible');
-        document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-      }
-    });
-
-    // ==========================================
-    // 3. SEND MAGIC LINK (The Form Submission)
-    // ==========================================
-    document.getElementById('authForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const emailInput = document.getElementById('userEmail');
-      const email = emailInput.value.trim();
-      const btn = document.getElementById('authSubmitBtn');
-      
-      // Basic validation
-      if (!email || !email.includes('@')) {
-        alert("Please enter a valid email address!");
-        return;
-      }
-
-      // UI Loading state
-      btn.disabled = true;
-      btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-      msgBox.classList.add('hidden');
-
-      const actionCodeSettings = {
-        // Point this back to this exact page
-        url: 'https://flooraqua.github.io/login.html', 
-        handleCodeInApp: true
-      };
+      // Trigger the slide-up animation
+      requestAnimationFrame(() => { loginContainer.classList.add('visible'); });
 
       try {
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        window.localStorage.setItem('emailForSignIn', email);
-        
-        msgBox.innerHTML = `✅ Magic link sent to <b>${email}</b>!<br><span class="text-xs font-normal mt-1 block text-green-700">Check your inbox (and spam folder) to finish logging in.</span>`;
-        msgBox.className = "bg-green-50 text-green-800 border border-green-200 text-sm font-bold p-4 rounded-2xl mb-6 text-center block";
-        msgBox.classList.remove('hidden');
-        
-        btn.innerHTML = "Check Your Email!";
-        emailInput.value = "";
-      } catch (error) {
-        console.error(error);
-        msgBox.innerText = "Failed to send link. Please check your connection.";
-        msgBox.className = "bg-red-50 text-red-600 border border-red-200 text-sm font-bold p-4 rounded-2xl mb-6 text-center block";
-        msgBox.classList.remove('hidden');
-        btn.disabled = false;
-        btn.innerHTML = "Try Again";
+        // 1. Safety Check
+        if (typeof window.Clerk === 'undefined') {
+          loader.innerHTML = `<p class="text-red-500 font-bold text-sm">System connecting... please wait.</p>`;
+          return;
+        }
+
+        // 2. Wait for Clerk to initialize
+        if (!window.Clerk.loaded) {
+          await window.Clerk.load();
+        }
+
+        // 3. Logic Check
+        if (window.Clerk.user) {
+          // If already logged in, skip the login box and go straight to the dashboard
+          window.location.replace("account.html");
+        } else {
+          // If not logged in, hide our spinner and show Clerk's beautiful UI
+          loader.classList.add('hidden');
+          clerkBox.classList.remove('hidden');
+          
+          window.Clerk.mountSignIn(clerkBox, {
+            appearance: {
+              variables: { 
+                colorPrimary: '#4f46e5', // Matches your Tailwind Indigo
+                colorText: '#1f2937',
+                colorBackground: '#ffffff'
+              },
+              elements: {
+                card: 'shadow-none', // Removes double shadows
+                headerTitle: 'hidden', // We already have our own title above
+                headerSubtitle: 'hidden'
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Authentication Error: ", err);
+        loader.innerHTML = `<p class="text-red-500 font-bold text-sm">Connection failed. Please refresh the page.</p>`;
       }
     });
   </script>
