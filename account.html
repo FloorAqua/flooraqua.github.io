@@ -7,168 +7,213 @@
   <title>My Account | FloorAqua</title>
   <meta name="description" content="Manage your FloorAqua account and view your order history.">
   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.tailwindcss.com"></script> 
   
   <style>
+    body { font-family: 'Inter', sans-serif; }
     html { scroll-behavior: smooth; }
-    #pageContainer { opacity: 0; transition: opacity 0.4s ease-out; }
+    
+    /* Animations */
+    #pageContainer { opacity: 0; transition: opacity 0.5s ease-out; }
     #pageContainer.visible { opacity: 1; }
-    .fade-in { opacity: 0; transform: translateY(15px); transition: all 0.6s ease-out; }
+    .fade-in { opacity: 0; transform: translateY(10px); transition: all 0.5s ease-out; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
     
-    .loader { border: 3px solid #f3f3f3; border-top: 3px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+    /* Custom Loader */
+    .loader { border: 3px solid #e5e7eb; border-top: 3px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Hide scrollbar for category filters */
+    /* Hide scrollbar for category filters but keep functionality */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Smooth Input Autofill styling */
+    input:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 30px white inset !important;
+    }
   </style>
 </head>
 
-<body class="bg-gray-50 font-sans flex flex-col min-h-screen">
+<body class="bg-[#f8fafc] flex flex-col min-h-screen text-slate-800">
 
-  <div id="toastNotification" class="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl z-[120] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm md:text-base flex items-center gap-2">
+  <div id="toastNotification" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-[120] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm flex items-center gap-3">
+    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
     <span id="toastMessage">Details Saved Successfully!</span>
   </div>
 
-  <header class="text-white body-font bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto flex flex-wrap p-3 md:p-5 flex-col md:flex-row items-center justify-between">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="container mx-auto px-4 py-3 flex flex-wrap items-center justify-between lg:py-4">
       
-      <div class="flex justify-between items-center w-full md:w-auto">
-        <a href="index.html" class="flex title-font font-medium items-center text-white">
-          <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 md:h-12 w-auto object-contain bg-white rounded-full p-1">
-          <span class="ml-2 md:ml-3 text-xl md:text-2xl font-bold tracking-tight">FloorAqua</span>
+      <div class="flex justify-between items-center w-full lg:w-auto">
+        <a href="index.html" class="flex items-center gap-2 lg:gap-3 group">
+          <div class="bg-indigo-600 p-1.5 rounded-xl shadow-inner group-hover:bg-indigo-700 transition">
+            <img src="flooraqua.png" alt="FloorAqua Logo" class="h-8 w-8 object-contain" onerror="this.style.display='none'">
+          </div>
+          <span class="text-xl lg:text-2xl font-extrabold tracking-tight text-slate-900">FloorAqua</span>
         </a>
-        <div class="flex items-center gap-2 md:hidden">
-          <button onclick="window.location.href='tel:+916398138894'" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-1.5 px-4 rounded-full shadow-md hover:bg-gray-100 transition text-sm">
-            Call
+        <div class="flex lg:hidden">
+          <button onclick="window.location.href='tel:+916398138894'" class="bg-indigo-50 text-indigo-600 font-semibold py-1.5 px-4 rounded-lg text-sm border border-indigo-100 active:bg-indigo-100 transition">
+            Call Support
           </button>
         </div>
       </div>
 
-      <nav class="w-full md:w-auto md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-indigo-400 flex flex-wrap items-center text-sm md:text-base justify-center gap-x-5 gap-y-2 mt-3 md:mt-0">
-        <a href="index.html" class="text-indigo-200 hover:text-white transition pb-1">Home</a>
-        <a href="product.html" class="text-indigo-200 hover:text-white transition pb-1">Products</a>
-        <a href="about.html" class="text-indigo-200 hover:text-white transition pb-1">About</a>
-        <a href="contact.html" class="text-indigo-200 hover:text-white transition pb-1">Contact</a>
+      <nav class="w-full lg:w-auto flex flex-wrap items-center text-sm font-medium justify-center gap-4 lg:gap-8 mt-3 lg:mt-0 text-slate-500 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
+        <a href="index.html" class="hover:text-indigo-600 transition whitespace-nowrap">Home</a>
+        <a href="product.html" class="hover:text-indigo-600 transition whitespace-nowrap">Products</a>
+        <a href="about.html" class="hover:text-indigo-600 transition whitespace-nowrap">About</a>
+        <a href="contact.html" class="hover:text-indigo-600 transition whitespace-nowrap">Contact</a>
       </nav>
 
-      <div class="hidden md:flex items-center gap-3 mt-4 md:mt-0">
-        <button onclick="window.location.href='tel:+916398138894'" class="inline-flex items-center justify-center bg-white/20 text-white font-bold py-2.5 px-6 rounded-xl hover:bg-white/30 transition">
-          Call Now
-        </button>
-        <button onclick="window.location.href='product.html'" class="inline-flex items-center justify-center bg-white text-indigo-600 font-bold py-2.5 px-5 rounded-xl shadow-lg hover:bg-gray-100 transition gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-          Go to Shop 
+      <div class="hidden lg:flex items-center gap-4">
+        <button onclick="window.location.href='product.html'" class="inline-flex items-center justify-center bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow hover:bg-indigo-700 hover:shadow-md transition-all gap-2 text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          Shop Now
         </button>
       </div>
-
     </div>
   </header>
 
-  <div id="pageContainer" class="flex-grow container mx-auto px-4 py-10 md:py-16 max-w-5xl hidden">
+  <div id="pageContainer" class="flex-grow container mx-auto px-4 py-8 lg:py-12 max-w-6xl hidden">
     
-    <div class="mb-8 text-center md:text-left fade-in">
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">My Account</h1>
-      <p class="text-gray-500 mt-2">Manage your profile and track your FloorAqua orders.</p>
+    <div class="mb-8 lg:mb-10 text-center lg:text-left fade-in">
+      <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">My Account</h1>
+      <p class="text-slate-500 mt-1 text-sm lg:text-base">Manage your profile and track your orders seamlessly.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
       
-      <div class="space-y-6 fade-in md:col-span-1">
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
-          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-4 border-4 border-white shadow-md overflow-hidden">
+      <div class="lg:col-span-4 space-y-6 fade-in">
+        
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:p-8 flex flex-col items-center text-center relative overflow-hidden">
+          <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-500 to-blue-400 opacity-10"></div>
+          
+          <div class="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-5 border-4 border-white shadow-md overflow-hidden relative z-10">
             <img id="userAvatar" src="" alt="User Avatar" class="w-full h-full object-cover hidden">
             <span class="text-3xl font-bold text-indigo-600" id="userInitial"></span>
           </div>
-          <h2 class="text-lg font-bold text-gray-900" id="userDisplayName">Welcome back,</h2>
-          <p id="userEmailDisplay" class="text-sm text-gray-500 font-medium mt-1 truncate w-full">Loading email...</p>
+          
+          <h2 class="text-lg font-bold text-slate-900 relative z-10" id="userDisplayName">Welcome back,</h2>
+          <div class="bg-slate-50 border border-slate-100 rounded-lg px-3 py-1.5 mt-3 w-full relative z-10">
+            <p id="userEmailDisplay" class="text-sm text-slate-500 font-medium truncate w-full">Loading email...</p>
+          </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 space-y-3">
-          <button id="logoutBtn" class="w-full bg-gray-100 text-gray-700 font-bold py-3 px-4 rounded-xl hover:bg-gray-200 transition active:scale-95 text-sm flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Log Out
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+          <button id="logoutBtn" class="w-full bg-white border border-slate-200 text-slate-700 font-semibold py-3 px-4 rounded-xl hover:bg-slate-50 transition active:scale-[0.98] text-sm flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Sign Out
           </button>
         </div>
       </div>
 
-      <div class="md:col-span-2 space-y-6 fade-in">
+      <div class="lg:col-span-8 space-y-6 fade-in">
 
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 relative overflow-hidden transition-all">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:p-8 relative overflow-hidden transition-all">
           
-          <div id="profileLoadingState" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm transition-opacity duration-300">
-            <div class="loader mb-4"></div>
-            <p class="text-sm text-indigo-600 font-bold animate-pulse">Syncing your saved details...</p>
+          <div id="profileLoadingState" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm transition-opacity duration-300">
+            <div class="loader mb-3"></div>
+            <p class="text-sm text-indigo-600 font-semibold animate-pulse">Syncing details...</p>
           </div>
 
-          <div class="flex justify-between items-start cursor-pointer group" onclick="toggleAddressForm()">
-            <div>
-              <h3 class="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                🚚 Delivery Details
-              </h3>
-              <p id="addressSummaryText" class="text-sm text-gray-500 mt-1 font-medium group-hover:text-indigo-600 transition">Fetching address...</p>
+          <div class="flex justify-between items-center cursor-pointer group" onclick="toggleAddressForm()">
+            <div class="flex items-center gap-3">
+              <div class="bg-indigo-50 p-2.5 rounded-xl text-indigo-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">Delivery Address</h3>
+                <p id="addressSummaryText" class="text-xs lg:text-sm text-slate-500 mt-0.5 font-medium group-hover:text-indigo-600 transition line-clamp-1">Fetching address...</p>
+              </div>
             </div>
-            <button class="bg-gray-50 p-2 rounded-full text-gray-500 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">
+            <button class="bg-slate-50 p-2 rounded-full text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">
               <svg id="addressToggleIcon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
           </div>
           
-          <div id="addressFormContainer" class="hidden mt-6 pt-6 border-t border-gray-100">
-            <form id="profileForm" class="space-y-4 relative z-0">
-              <div class="flex flex-col md:flex-row gap-4">
-                <input type="text" id="profName" placeholder="Full Name *" required class="text-sm w-full md:w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
-                <input type="tel" id="profPhone" placeholder="Mobile Number *" pattern="[0-9]{10}" maxlength="10" required class="text-sm w-full md:w-1/2 p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <div id="addressFormContainer" class="hidden mt-6 pt-6 border-t border-slate-100">
+            <form id="profileForm" class="space-y-4 lg:space-y-5 relative z-0">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
+                <div class="space-y-1.5">
+                  <label class="text-xs font-semibold text-slate-500 ml-1">Full Name</label>
+                  <input type="text" id="profName" placeholder="John Doe" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300">
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-xs font-semibold text-slate-500 ml-1">Mobile Number</label>
+                  <input type="tel" id="profPhone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                </div>
               </div>
               
-              <input type="text" id="profStreet" placeholder="Street / House No. / Locality *" required class="text-sm w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
-              <input type="text" id="profLandmark" placeholder="Nearest Landmark / Area (Optional)" class="text-sm w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white">
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Street / House No. / Locality</label>
+                <input type="text" id="profStreet" placeholder="123 Main Street, Apt 4B" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300">
+              </div>
               
-              <div class="flex flex-col md:flex-row gap-4">
-                <div class="relative w-full md:w-1/3">
-                  <input type="tel" id="profPincode" placeholder="Pincode *" pattern="[0-9]{6}" maxlength="6" required class="text-sm w-full p-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition bg-gray-50 focus:bg-white" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) fetchProfileLocation(this.value);">
-                  <span id="profPincodeLoader" class="hidden absolute right-4 top-4 text-xs font-bold text-indigo-500">...</span>
+              <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Landmark (Optional)</label>
+                <input type="text" id="profLandmark" placeholder="Near City Mall" class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300">
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
+                <div class="space-y-1.5 relative">
+                  <label class="text-xs font-semibold text-slate-500 ml-1">Pincode</label>
+                  <input type="tel" id="profPincode" placeholder="6 digits" pattern="[0-9]{6}" maxlength="6" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) fetchProfileLocation(this.value);">
+                  <span id="profPincodeLoader" class="hidden absolute right-4 top-[38px] text-xs font-bold text-indigo-500 animate-pulse">Checking...</span>
                 </div>
-                <input type="text" id="profDistrict" placeholder="City / District *" required class="text-sm w-full md:w-1/3 p-3.5 border border-gray-300 rounded-xl outline-none bg-gray-100 text-gray-600 cursor-not-allowed" readonly>
-                <input type="text" id="profState" placeholder="State *" required class="text-sm w-full md:w-1/3 p-3.5 border border-gray-300 rounded-xl outline-none bg-gray-100 text-gray-600 cursor-not-allowed" readonly>
+                <div class="space-y-1.5">
+                  <label class="text-xs font-semibold text-slate-500 ml-1">City / District</label>
+                  <input type="text" id="profDistrict" placeholder="Auto-filled" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl outline-none bg-slate-50 text-slate-500 cursor-not-allowed" readonly>
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-xs font-semibold text-slate-500 ml-1">State</label>
+                  <input type="text" id="profState" placeholder="Auto-filled" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl outline-none bg-slate-50 text-slate-500 cursor-not-allowed" readonly>
+                </div>
               </div>
 
-              <button type="submit" id="saveProfileBtn" class="mt-4 bg-indigo-100 text-indigo-700 hover:bg-indigo-600 hover:text-white font-bold py-3 px-6 rounded-xl transition active:scale-95 text-sm flex items-center justify-center gap-2">
-                Save Details
-              </button>
+              <div class="pt-2">
+                <button type="submit" id="saveProfileBtn" class="w-full lg:w-auto bg-indigo-600 text-white hover:bg-indigo-700 font-semibold py-3.5 px-8 rounded-xl transition active:scale-[0.98] text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                  Save Address Details
+                </button>
+              </div>
             </form>
           </div>
         </div>
         
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:p-8">
           
-          <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-5 gap-4">
-            <h3 class="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2 shrink-0">
-              📦 Order History
-            </h3>
+          <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 gap-4">
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="bg-emerald-50 p-2.5 rounded-xl text-emerald-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900">Order History</h3>
+            </div>
             
-            <div class="flex overflow-x-auto no-scrollbar gap-2 pb-1 md:pb-0 w-full md:w-auto">
-              <button onclick="filterOrders('All')" id="flt-All" class="px-4 py-1.5 rounded-full text-xs font-bold border border-indigo-200 bg-indigo-50 text-indigo-700 shrink-0 transition shadow-sm">All</button>
-              <button onclick="filterOrders('Pending')" id="flt-Pending" class="px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 shrink-0 transition">Pending</button>
-              <button onclick="filterOrders('Shipped')" id="flt-Shipped" class="px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 shrink-0 transition">Shipped</button>
-              <button onclick="filterOrders('Cancelled')" id="flt-Cancelled" class="px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 shrink-0 transition">Cancelled</button>
+            <div class="flex overflow-x-auto no-scrollbar gap-2 pb-2 lg:pb-0 w-full lg:w-auto snap-x">
+              <button onclick="filterOrders('All')" id="flt-All" class="snap-start px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white shrink-0 transition shadow-sm">All Orders</button>
+              <button onclick="filterOrders('Pending')" id="flt-Pending" class="snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition">Pending</button>
+              <button onclick="filterOrders('Shipped')" id="flt-Shipped" class="snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition">Shipped</button>
+              <button onclick="filterOrders('Cancelled')" id="flt-Cancelled" class="snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition">Cancelled</button>
             </div>
           </div>
           
-          <div id="ordersContainer" class="space-y-4 min-h-[150px] relative mt-2">
+          <div id="ordersContainer" class="space-y-4 min-h-[150px] relative">
             </div>
         </div>
 
-        <div class="bg-red-50/50 rounded-3xl border border-red-100 p-6 md:p-8 mt-6">
-          <h3 class="text-lg font-bold text-red-800 mb-2 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        <div class="bg-red-50/30 rounded-2xl border border-red-100 p-6 lg:p-8 mt-6">
+          <h3 class="text-sm font-bold text-red-700 mb-1.5 flex items-center gap-2">
             Danger Zone
           </h3>
-          <p class="text-sm text-red-600 mb-5">Once you delete your account, there is no going back. Your profile and order tracking history will be permanently erased.</p>
+          <p class="text-xs text-red-500 mb-4">Deleting your account is permanent. Your order tracking history will be erased.</p>
           
-          <button id="deleteAccountBtn" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold py-2.5 px-5 rounded-xl transition active:scale-95 text-sm flex items-center justify-center gap-2 w-full sm:w-auto">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            Delete My Account
+          <button id="deleteAccountBtn" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 font-semibold py-2.5 px-5 rounded-lg transition active:scale-[0.98] text-xs flex items-center justify-center gap-2 w-full sm:w-auto">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            Delete Account
           </button>
         </div>
 
@@ -176,9 +221,9 @@
     </div>
   </div>
 
-  <footer class="text-gray-600 body-font bg-gray-100 border-t border-gray-200 mt-auto fade-in">
-    <div class="container px-5 py-10 md:py-16 mx-auto flex flex-col items-center">
-      <p class="text-gray-500 text-xs md:text-sm text-center">© 2026 FloorAqua — Premium Cleaning Solutions</p>
+  <footer class="text-slate-500 bg-white border-t border-slate-200 mt-auto fade-in">
+    <div class="container px-5 py-8 mx-auto flex flex-col items-center">
+      <p class="text-xs font-medium">© 2026 FloorAqua — Premium Cleaning Solutions</p>
     </div>
   </footer>
 
@@ -186,7 +231,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
-    // 1. FIREBASE CONFIGURATION
+    // 1. FIREBASE CONFIGURATION (Untouched)
     const firebaseConfig = {
       apiKey: "AIzaSyCx_gDD74ZnTeIhWHSG42ExK67fUQaNNQE",
       authDomain: "flooraqua-2e835.firebaseapp.com",
@@ -199,7 +244,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // 2. GLOBAL VARIABLES
+    // 2. GLOBAL VARIABLES (Untouched)
     const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
     window.currentUserEmail = "";
     window.globalOrdersList = [];
@@ -208,13 +253,11 @@
     // 3. AUTHENTICATION LISTENER
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is securely logged in
         window.currentUserEmail = user.email;
         
-        // Update UI with Firebase User Data
         document.getElementById('userEmailDisplay').textContent = user.email;
         if (user.displayName) {
-          document.getElementById('userDisplayName').textContent = `Welcome back, ${user.displayName.split(' ')[0]}`;
+          document.getElementById('userDisplayName').textContent = `Welcome, ${user.displayName.split(' ')[0]}`;
         }
         
         if (user.photoURL) {
@@ -225,7 +268,6 @@
           document.getElementById('userInitial').textContent = user.email.charAt(0).toUpperCase();
         }
 
-        // Reveal the protected page
         const container = document.getElementById('pageContainer');
         container.classList.remove('hidden');
         setTimeout(() => {
@@ -233,11 +275,9 @@
           document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
         }, 50);
 
-        // Fetch user data
         loadSavedProfile(); 
         window.fetchUserOrders();
       } else {
-        // Kicks unauthorized users back to login
         window.location.replace("login.html");
       }
     });
@@ -259,9 +299,7 @@
       alert("For security, please contact FloorAqua Support at +91 6398138894 to permanently delete your data.");
     });
 
-    // ---------------------------------------------------------
-    // ✨ ADDRESS LOGIC: LOAD & TOGGLE
-    // ---------------------------------------------------------
+    // ✨ ADDRESS LOGIC
     window.toggleAddressForm = function(forceClose = false) {
       const form = document.getElementById('addressFormContainer');
       const icon = document.getElementById('addressToggleIcon');
@@ -278,10 +316,10 @@
     function updateAddressSummaryText(profile) {
       const summaryText = document.getElementById('addressSummaryText');
       if (profile && profile.street && profile.district) {
-        summaryText.innerText = `Saved: ${profile.name} - ${profile.street}, ${profile.district}`;
+        summaryText.innerText = `${profile.street}, ${profile.district}, ${profile.pincode}`;
         window.toggleAddressForm(true); 
       } else {
-        summaryText.innerText = "No address saved. Click here to add.";
+        summaryText.innerText = "No address saved. Click to add.";
         document.getElementById('addressFormContainer').classList.remove('hidden');
         document.getElementById('addressToggleIcon').style.transform = 'rotate(180deg)';
       }
@@ -323,13 +361,10 @@
       }
     }
 
-    // ---------------------------------------------------------
-    // ✨ ADDRESS LOGIC: SAVE
-    // ---------------------------------------------------------
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('saveProfileBtn');
-      btn.innerHTML = `<div class="loader !w-4 !h-4 !border-2 mr-2"></div> Saving...`;
+      btn.innerHTML = `<div class="loader !w-4 !h-4 !border-2 mr-2 !border-white !border-t-transparent"></div> Saving...`;
       btn.disabled = true;
 
       const profileData = {
@@ -352,20 +387,18 @@
            localStorage.setItem('floorAquaSavedAddress', JSON.stringify(profileData));
            updateAddressSummaryText(profileData);
            window.toggleAddressForm(true);
-           window.showToast("Details Securely Saved! ☁️🚚");
+           window.showToast("Address Saved Successfully!");
         }
       } catch(e) { alert("Network error. Please try again."); }
       
-      btn.innerText = "Save Details";
+      btn.innerText = "Save Address Details";
       btn.disabled = false;
     });
 
-    // ---------------------------------------------------------
-    // 📦 ORDERS LOGIC: FETCH, FILTER, & CANCEL
-    // ---------------------------------------------------------
+    // 📦 ORDERS LOGIC
     window.fetchUserOrders = async function() {
       const container = document.getElementById('ordersContainer');
-      container.innerHTML = `<div class="flex flex-col items-center justify-center py-12 text-center absolute inset-0 bg-white/80 z-10 rounded-2xl"><div class="loader mb-4"></div><p class="text-sm text-indigo-600 font-bold animate-pulse">Syncing with database...</p></div>`;
+      container.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-center bg-slate-50 rounded-xl"><div class="loader mb-3 !border-slate-300 !border-t-indigo-600"></div><p class="text-sm text-slate-500 font-medium">Loading your orders...</p></div>`;
       
       try {
         const response = await fetch(GOOGLE_WEB_APP_URL, {
@@ -378,7 +411,7 @@
           window.filterOrders(window.currentOrderFilter);
         }
       } catch (error) { 
-        container.innerHTML = `<div class="text-center py-8 text-red-500 font-bold">Failed to load orders.</div>`; 
+        container.innerHTML = `<div class="text-center py-8 text-red-500 font-medium text-sm">Failed to load orders. Please refresh.</div>`; 
       }
     };
 
@@ -386,17 +419,18 @@
       window.currentOrderFilter = status;
       
       document.querySelectorAll('[id^="flt-"]').forEach(btn => {
-        btn.className = "px-4 py-1.5 rounded-full text-xs font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 shrink-0 transition";
+        btn.className = "snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition";
       });
       
       const activeBtn = document.getElementById('flt-' + status);
       if(activeBtn) {
-        activeBtn.className = "px-4 py-1.5 rounded-full text-xs font-bold border border-indigo-200 bg-indigo-50 text-indigo-700 shrink-0 transition shadow-sm";
+        activeBtn.className = "snap-start px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white shrink-0 transition shadow-sm";
       }
 
       window.renderOrders();
     }
 
+    // Upgraded Order Cards Render Logic
     window.renderOrders = function() {
       const container = document.getElementById('ordersContainer');
       let ordersToRender = window.globalOrdersList;
@@ -410,7 +444,14 @@
       }
 
       if (!ordersToRender || ordersToRender.length === 0) {
-        container.innerHTML = `<div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50"><p class="text-gray-500 font-medium mb-4">No ${window.currentOrderFilter !== 'All' ? window.currentOrderFilter.toLowerCase() : 'recent'} orders found.</p><button onclick="window.location.href='product.html'" class="bg-white border border-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg hover:bg-gray-50 shadow-sm text-sm transition">Shop Now</button></div>`;
+        container.innerHTML = `
+          <div class="text-center py-12 border border-dashed border-slate-200 rounded-xl bg-slate-50">
+            <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-slate-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            </div>
+            <p class="text-slate-500 font-medium mb-4 text-sm">No ${window.currentOrderFilter !== 'All' ? window.currentOrderFilter.toLowerCase() : 'recent'} orders found.</p>
+            <button onclick="window.location.href='product.html'" class="bg-white border border-slate-200 text-slate-700 font-semibold py-2 px-5 rounded-lg hover:bg-slate-50 shadow-sm text-xs transition">Start Shopping</button>
+          </div>`;
         return;
       }
 
@@ -418,30 +459,40 @@
       ordersToRender.forEach(order => {
         let statusBadge = '';
         let cancelBtn = '';
+        let accentColor = '';
 
         if(order.status === "Pending" || order.status === "Packed") {
-           statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-[10px] uppercase tracking-wider font-black px-2.5 py-1 rounded-md border border-yellow-200 shadow-sm">${order.status}</span>`;
-           cancelBtn = `<button onclick="cancelOrder('${order.orderId}')" class="text-red-500 text-xs font-bold hover:text-red-700 hover:underline transition">Cancel Order</button>`;
+           accentColor = 'bg-amber-400';
+           statusBadge = `<span class="bg-amber-50 text-amber-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-amber-200">${order.status}</span>`;
+           cancelBtn = `<button onclick="cancelOrder('${order.orderId}')" class="text-slate-400 text-xs font-medium hover:text-red-600 transition">Cancel</button>`;
         } else if(order.status === "Shipped") {
-           statusBadge = `<span class="bg-blue-100 text-blue-800 text-[10px] uppercase tracking-wider font-black px-2.5 py-1 rounded-md border border-blue-200 shadow-sm">Shipped 🚚</span>`;
+           accentColor = 'bg-blue-500';
+           statusBadge = `<span class="bg-blue-50 text-blue-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-blue-200">Shipped</span>`;
         } else if(order.status === "Delivered") {
-           statusBadge = `<span class="bg-green-100 text-green-800 text-[10px] uppercase tracking-wider font-black px-2.5 py-1 rounded-md border border-green-200 shadow-sm">Delivered ✅</span>`;
+           accentColor = 'bg-emerald-500';
+           statusBadge = `<span class="bg-emerald-50 text-emerald-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-emerald-200">Delivered</span>`;
         } else if(order.status === "Cancelled") {
-           statusBadge = `<span class="bg-gray-100 text-gray-600 text-[10px] uppercase tracking-wider font-black px-2.5 py-1 rounded-md border border-gray-300 shadow-sm">Cancelled 🚫</span>`;
+           accentColor = 'bg-slate-300';
+           statusBadge = `<span class="bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-slate-200">Cancelled</span>`;
         }
 
         container.innerHTML += `
-          <div class="border border-gray-100 rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition mb-4 relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-1 ${order.status === 'Cancelled' ? 'bg-gray-300' : (order.status === 'Delivered' ? 'bg-green-400' : 'bg-indigo-400')}"></div>
-            <div class="flex justify-between items-start pl-2">
-              <div>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Order #${order.orderId}</p>
-                <h4 class="font-bold text-gray-900 text-sm md:text-base leading-snug max-w-[200px] md:max-w-xs">${order.item}</h4>
+          <div class="border border-slate-200 rounded-xl p-4 lg:p-5 bg-white shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+            <div class="absolute left-0 top-0 bottom-0 w-1 ${accentColor}"></div>
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start pl-2 gap-3">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1.5">
+                  <p class="text-[11px] text-slate-500 font-semibold">ORDER #${order.orderId}</p>
+                  ${statusBadge}
+                </div>
+                <h4 class="font-bold text-slate-800 text-sm lg:text-base leading-snug truncate pr-4">${order.item}</h4>
               </div>
-              ${statusBadge}
             </div>
-            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100 pl-2">
-              <span class="text-xs text-gray-500 font-medium flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ${order.date}</span>
+            <div class="flex justify-between items-center mt-4 pt-3 border-t border-slate-100 pl-2">
+              <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 
+                ${order.date}
+              </span>
               ${cancelBtn}
             </div>
           </div>`;
