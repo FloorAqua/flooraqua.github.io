@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>My Account | FloorAqua</title>
+  <title>Your Account | FloorAqua</title>
   <meta name="description" content="Manage your FloorAqua account and view your order history.">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,213 +17,187 @@
     body { font-family: 'Inter', sans-serif; }
     html { scroll-behavior: smooth; }
     
-    /* Animations */
-    #pageContainer { opacity: 0; transition: opacity 0.5s ease-out; }
+    #pageContainer { opacity: 0; transition: opacity 0.4s ease-out; }
     #pageContainer.visible { opacity: 1; }
-    .fade-in { opacity: 0; transform: translateY(10px); transition: all 0.5s ease-out; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
     
-    /* Custom Loader */
-    .loader { border: 3px solid #e5e7eb; border-top: 3px solid #4f46e5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+    .loader { border: 3px solid #e5e7eb; border-top: 3px solid #4f46e5; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* Hide scrollbar for category filters but keep functionality */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Smooth Input Autofill styling */
-    input:-webkit-autofill {
-      -webkit-box-shadow: 0 0 0 30px white inset !important;
-    }
+    /* Active Sidebar Tab Styling */
+    .sidebar-tab-active { border-left-width: 4px; border-color: #4f46e5; background-color: #f8fafc; color: #4f46e5; font-weight: 700; }
   </style>
 </head>
 
-<body class="bg-[#f8fafc] flex flex-col min-h-screen text-slate-800">
+<body class="bg-gray-100 flex flex-col min-h-screen text-gray-800">
 
-  <div id="toastNotification" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-[120] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm flex items-center gap-3">
+  <div id="toastNotification" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-md shadow-xl z-[120] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm flex items-center gap-3">
     <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-    <span id="toastMessage">Details Saved Successfully!</span>
+    <span id="toastMessage">Saved!</span>
   </div>
 
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-    <div class="container mx-auto px-4 py-3 flex flex-wrap items-center justify-between lg:py-4">
+  <header class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-2 flex flex-wrap items-center justify-between">
       
       <div class="flex justify-between items-center w-full lg:w-auto">
         <a href="index.html" class="flex items-center gap-2 lg:gap-3 group">
-          <div class="bg-indigo-600 p-1.5 rounded-xl shadow-inner group-hover:bg-indigo-700 transition">
-            <img src="flooraqua.png" alt="FloorAqua Logo" class="h-8 w-8 object-contain" onerror="this.style.display='none'">
-          </div>
-          <span class="text-xl lg:text-2xl font-extrabold tracking-tight text-slate-900">FloorAqua</span>
+          <img src="flooraqua.png" alt="FloorAqua Logo" class="h-10 lg:h-12 w-auto object-contain bg-white rounded-full p-1 shadow-sm transition-transform group-hover:scale-105">
+          <span class="text-xl lg:text-2xl font-extrabold tracking-tight text-white">FloorAqua</span>
         </a>
         <div class="flex lg:hidden">
-          <button onclick="window.location.href='tel:+916398138894'" class="bg-indigo-50 text-indigo-600 font-semibold py-1.5 px-4 rounded-lg text-sm border border-indigo-100 active:bg-indigo-100 transition">
+          <button onclick="window.location.href='tel:+916398138894'" class="bg-white/20 font-semibold py-1.5 px-4 rounded-md text-sm transition">
             Call Support
           </button>
         </div>
       </div>
 
-      <nav class="w-full lg:w-auto flex flex-wrap items-center text-sm font-medium justify-center gap-4 lg:gap-8 mt-3 lg:mt-0 text-slate-500 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
-        <a href="index.html" class="hover:text-indigo-600 transition whitespace-nowrap">Home</a>
-        <a href="product.html" class="hover:text-indigo-600 transition whitespace-nowrap">Products</a>
-        <a href="about.html" class="hover:text-indigo-600 transition whitespace-nowrap">About</a>
-        <a href="contact.html" class="hover:text-indigo-600 transition whitespace-nowrap">Contact</a>
+      <nav class="w-full lg:w-auto flex flex-wrap items-center text-sm font-medium justify-center gap-4 lg:gap-8 mt-2 lg:mt-0 text-indigo-100 overflow-x-auto no-scrollbar pb-1 lg:pb-0">
+        <a href="index.html" class="hover:text-white transition whitespace-nowrap">Home</a>
+        <a href="product.html" class="hover:text-white transition whitespace-nowrap">Products</a>
+        <a href="about.html" class="hover:text-white transition whitespace-nowrap">About</a>
+        <a href="contact.html" class="hover:text-white transition whitespace-nowrap">Contact</a>
       </nav>
 
       <div class="hidden lg:flex items-center gap-4">
-        <button onclick="window.location.href='product.html'" class="inline-flex items-center justify-center bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg shadow hover:bg-indigo-700 hover:shadow-md transition-all gap-2 text-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        <button onclick="window.location.href='product.html'" class="inline-flex items-center justify-center bg-white text-indigo-700 font-bold py-2 px-5 rounded-md shadow hover:bg-gray-100 transition-all gap-2 text-sm">
           Shop Now
         </button>
       </div>
     </div>
   </header>
 
-  <div id="pageContainer" class="flex-grow container mx-auto px-4 py-8 lg:py-12 max-w-6xl hidden">
+  <div id="pageContainer" class="flex-grow container mx-auto px-4 py-6 lg:py-8 max-w-7xl hidden">
     
-    <div class="mb-8 lg:mb-10 text-center lg:text-left fade-in">
-      <h1 class="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">My Account</h1>
-      <p class="text-slate-500 mt-1 text-sm lg:text-base">Manage your profile and track your orders seamlessly.</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+    <div class="flex flex-col lg:flex-row gap-6">
       
-      <div class="lg:col-span-4 space-y-6 fade-in">
+      <div class="w-full lg:w-1/4 flex flex-col gap-4">
         
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:p-8 flex flex-col items-center text-center relative overflow-hidden">
-          <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-indigo-500 to-blue-400 opacity-10"></div>
-          
-          <div class="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mb-5 border-4 border-white shadow-md overflow-hidden relative z-10">
-            <img id="userAvatar" src="" alt="User Avatar" class="w-full h-full object-cover hidden">
-            <span class="text-3xl font-bold text-indigo-600" id="userInitial"></span>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex items-center gap-4">
+          <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center border border-indigo-200 overflow-hidden shrink-0">
+            <img id="userAvatar" src="" alt="Avatar" class="w-full h-full object-cover hidden">
+            <span class="text-xl font-bold text-indigo-600" id="userInitial"></span>
           </div>
-          
-          <h2 class="text-lg font-bold text-slate-900 relative z-10" id="userDisplayName">Welcome back,</h2>
-          <div class="bg-slate-50 border border-slate-100 rounded-lg px-3 py-1.5 mt-3 w-full relative z-10">
-            <p id="userEmailDisplay" class="text-sm text-slate-500 font-medium truncate w-full">Loading email...</p>
+          <div class="overflow-hidden">
+            <p class="text-xs text-gray-500 font-medium">Hello,</p>
+            <h2 class="text-base font-bold text-gray-900 truncate" id="userDisplayName">User</h2>
+            <p id="userEmailDisplay" class="text-xs text-gray-500 truncate hidden">email</p>
           </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-          <button id="logoutBtn" class="w-full bg-white border border-slate-200 text-slate-700 font-semibold py-3 px-4 rounded-xl hover:bg-slate-50 transition active:scale-[0.98] text-sm flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <button onclick="switchTab('orders')" id="tab-orders" class="w-full text-left px-5 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 border-b border-gray-100 transition sidebar-tab-active flex items-center justify-between group">
+            <span class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+              Your Orders
+            </span>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          
+          <button onclick="switchTab('address')" id="tab-address" class="w-full text-left px-5 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 border-b border-gray-100 transition flex items-center justify-between group border-l-4 border-transparent">
+            <span class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              Delivery Addresses
+            </span>
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+
+          <button id="logoutBtn" class="w-full text-left px-5 py-4 text-sm font-medium text-red-600 hover:bg-red-50 transition flex items-center gap-3">
+            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
             Sign Out
           </button>
         </div>
       </div>
 
-      <div class="lg:col-span-8 space-y-6 fade-in">
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:p-8 relative overflow-hidden transition-all">
-          
-          <div id="profileLoadingState" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm transition-opacity duration-300">
-            <div class="loader mb-3"></div>
-            <p class="text-sm text-indigo-600 font-semibold animate-pulse">Syncing details...</p>
-          </div>
-
-          <div class="flex justify-between items-center cursor-pointer group" onclick="toggleAddressForm()">
-            <div class="flex items-center gap-3">
-              <div class="bg-indigo-50 p-2.5 rounded-xl text-indigo-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-              </div>
-              <div>
-                <h3 class="text-lg font-bold text-slate-900">Delivery Address</h3>
-                <p id="addressSummaryText" class="text-xs lg:text-sm text-slate-500 mt-0.5 font-medium group-hover:text-indigo-600 transition line-clamp-1">Fetching address...</p>
+      <div class="w-full lg:w-3/4">
+        
+        <div id="view-orders" class="block">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 lg:p-6 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 mb-4 gap-4">
+              <h1 class="text-xl font-bold text-gray-900">Your Orders</h1>
+              
+              <div class="flex bg-gray-100 p-1 rounded-md overflow-x-auto no-scrollbar snap-x">
+                <button onclick="filterOrders('All')" id="flt-All" class="snap-start px-4 py-1.5 rounded text-xs font-semibold bg-white text-gray-900 shadow-sm shrink-0">All</button>
+                <button onclick="filterOrders('Pending')" id="flt-Pending" class="snap-start px-4 py-1.5 rounded text-xs font-medium text-gray-600 hover:text-gray-900 shrink-0">Pending</button>
+                <button onclick="filterOrders('Shipped')" id="flt-Shipped" class="snap-start px-4 py-1.5 rounded text-xs font-medium text-gray-600 hover:text-gray-900 shrink-0">Shipped</button>
+                <button onclick="filterOrders('Cancelled')" id="flt-Cancelled" class="snap-start px-4 py-1.5 rounded text-xs font-medium text-gray-600 hover:text-gray-900 shrink-0">Cancelled</button>
               </div>
             </div>
-            <button class="bg-slate-50 p-2 rounded-full text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition">
-              <svg id="addressToggleIcon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </button>
+
+            <div id="ordersContainer" class="space-y-4 min-h-[200px] relative">
+              </div>
           </div>
-          
-          <div id="addressFormContainer" class="hidden mt-6 pt-6 border-t border-slate-100">
-            <form id="profileForm" class="space-y-4 lg:space-y-5 relative z-0">
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
-                <div class="space-y-1.5">
-                  <label class="text-xs font-semibold text-slate-500 ml-1">Full Name</label>
-                  <input type="text" id="profName" placeholder="John Doe" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300">
+        </div>
+
+        <div id="view-address" class="hidden">
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 lg:p-6 relative">
+            <div id="profileLoadingState" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/90 transition-opacity duration-300">
+              <div class="loader mb-2"></div>
+              <p class="text-xs text-indigo-600 font-semibold">Loading Address...</p>
+            </div>
+
+            <div class="border-b border-gray-200 pb-4 mb-5 flex justify-between items-end">
+              <div>
+                <h1 class="text-xl font-bold text-gray-900">Your Addresses</h1>
+                <p id="addressSummaryText" class="text-sm text-gray-500 mt-1">Manage where your FloorAqua products arrive.</p>
+              </div>
+            </div>
+            
+            <form id="profileForm" class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-gray-700">Full Name</label>
+                  <input type="text" id="profName" required class="w-full p-2.5 text-sm border border-gray-300 rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition">
                 </div>
-                <div class="space-y-1.5">
-                  <label class="text-xs font-semibold text-slate-500 ml-1">Mobile Number</label>
-                  <input type="tel" id="profPhone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-gray-700">Mobile Number</label>
+                  <input type="tel" id="profPhone" pattern="[0-9]{10}" maxlength="10" required class="w-full p-2.5 text-sm border border-gray-300 rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
               </div>
               
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-slate-500 ml-1">Street / House No. / Locality</label>
-                <input type="text" id="profStreet" placeholder="123 Main Street, Apt 4B" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-700">Flat, House no., Building, Company, Apartment</label>
+                <input type="text" id="profStreet" required class="w-full p-2.5 text-sm border border-gray-300 rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition">
               </div>
               
-              <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-slate-500 ml-1">Landmark (Optional)</label>
-                <input type="text" id="profLandmark" placeholder="Near City Mall" class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300">
+              <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-700">Landmark</label>
+                <input type="text" id="profLandmark" placeholder="E.g. near apollo hospital" class="w-full p-2.5 text-sm border border-gray-300 rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition">
               </div>
               
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
-                <div class="space-y-1.5 relative">
-                  <label class="text-xs font-semibold text-slate-500 ml-1">Pincode</label>
-                  <input type="tel" id="profPincode" placeholder="6 digits" pattern="[0-9]{6}" maxlength="6" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition bg-white placeholder-slate-300" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) fetchProfileLocation(this.value);">
-                  <span id="profPincodeLoader" class="hidden absolute right-4 top-[38px] text-xs font-bold text-indigo-500 animate-pulse">Checking...</span>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-1 relative">
+                  <label class="text-xs font-bold text-gray-700">Pincode</label>
+                  <input type="tel" id="profPincode" pattern="[0-9]{6}" maxlength="6" required class="w-full p-2.5 text-sm border border-gray-300 rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) fetchProfileLocation(this.value);">
+                  <span id="profPincodeLoader" class="hidden absolute right-3 top-8 text-xs font-bold text-indigo-600">Checking...</span>
                 </div>
-                <div class="space-y-1.5">
-                  <label class="text-xs font-semibold text-slate-500 ml-1">City / District</label>
-                  <input type="text" id="profDistrict" placeholder="Auto-filled" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl outline-none bg-slate-50 text-slate-500 cursor-not-allowed" readonly>
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-gray-700">Town/City</label>
+                  <input type="text" id="profDistrict" required class="w-full p-2.5 text-sm border border-gray-200 rounded bg-gray-50 text-gray-600 cursor-not-allowed outline-none" readonly>
                 </div>
-                <div class="space-y-1.5">
-                  <label class="text-xs font-semibold text-slate-500 ml-1">State</label>
-                  <input type="text" id="profState" placeholder="Auto-filled" required class="text-sm w-full p-3.5 border border-slate-200 rounded-xl outline-none bg-slate-50 text-slate-500 cursor-not-allowed" readonly>
+                <div class="space-y-1">
+                  <label class="text-xs font-bold text-gray-700">State</label>
+                  <input type="text" id="profState" required class="w-full p-2.5 text-sm border border-gray-200 rounded bg-gray-50 text-gray-600 cursor-not-allowed outline-none" readonly>
                 </div>
               </div>
 
-              <div class="pt-2">
-                <button type="submit" id="saveProfileBtn" class="w-full lg:w-auto bg-indigo-600 text-white hover:bg-indigo-700 font-semibold py-3.5 px-8 rounded-xl transition active:scale-[0.98] text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
-                  Save Address Details
+              <div class="pt-4 border-t border-gray-100 mt-6">
+                <button type="submit" id="saveProfileBtn" class="bg-indigo-600 text-white hover:bg-indigo-700 font-bold py-2.5 px-6 rounded shadow-sm transition text-sm flex items-center gap-2">
+                  Save Address
                 </button>
               </div>
             </form>
           </div>
-        </div>
-        
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:p-8">
-          
-          <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 gap-4">
-            <div class="flex items-center gap-3 shrink-0">
-              <div class="bg-emerald-50 p-2.5 rounded-xl text-emerald-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-              </div>
-              <h3 class="text-lg font-bold text-slate-900">Order History</h3>
-            </div>
-            
-            <div class="flex overflow-x-auto no-scrollbar gap-2 pb-2 lg:pb-0 w-full lg:w-auto snap-x">
-              <button onclick="filterOrders('All')" id="flt-All" class="snap-start px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white shrink-0 transition shadow-sm">All Orders</button>
-              <button onclick="filterOrders('Pending')" id="flt-Pending" class="snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition">Pending</button>
-              <button onclick="filterOrders('Shipped')" id="flt-Shipped" class="snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition">Shipped</button>
-              <button onclick="filterOrders('Cancelled')" id="flt-Cancelled" class="snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition">Cancelled</button>
-            </div>
-          </div>
-          
-          <div id="ordersContainer" class="space-y-4 min-h-[150px] relative">
-            </div>
-        </div>
-
-        <div class="bg-red-50/30 rounded-2xl border border-red-100 p-6 lg:p-8 mt-6">
-          <h3 class="text-sm font-bold text-red-700 mb-1.5 flex items-center gap-2">
-            Danger Zone
-          </h3>
-          <p class="text-xs text-red-500 mb-4">Deleting your account is permanent. Your order tracking history will be erased.</p>
-          
-          <button id="deleteAccountBtn" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 font-semibold py-2.5 px-5 rounded-lg transition active:scale-[0.98] text-xs flex items-center justify-center gap-2 w-full sm:w-auto">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            Delete Account
-          </button>
         </div>
 
       </div>
     </div>
   </div>
 
-  <footer class="text-slate-500 bg-white border-t border-slate-200 mt-auto fade-in">
-    <div class="container px-5 py-8 mx-auto flex flex-col items-center">
-      <p class="text-xs font-medium">© 2026 FloorAqua — Premium Cleaning Solutions</p>
+  <footer class="bg-white border-t border-gray-200 mt-auto">
+    <div class="container mx-auto px-4 py-6 text-center">
+      <p class="text-sm text-gray-500">© 2026 FloorAqua — Premium Cleaning Solutions</p>
     </div>
   </footer>
 
@@ -231,7 +205,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
-    // 1. FIREBASE CONFIGURATION (Untouched)
+    // FIREBASE CONFIGURATION (Untouched)
     const firebaseConfig = {
       apiKey: "AIzaSyCx_gDD74ZnTeIhWHSG42ExK67fUQaNNQE",
       authDomain: "flooraqua-2e835.firebaseapp.com",
@@ -244,20 +218,37 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // 2. GLOBAL VARIABLES (Untouched)
     const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydy_55_wyhjkIMxHQb8jgf8teDqql0TkK2yrGXXM-rqG_G3CqC9uRm5Y-Ps4DT8J_j/exec"; 
     window.currentUserEmail = "";
     window.globalOrdersList = [];
     window.currentOrderFilter = 'All';
 
-    // 3. AUTHENTICATION LISTENER
+    // UI Tab Switcher
+    window.switchTab = function(tabName) {
+      // Hide all views
+      document.getElementById('view-orders').classList.add('hidden');
+      document.getElementById('view-address').classList.add('hidden');
+      
+      // Reset sidebar styling
+      document.getElementById('tab-orders').className = "w-full text-left px-5 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 border-b border-gray-100 transition flex items-center justify-between group border-l-4 border-transparent";
+      document.getElementById('tab-address').className = "w-full text-left px-5 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 border-b border-gray-100 transition flex items-center justify-between group border-l-4 border-transparent";
+      
+      // Show requested view & style active tab
+      document.getElementById('view-' + tabName).classList.remove('hidden');
+      document.getElementById('tab-' + tabName).classList.add('sidebar-tab-active');
+      document.getElementById('tab-' + tabName).classList.remove('border-transparent');
+    };
+
+    // AUTHENTICATION LISTENER
     onAuthStateChanged(auth, (user) => {
       if (user) {
         window.currentUserEmail = user.email;
         
         document.getElementById('userEmailDisplay').textContent = user.email;
         if (user.displayName) {
-          document.getElementById('userDisplayName').textContent = `Welcome, ${user.displayName.split(' ')[0]}`;
+          document.getElementById('userDisplayName').textContent = user.displayName;
+        } else {
+          document.getElementById('userDisplayName').textContent = user.email.split('@')[0];
         }
         
         if (user.photoURL) {
@@ -270,10 +261,7 @@
 
         const container = document.getElementById('pageContainer');
         container.classList.remove('hidden');
-        setTimeout(() => {
-          container.classList.add('visible');
-          document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
-        }, 50);
+        setTimeout(() => container.classList.add('visible'), 50);
 
         loadSavedProfile(); 
         window.fetchUserOrders();
@@ -282,46 +270,24 @@
       }
     });
 
-    // 4. LOGOUT & DELETE
+    // LOGOUT
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       try {
         await signOut(auth);
         localStorage.removeItem('floorAquaSavedAddress'); 
-        localStorage.removeItem('customerName'); 
-        localStorage.removeItem('customerEmail');
         window.location.href = "login.html";
       } catch (error) {
         console.error("Logout Error:", error);
       }
     });
 
-    document.getElementById('deleteAccountBtn').addEventListener('click', () => {
-      alert("For security, please contact FloorAqua Support at +91 6398138894 to permanently delete your data.");
-    });
-
-    // ✨ ADDRESS LOGIC
-    window.toggleAddressForm = function(forceClose = false) {
-      const form = document.getElementById('addressFormContainer');
-      const icon = document.getElementById('addressToggleIcon');
-      
-      if (forceClose || !form.classList.contains('hidden')) {
-        form.classList.add('hidden');
-        icon.style.transform = 'rotate(0deg)';
-      } else {
-        form.classList.remove('hidden');
-        icon.style.transform = 'rotate(180deg)';
-      }
-    }
-
+    // ADDRESS LOGIC
     function updateAddressSummaryText(profile) {
       const summaryText = document.getElementById('addressSummaryText');
       if (profile && profile.street && profile.district) {
-        summaryText.innerText = `${profile.street}, ${profile.district}, ${profile.pincode}`;
-        window.toggleAddressForm(true); 
+        summaryText.innerHTML = `Saved Address: <b>${profile.street}, ${profile.district} - ${profile.pincode}</b>`;
       } else {
-        summaryText.innerText = "No address saved. Click to add.";
-        document.getElementById('addressFormContainer').classList.remove('hidden');
-        document.getElementById('addressToggleIcon').style.transform = 'rotate(180deg)';
+        summaryText.innerText = "Add a new address for faster checkout.";
       }
     }
 
@@ -364,7 +330,7 @@
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('saveProfileBtn');
-      btn.innerHTML = `<div class="loader !w-4 !h-4 !border-2 mr-2 !border-white !border-t-transparent"></div> Saving...`;
+      btn.innerHTML = `<div class="loader mr-2 !w-4 !h-4 !border-white !border-t-transparent !border-2"></div> Saving...`;
       btn.disabled = true;
 
       const profileData = {
@@ -386,19 +352,18 @@
         if(data.result === "success") {
            localStorage.setItem('floorAquaSavedAddress', JSON.stringify(profileData));
            updateAddressSummaryText(profileData);
-           window.toggleAddressForm(true);
-           window.showToast("Address Saved Successfully!");
+           window.showToast("Address Saved!");
         }
       } catch(e) { alert("Network error. Please try again."); }
       
-      btn.innerText = "Save Address Details";
+      btn.innerHTML = "Save Address";
       btn.disabled = false;
     });
 
-    // 📦 ORDERS LOGIC
+    // ORDERS LOGIC - AMAZON STYLE CARDS
     window.fetchUserOrders = async function() {
       const container = document.getElementById('ordersContainer');
-      container.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-center bg-slate-50 rounded-xl"><div class="loader mb-3 !border-slate-300 !border-t-indigo-600"></div><p class="text-sm text-slate-500 font-medium">Loading your orders...</p></div>`;
+      container.innerHTML = `<div class="flex flex-col items-center justify-center py-10 bg-gray-50 rounded-md border border-gray-100"><div class="loader !border-gray-300 !border-t-indigo-600 mb-2"></div><p class="text-sm text-gray-500">Fetching orders...</p></div>`;
       
       try {
         const response = await fetch(GOOGLE_WEB_APP_URL, {
@@ -411,7 +376,7 @@
           window.filterOrders(window.currentOrderFilter);
         }
       } catch (error) { 
-        container.innerHTML = `<div class="text-center py-8 text-red-500 font-medium text-sm">Failed to load orders. Please refresh.</div>`; 
+        container.innerHTML = `<div class="text-center py-8 text-red-500 font-medium text-sm">Failed to load orders.</div>`; 
       }
     };
 
@@ -419,18 +384,17 @@
       window.currentOrderFilter = status;
       
       document.querySelectorAll('[id^="flt-"]').forEach(btn => {
-        btn.className = "snap-start px-4 py-2 rounded-lg text-xs font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 shrink-0 transition";
+        btn.className = "snap-start px-4 py-1.5 rounded text-xs font-medium text-gray-600 hover:text-gray-900 shrink-0";
       });
       
       const activeBtn = document.getElementById('flt-' + status);
       if(activeBtn) {
-        activeBtn.className = "snap-start px-4 py-2 rounded-lg text-xs font-semibold bg-slate-900 text-white shrink-0 transition shadow-sm";
+        activeBtn.className = "snap-start px-4 py-1.5 rounded text-xs font-semibold bg-white text-gray-900 shadow-sm shrink-0";
       }
 
       window.renderOrders();
     }
 
-    // Upgraded Order Cards Render Logic
     window.renderOrders = function() {
       const container = document.getElementById('ordersContainer');
       let ordersToRender = window.globalOrdersList;
@@ -445,12 +409,9 @@
 
       if (!ordersToRender || ordersToRender.length === 0) {
         container.innerHTML = `
-          <div class="text-center py-12 border border-dashed border-slate-200 rounded-xl bg-slate-50">
-            <div class="bg-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm text-slate-400">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-            </div>
-            <p class="text-slate-500 font-medium mb-4 text-sm">No ${window.currentOrderFilter !== 'All' ? window.currentOrderFilter.toLowerCase() : 'recent'} orders found.</p>
-            <button onclick="window.location.href='product.html'" class="bg-white border border-slate-200 text-slate-700 font-semibold py-2 px-5 rounded-lg hover:bg-slate-50 shadow-sm text-xs transition">Start Shopping</button>
+          <div class="text-center py-12 border border-gray-200 rounded-lg bg-gray-50">
+            <p class="text-gray-600 font-medium text-sm mb-3">No ${window.currentOrderFilter !== 'All' ? window.currentOrderFilter.toLowerCase() : ''} orders found.</p>
+            <button onclick="window.location.href='product.html'" class="bg-white border border-gray-300 text-gray-700 font-semibold py-1.5 px-4 rounded shadow-sm text-sm hover:bg-gray-50">Continue Shopping</button>
           </div>`;
         return;
       }
@@ -459,48 +420,65 @@
       ordersToRender.forEach(order => {
         let statusBadge = '';
         let cancelBtn = '';
-        let accentColor = '';
+        let statusColor = 'text-gray-500';
 
         if(order.status === "Pending" || order.status === "Packed") {
-           accentColor = 'bg-amber-400';
-           statusBadge = `<span class="bg-amber-50 text-amber-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-amber-200">${order.status}</span>`;
-           cancelBtn = `<button onclick="cancelOrder('${order.orderId}')" class="text-slate-400 text-xs font-medium hover:text-red-600 transition">Cancel</button>`;
+           statusBadge = `Preparing for Dispatch`;
+           statusColor = 'text-amber-600';
+           cancelBtn = `<button onclick="cancelOrder('${order.orderId}')" class="text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 py-1.5 px-4 rounded w-full sm:w-auto shadow-sm transition">Cancel Order</button>`;
         } else if(order.status === "Shipped") {
-           accentColor = 'bg-blue-500';
-           statusBadge = `<span class="bg-blue-50 text-blue-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-blue-200">Shipped</span>`;
+           statusBadge = `Out for Delivery 🚚`;
+           statusColor = 'text-blue-600';
+           cancelBtn = `<button class="text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 py-1.5 px-4 rounded w-full sm:w-auto shadow-sm transition">Track Package</button>`;
         } else if(order.status === "Delivered") {
-           accentColor = 'bg-emerald-500';
-           statusBadge = `<span class="bg-emerald-50 text-emerald-700 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-emerald-200">Delivered</span>`;
+           statusBadge = `Delivered`;
+           statusColor = 'text-green-700';
+           cancelBtn = `<button class="text-sm font-medium border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 py-1.5 px-4 rounded w-full sm:w-auto shadow-sm transition">Buy it again</button>`;
         } else if(order.status === "Cancelled") {
-           accentColor = 'bg-slate-300';
-           statusBadge = `<span class="bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border border-slate-200">Cancelled</span>`;
+           statusBadge = `Cancelled`;
+           statusColor = 'text-red-600';
         }
 
+        // Amazon-style horizontal card structure
         container.innerHTML += `
-          <div class="border border-slate-200 rounded-xl p-4 lg:p-5 bg-white shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-            <div class="absolute left-0 top-0 bottom-0 w-1 ${accentColor}"></div>
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start pl-2 gap-3">
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1.5">
-                  <p class="text-[11px] text-slate-500 font-semibold">ORDER #${order.orderId}</p>
-                  ${statusBadge}
+          <div class="border border-gray-200 rounded-lg bg-white overflow-hidden mb-4">
+            <div class="bg-gray-100 border-b border-gray-200 px-4 py-3 flex flex-wrap justify-between gap-4 text-xs">
+              <div class="flex gap-6">
+                <div>
+                  <p class="text-gray-500 font-medium uppercase mb-0.5">Order Placed</p>
+                  <p class="text-gray-900">${order.date}</p>
                 </div>
-                <h4 class="font-bold text-slate-800 text-sm lg:text-base leading-snug truncate pr-4">${order.item}</h4>
+                <div>
+                  <p class="text-gray-500 font-medium uppercase mb-0.5">Total</p>
+                  <p class="text-gray-900 font-semibold">₹${order.total || '---'}</p>
+                </div>
+              </div>
+              <div class="text-right flex-grow">
+                <p class="text-gray-500 font-medium uppercase mb-0.5">Order # ${order.orderId}</p>
+                <a href="#" class="text-indigo-600 hover:text-indigo-800 hover:underline">View invoice</a>
               </div>
             </div>
-            <div class="flex justify-between items-center mt-4 pt-3 border-t border-slate-100 pl-2">
-              <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> 
-                ${order.date}
-              </span>
-              ${cancelBtn}
+            
+            <div class="p-4 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+              <div class="flex gap-4">
+                <div class="w-16 h-16 bg-gray-50 border border-gray-200 rounded p-1 shrink-0 flex items-center justify-center">
+                   <img src="flooraqua.png" class="max-w-full max-h-full opacity-50 grayscale" alt="Item">
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-900 text-sm md:text-base leading-snug mb-1">${order.item}</h3>
+                  <p class="text-sm font-bold ${statusColor}">${statusBadge}</p>
+                </div>
+              </div>
+              <div class="w-full sm:w-auto mt-2 sm:mt-0 flex shrink-0">
+                 ${cancelBtn}
+              </div>
             </div>
           </div>`;
       });
     }
 
     window.cancelOrder = async function(orderId) {
-      if(confirm(`Are you sure you want to cancel order #${orderId}?`)) {
+      if(confirm(`Cancel order #${orderId}?`)) {
         document.getElementById('ordersContainer').style.opacity = '0.5';
         try {
           const response = await fetch(GOOGLE_WEB_APP_URL, {
@@ -509,7 +487,7 @@
           });
           const data = await response.json();
           if (data.result === "success") {
-            window.showToast("Order Cancelled.");
+            window.showToast("Order Cancelled");
             window.fetchUserOrders();
           }
         } catch (error) { alert("Error cancelling order."); }
@@ -517,7 +495,7 @@
       }
     };
 
-    // --- UTILITIES ---
+    // UTILITIES
     window.fetchProfileLocation = async function(pincode) {
       const loader = document.getElementById('profPincodeLoader');
       loader.classList.remove('hidden');
