@@ -621,10 +621,22 @@
         return;
       }
 
-      // ✨ Display exactly 2 featured products on the homepage
-      const featuredProducts = products.slice(0, 2);
+      // ✨ SORT LOGIC: Find the cheapest products first
+      const sortedProducts = [...products].sort((a, b) => {
+        const minPriceA = Math.min(...a.variants.map(v => parseFloat(v.price)));
+        const minPriceB = Math.min(...b.variants.map(v => parseFloat(v.price)));
+        
+        // If prices are identical, sort alphabetically by name
+        if (minPriceA === minPriceB) {
+          return a.name.localeCompare(b.name); 
+        }
+        return minPriceA - minPriceB; // Otherwise sort by lowest price
+      });
 
-      featuredProducts.forEach((p, index) => {
+      // Display exactly 2 cheapest products on the homepage
+      const featuredProducts = sortedProducts.slice(0, 2);
+
+      featuredProducts.forEach((p) => {
         const minPrice = Math.min(...p.variants.map(v => v.price));
         
         let badgeHtml = '';
@@ -641,6 +653,7 @@
           `;
         }
 
+        // We still need the index from the ORIGINAL array so the modal opens the correct product
         const actualIndex = products.findIndex(prod => prod.name === p.name);
 
         productsHTML += `
@@ -1334,5 +1347,3 @@
   </script>
 </body>
 </html>
-
-
